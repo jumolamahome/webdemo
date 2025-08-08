@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜03 今天吃什麼？（隨機決定器）</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>03｜今天吃什麼？（隨機決定器） <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>輸入候選餐廳/餐點，按一下「抽！」從清單中隨機挑選結果。支援新增與一鍵移除（點標籤 ✕），並將清單保存在 <code>localStorage</code> 以便下次使用。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>在輸入框輸入一家店（例如：拉麵、便當、咖哩），按「加入」。</li>
+      <li>重複加入多筆後，按「抽！」即可隨機抽出今天吃什麼。</li>
+      <li>點選清單中的標籤即可刪除該項目。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li>陣列操作與亂數 <code>Math.random()</code></li>
+      <li>事件委派（在容器上監聽點擊以刪除標籤）</li>
+      <li><code>localStorage</code> 永續保存清單</li>
+      <li>CSS 小動畫（抽選結果放大縮小）</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>lunch-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">lunch-single.html</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-single" data-filename="lunch-single.html">下載</button>
+          <button class="btn copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;今天吃什麼？（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    body{margin:0;background:#0f172a;color:#e5e7eb;font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;display:grid;place-items:center;min-height:100vh}
+    .card{background:#0b1220;border:1px solid #1f2937;border-radius:18px;padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw)}
+    input,button{padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#e5e7eb}
+    button{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+    .list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+    .tag{padding:8px 10px;background:#0f1a30;border:1px solid #1f2937;border-radius:999px;cursor:pointer}
+    #result{font-size:34px;font-weight:900;margin:12px 0;min-height:48px;text-align:center}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;
+  &lt;h2&gt;今天吃什麼？&lt;/h2&gt;
+  &lt;div style=&quot;display:flex;gap:8px&quot;&gt;
+    &lt;input id=&quot;inp&quot; placeholder=&quot;拉麵、便當、咖哩…&quot; style=&quot;flex:1&quot;&gt;
+    &lt;button id=&quot;add&quot;&gt;加入&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;list&quot; id=&quot;list&quot;&gt;&lt;/div&gt;
+  &lt;button id=&quot;go&quot; style=&quot;width:100%;margin-top:8px&quot;&gt;抽！&lt;/button&gt;
+  &lt;div id=&quot;result&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+const KEY='lunch.list.v1';
+let items=JSON.parse(localStorage.getItem(KEY)||'["便當","火鍋","咖哩","拉麵","水餃"]');
+const $=q=&gt;document.querySelector(q), list=$('#list'), result=$('#result');
+function render(){list.innerHTML=items.map((t,i)=&gt;`&lt;span class=&quot;tag&quot; data-i=&quot;${i}&quot;&gt;${t} ✕&lt;/span&gt;`).join('')}
+render();
+$('#add').onclick=()=>{const v=$('#inp').value.trim(); if(!v) return; items.push(v); save(); render(); $('#inp').value='';}
+list.onclick=e=&gt;{const el=e.target.closest('.tag'); if(!el) return; items.splice(+el.dataset.i,1); save(); render();}
+$('#go').onclick=()=>{ if(!items.length) return; const pick=items[(Math.random()*items.length)|0]; result.textContent=pick; result.animate([{transform:'scale(.9)'},{transform:'scale(1.08)'},{transform:'scale(1)'}],{duration:420,easing:'ease'}) }
+function save(){ localStorage.setItem(KEY, JSON.stringify(items)); }
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（lunch-standalone.html）</h2>
+    <div class="muted">請與 <code>lunch.css</code>、<code>lunch.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">lunch-standalone.html</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-html" data-filename="lunch-standalone.html">下載</button>
+          <button class="btn copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;今天吃什麼？（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./lunch.css&quot; /&gt;
+  &lt;script src=&quot;./lunch.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;
+    &lt;h2&gt;今天吃什麼？&lt;/h2&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;input id=&quot;inp&quot; placeholder=&quot;拉麵、便當、咖哩…&quot; style=&quot;flex:1&quot;&gt;
+      &lt;button class=&quot;accent&quot; id=&quot;add&quot;&gt;加入&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;list&quot; id=&quot;list&quot;&gt;&lt;/div&gt;
+    &lt;button class=&quot;accent&quot; id=&quot;go&quot; style=&quot;width:100%;margin-top:8px&quot;&gt;抽！&lt;/button&gt;
+    &lt;div id=&quot;result&quot; class=&quot;result&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（lunch.css）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">lunch.css</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-css" data-filename="lunch.css">下載</button>
+          <button class="btn copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">body{margin:0;background:#0f172a;color:#e5e7eb;font-family:system-ui,"Noto Sans TC",sans-serif;display:grid;place-items:center;min-height:100vh}
+.card{background:#0b1220;border:1px solid #1f2937;border-radius:18px;padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw)}
+.row{display:flex;gap:8px;align-items:center}
+input,button{padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#e5e7eb}
+button.accent{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+.list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.tag{padding:8px 10px;background:#0f1a30;border:1px solid #1f2937;border-radius:999px;cursor:pointer}
+.result{font-size:34px;font-weight:900;margin:12px 0;min-height:48px;text-align:center}
+</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（lunch.js）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">lunch.js</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-js" data-filename="lunch.js">下載</button>
+          <button class="btn copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(() =&gt; {
+  const root = document.querySelector('#app');
+  if(!root){ console.error('[Lunch] 找不到 #app'); return; }
+  const $ = (q) =&gt; root.querySelector(q);
+  const KEY = 'lunch.list.v1';
+  const list = $('#list');
+  const result = $('#result');
+
+  let items = [];
+  try{
+    items = JSON.parse(localStorage.getItem(KEY) || '["便當","火鍋","咖哩","拉麵","水餃"]');
+  }catch{ items = ["便當","火鍋","咖哩","拉麵","水餃"]; }
+
+  function save(){ localStorage.setItem(KEY, JSON.stringify(items)); }
+  function render(){ list.innerHTML = items.map((t,i)=&gt;`&lt;span class="tag" data-i="${i}"&gt;${t} ✕&lt;/span&gt;`).join(''); }
+
+  $('#add').onclick = () =&gt; {
+    const v = $('#inp').value.trim();
+    if(!v) return;
+    items.push(v);
+    $('#inp').value = '';
+    save();
+    render();
+  };
+
+  list.onclick = (e) =&gt; {
+    const el = e.target.closest('.tag');
+    if(!el) return;
+    items.splice(+el.dataset.i, 1);
+    save();
+    render();
+  };
+
+  $('#go').onclick = () =&gt; {
+    if(!items.length) return;
+    const pick = items[(Math.random()*items.length)|0];
+    result.textContent = pick;
+    result.animate([
+      {transform:'scale(.9)'},
+      {transform:'scale(1.08)'},
+      {transform:'scale(1)'}
+    ], {duration:420, easing:'ease'});
+  };
+
+  render();
+})();</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    const dl = e.target.closest('.downloadbtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{ await navigator.clipboard.writeText(text); showToast('已複製到剪貼簿'); }
+      catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+    if(dl){
+      const id = dl.dataset.download;
+      const filename = dl.dataset.filename || 'code.txt';
+      const el = document.getElementById(id);
+      if(!el) return;
+      const blob = new Blob([el.textContent], {type:'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('已下載：' + filename);
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>

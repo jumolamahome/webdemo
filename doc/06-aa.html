@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜06 AA 分帳（reduce / 表單 / 計算）</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px;gap:8px}
+  .codehead .title{font-weight:700}
+  .btns{display:flex;gap:8px}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:#e5e7eb;color:#111827;cursor:pointer}
+  .btn.accent{background:var(--accent);color:#fff}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>06｜AA 分帳（reduce / 表單 / 計算） <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>輸入多個品項與金額，自動計算總金額，並依人數平均分攤顯示「每人應付」金額。支援即時編輯、刪除列與動態更新。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>在「品項」與「金額」輸入後按「加入」。</li>
+      <li>下方清單可即時編輯品名或金額，按「刪」可移除該列。</li>
+      <li>調整「人數」欄位，會即時計算每人應付金額（四捨五入）。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li>表單輸入處理、事件監聽（<code>click</code> / <code>input</code>）。</li>
+      <li><code>Array.prototype.reduce</code> 計算總金額。</li>
+      <li>即時渲染 UI 與狀態管理（以陣列維護品項）。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>aa-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">aa-single.html</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-single" data-fn="aa-single.html">下載</button>
+          <button class="btn accent copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;AA 分帳（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    body{
+      margin:0;background:#0f172a;color:#e5e7eb;
+      font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;
+      min-height:100vh;display:grid;place-items:center
+    }
+    .card{
+      background:#0b1220;border:1px solid #1f2937;border-radius:18px;
+      padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw)
+    }
+    input,button{
+      padding:10px 12px;border-radius:10px;border:1px solid #1f2937;
+      background:#0b1220;color:#e5e7eb
+    }
+    button{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+    .list{display:grid;gap:8px;margin:10px 0}
+    .row{display:grid;grid-template-columns:1fr 100px 60px;gap:8px}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot;&gt;
+    &lt;h2&gt;AA 分帳&lt;/h2&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;input id=&quot;name&quot; placeholder=&quot;品項：披薩&quot;&gt;
+      &lt;input id=&quot;price&quot; type=&quot;number&quot; placeholder=&quot;金額&quot;&gt;
+      &lt;button id=&quot;add&quot;&gt;加入&lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class=&quot;list&quot; id=&quot;list&quot;&gt;&lt;/div&gt;
+    &lt;div&gt;總金額：&lt;span id=&quot;sum&quot;&gt;0&lt;/span&gt; 元&lt;/div&gt;
+    &lt;div style=&quot;margin-top:6px&quot;&gt;
+      人數：&lt;input id=&quot;p&quot; type=&quot;number&quot; value=&quot;2&quot; style=&quot;width:80px&quot;&gt; → 每人 &lt;b id=&quot;each&quot;&gt;0&lt;/b&gt; 元
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (()=&gt;{
+      let items=[];
+      const $=q=&gt;document.querySelector(q);
+      const list=$('#list');
+
+      function render(){
+        list.innerHTML=items.map((it,i)=&gt;`
+          &lt;div class=&quot;row&quot;&gt;
+            &lt;input value=&quot;${it.name}&quot; data-i=&quot;${i}&quot; class=&quot;n&quot;&gt;
+            &lt;input type=&quot;number&quot; value=&quot;${it.price}&quot; data-i=&quot;${i}&quot; class=&quot;v&quot;&gt;
+            &lt;button data-i=&quot;${i}&quot; class=&quot;del&quot;&gt;刪&lt;/button&gt;
+          &lt;/div&gt;`).join('');
+        calc();
+      }
+
+      function calc(){
+        const sum=items.reduce((a,b)=&gt;a+(+b.price||0),0);
+        document.getElementById('sum').textContent=sum;
+        const p=+document.getElementById('p').value||1;
+        document.getElementById('each').textContent=Math.round(sum/p);
+      }
+
+      document.getElementById('add').onclick=()=>{
+        const n=document.getElementById('name').value.trim();
+        const v=+document.getElementById('price').value||0;
+        if(!n) return;
+        items.push({name:n,price:v});
+        document.getElementById('name').value='';
+        document.getElementById('price').value='';
+        render();
+      };
+
+      list.oninput=e=&gt;{
+        const i=e.target.dataset.i;
+        if(e.target.classList.contains('n')) items[i].name=e.target.value;
+        if(e.target.classList.contains('v')) items[i].price=+e.target.value||0;
+        calc();
+      };
+
+      list.onclick=e=&gt;{
+        if(e.target.classList.contains('del')){
+          items.splice(+e.target.dataset.i,1);
+          render();
+        }
+      };
+
+      document.getElementById('p').oninput=calc;
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（<code>aa-standalone.html</code>）</h2>
+    <div class="muted">請與 <code>aa.css</code>、<code>aa.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">aa-standalone.html</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-html" data-fn="aa-standalone.html">下載</button>
+          <button class="btn accent copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;AA 分帳（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./aa.css&quot; /&gt;
+  &lt;script src=&quot;./aa.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;aa&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;input id=&quot;name&quot; placeholder=&quot;品項：披薩&quot; /&gt;
+      &lt;input id=&quot;price&quot; type=&quot;number&quot; placeholder=&quot;金額&quot; /&gt;
+      &lt;button id=&quot;add&quot;&gt;加入&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;list&quot; class=&quot;list&quot;&gt;&lt;/div&gt;
+    &lt;div&gt;總金額：&lt;span id=&quot;sum&quot;&gt;0&lt;/span&gt; 元&lt;/div&gt;
+    &lt;div style=&quot;margin-top:6px&quot;&gt;
+      人數：&lt;input id=&quot;p&quot; type=&quot;number&quot; value=&quot;2&quot; style=&quot;width:80px&quot; /&gt;
+      → 每人 &lt;b id=&quot;each&quot;&gt;0&lt;/b&gt; 元
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（<code>aa.css</code>）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">aa.css</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-css" data-fn="aa.css">下載</button>
+          <button class="btn accent copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">body{
+  margin:0;background:#0f172a;color:#e5e7eb;
+  font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;
+  min-height:100vh;display:grid;place-items:center
+}
+.card{
+  background:#0b1220;border:1px solid #1f2937;border-radius:18px;
+  padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw)
+}
+input,button{
+  padding:10px 12px;border-radius:10px;border:1px solid #1f2937;
+  background:#0b1220;color:#e5e7eb
+}
+button{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+.list{display:grid;gap:8px;margin:10px 0}
+.row{display:grid;grid-template-columns:1fr 100px 60px;gap:8px}</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（<code>aa.js</code>）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">aa.js</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-js" data-fn="aa.js">下載</button>
+          <button class="btn accent copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(()=&gt;{
+  const root=document.querySelector('#aa')||document;
+  const $=q=&gt;root.querySelector(q);
+  let items=[];
+  const list=$('#list');
+
+  function render(){
+    list.innerHTML=items.map((it,i)=&gt;`
+      &lt;div class=&quot;row&quot;&gt;
+        &lt;input value=&quot;${it.name}&quot; data-i=&quot;${i}&quot; class=&quot;n&quot;&gt;
+        &lt;input type=&quot;number&quot; value=&quot;${it.price}&quot; data-i=&quot;${i}&quot; class=&quot;v&quot;&gt;
+        &lt;button data-i=&quot;${i}&quot; class=&quot;del&quot;&gt;刪&lt;/button&gt;
+      &lt;/div&gt;`).join('');
+    calc();
+  }
+
+  function calc(){
+    const sum=items.reduce((a,b)=&gt;a+(+b.price||0),0);
+    $('#sum').textContent=sum;
+    const p=+$('#p').value||1;
+    $('#each').textContent=Math.round(sum/p);
+  }
+
+  $('#add').onclick=()=>{
+    const n=$('#name').value.trim();
+    const v=+$('#price').value||0;
+    if(!n) return;
+    items.push({name:n,price:v});
+    $('#name').value='';
+    $('#price').value='';
+    render();
+  };
+
+  list.oninput=e=&gt;{
+    const i=e.target.dataset.i;
+    if(e.target.classList.contains('n')) items[i].name=e.target.value;
+    if(e.target.classList.contains('v')) items[i].price=+e.target.value||0;
+    calc();
+  };
+
+  list.onclick=e=&gt;{
+    if(e.target.classList.contains('del')){
+      items.splice(+e.target.dataset.i,1);
+      render();
+    }
+  };
+
+  $('#p').oninput=calc;
+})();</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">完成</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  // 複製
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(!btn) return;
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if(!el) return;
+    const text = el.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('已複製到剪貼簿');
+    }catch{
+      const ta=document.createElement('textarea');
+      ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('已複製到剪貼簿');
+    }
+  }, {passive:true});
+
+  // 下載
+  document.addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-dl]');
+    if(!b) return;
+    const codeId = b.getAttribute('data-dl');
+    const fn = b.getAttribute('data-fn') || 'download.txt';
+    const el = document.getElementById(codeId);
+    if(!el) return;
+    const blob = new Blob([el.textContent], {type: 'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fn;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    a.remove();
+    showToast('已下載：' + fn);
+  }, {passive:true});
+
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>

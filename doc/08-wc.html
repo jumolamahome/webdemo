@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜08 即時字數 / 閱讀時間估算器</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px;gap:8px}
+  .codehead .title{font-weight:700}
+  .btns{display:flex;gap:8px}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:#e5e7eb;color:#111827;cursor:pointer}
+  .btn.accent{background:var(--accent);color:#fff}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>08｜即時字數 / 閱讀時間估算器 <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>輸入或貼上文字，即時計算字數、句子數與估計閱讀時間（每分鐘約 300 字）。採用節流（throttle）避免高頻輸入造成多次重算，提升效能與體驗。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>在文字框中輸入或貼上內容。</li>
+      <li>下方即時顯示「字數 / 句子數 / 估計閱讀時間（分）」。</li>
+      <li>可依需求調整每分鐘閱讀字數的估算常數。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li>字數與句子偵測的正規表示式運算。</li>
+      <li>節流（以 <code>setTimeout</code> 實作簡易 throttle）。</li>
+      <li>狀態渲染（DOM 元素內容更新）。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>wc-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">wc-single.html</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-single" data-fn="wc-single.html">下載</button>
+          <button class="btn accent copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;即時字數 / 閱讀時間（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--fg);font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:24px 28px;width:min(720px,92vw)}
+    textarea{width:100%;min-height:180px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+    .stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+    .badge{padding:8px 12px;border-radius:999px;background:#f3f4f6;color:#111827;border:1px solid var(--line)}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot;&gt;
+    &lt;h2&gt;即時字數 / 閱讀時間&lt;/h2&gt;
+    &lt;textarea id=&quot;ta&quot; placeholder=&quot;貼上或輸入文字...&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;stats&quot;&gt;
+      &lt;div class=&quot;badge&quot;&gt;字數：&lt;b id=&quot;w&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+      &lt;div class=&quot;badge&quot;&gt;句子：&lt;b id=&quot;s&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+      &lt;div class=&quot;badge&quot;&gt;估計閱讀：&lt;b id=&quot;m&quot;&gt;0&lt;/b&gt; 分&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    (()=&gt;{
+      const $=q=&gt;document.querySelector(q);
+      const ta=$('#ta'), w=$('#w'), s=$('#s'), m=$('#m');
+      const WPM=300; // 每分鐘約 300 字
+      function calc(){
+        const text=ta.value.trim();
+        const words=(text.match(/\S+/g)||[]).length;
+        const sentences=(text.match(/[。！？.!?]+/g)||[]).length;
+        const minutes=Math.ceil(words/WPM);
+        w.textContent=words; s.textContent=sentences; m.textContent=minutes;
+      }
+      let t=null;
+      ta.addEventListener('input',()=>{ clearTimeout(t); t=setTimeout(calc,120); });
+      calc();
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（<code>wc-standalone.html</code>）</h2>
+    <div class="muted">請與 <code>wc.css</code>、<code>wc.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">wc-standalone.html</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-html" data-fn="wc-standalone.html">下載</button>
+          <button class="btn accent copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;即時字數 / 閱讀時間（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./wc.css&quot; /&gt;
+  &lt;script src=&quot;./wc.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;wc&quot;&gt;
+    &lt;h2&gt;即時字數 / 閱讀時間&lt;/h2&gt;
+    &lt;textarea id=&quot;ta&quot; placeholder=&quot;貼上或輸入文字...&quot;&gt;&lt;/textarea&gt;
+    &lt;div class=&quot;stats&quot;&gt;
+      &lt;div class=&quot;badge&quot;&gt;字數：&lt;b id=&quot;w&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+      &lt;div class=&quot;badge&quot;&gt;句子：&lt;b id=&quot;s&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+      &lt;div class=&quot;badge&quot;&gt;估計閱讀：&lt;b id=&quot;m&quot;&gt;0&lt;/b&gt; 分&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（<code>wc.css</code>）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">wc.css</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-css" data-fn="wc.css">下載</button>
+          <button class="btn accent copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">:root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;line-height:1.6}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:24px 28px;width:min(720px,92vw);margin:40px auto}
+textarea{width:100%;min-height:180px;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+.badge{padding:8px 12px;border-radius:999px;background:#f3f4f6;color:#111827;border:1px solid var(--line)}</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（<code>wc.js</code>）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">wc.js</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-js" data-fn="wc.js">下載</button>
+          <button class="btn accent copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(()=> {
+  const root=document.getElementById('wc')||document;
+  const $=q=&gt;root.querySelector(q);
+  const ta=$('#ta'), w=$('#w'), s=$('#s'), m=$('#m');
+  const WPM=300; // 每分鐘約 300 字
+
+  function calc(){
+    const text=ta.value.trim();
+    const words=(text.match(/\S+/g)||[]).length;
+    const sentences=(text.match(/[。！？.!?]+/g)||[]).length;
+    const minutes=Math.ceil(words/WPM);
+    w.textContent=words; s.textContent=sentences; m.textContent=minutes;
+  }
+
+  let t=null;
+  ta.addEventListener('input',()=>{ clearTimeout(t); t=setTimeout(calc,120); });
+  calc();
+})();</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">完成</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  // 複製
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(!btn) return;
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if(!el) return;
+    const text = el.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('已複製到剪貼簿');
+    }catch{
+      const ta=document.createElement('textarea');
+      ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('已複製到剪貼簿');
+    }
+  }, {passive:true});
+
+  // 下載
+  document.addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-dl]');
+    if(!b) return;
+    const codeId = b.getAttribute('data-dl');
+    const fn = b.getAttribute('data-fn') || 'download.txt';
+    const el = document.getElementById(codeId);
+    if(!el) return;
+    const blob = new Blob([el.textContent], {type: 'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fn;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    a.remove();
+    showToast('已下載：' + fn);
+  }, {passive:true});
+
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>

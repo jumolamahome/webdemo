@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜04 閱讀進度條（Scroll Percentage）</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>04｜閱讀進度條（Scroll %） <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>頂部顯示「閱讀進度條」，進度跟隨外部文字方塊（高度固定、可滾動）的滾動百分比。長文內容置於方塊內，方塊高度小於長文，故可正確展示捲動。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>把長文放在一個固定高度的外部文字方塊（<code>max-height</code> + <code>overflow:auto</code>）。</li>
+      <li>監聽該方塊的 <code>scroll</code> 事件，計算 <code>scrollTop / (scrollHeight - clientHeight)</code>。</li>
+      <li>把百分比寫入進度條的 <code>width</code>。非整頁滾動也能準確顯示。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li>容器捲動監聽與百分比計算</li>
+      <li>CSS <code>position: sticky</code> + 邊框/陰影的視覺化</li>
+      <li>被動監聽 <code>{ passive:true }</code> 提升效能</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>progress-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">progress-single.html</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-single" data-filename="progress-single.html">下載</button>
+          <button class="btn copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;閱讀進度條（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    body{margin:0;font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;line-height:1.7}
+    .wrap{max-width:820px;margin:20px auto;padding:0 16px}
+    .top{position:sticky;top:0;background:#0f172a;color:#e5e7eb;z-index:10}
+    .bar{height:6px;background:#111827;border-radius:6px;overflow:hidden}
+    .fill{height:100%;width:0;background:#22d3ee}
+    .box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;max-height:48vh;overflow:auto;background:#fff}
+    h1{margin:.4em 0 0.6em}
+    .muted{color:#6b7280;font-size:14px}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;wrap&quot;&gt;
+    &lt;div class=&quot;top&quot;&gt;&lt;div class=&quot;bar&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;fill&quot;&gt;&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;box&quot; id=&quot;area&quot;&gt;
+      &lt;h1&gt;長文內容&lt;/h1&gt;
+      &lt;h3&gt;長文示例&lt;/h3&gt;
+      &lt;p&gt;向下捲動觀察上方進度條變化。&lt;/p&gt;
+      &lt;p&gt;良好閱讀 UX 可提高完成率。&lt;/p&gt;
+      &lt;p&gt;（以下填充）&lt;/p&gt;
+      &lt;p&gt;結構/表現/行為是前端三要素。&lt;/p&gt;
+      &lt;p&gt;RWD 讓不同裝置皆可用。&lt;/p&gt;
+      &lt;p&gt;A11y 提升可存取性。&lt;/p&gt;
+      &lt;p&gt;效能優化減少重排。&lt;/p&gt;
+      &lt;p&gt;模組化提升維護性。&lt;/p&gt;
+      &lt;p style=&quot;height:1200px&quot; class=&quot;muted&quot;&gt;(補足高度以展示捲動)&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    const area=document.getElementById('area');
+    const fill=document.getElementById('fill');
+    function onScroll(){
+      const max=area.scrollHeight-area.clientHeight;
+      const pct=Math.min(100, Math.round((area.scrollTop/max)*100));
+      fill.style.width=pct+"%";
+    }
+    area.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（progress-standalone.html）</h2>
+    <div class="muted">請與 <code>progress.css</code>、<code>progress.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">progress-standalone.html</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-html" data-filename="progress-standalone.html">下載</button>
+          <button class="btn copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;閱讀進度條（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./progress.css&quot; /&gt;
+  &lt;script src=&quot;./progress.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;wrap&quot;&gt;
+    &lt;div class=&quot;top&quot;&gt;
+      &lt;div class=&quot;bar&quot;&gt;&lt;div class=&quot;fill&quot; id=&quot;fill&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;box&quot; id=&quot;area&quot;&gt;
+      &lt;h1&gt;長文內容&lt;/h1&gt;
+      &lt;h3&gt;長文示例&lt;/h3&gt;
+      &lt;p&gt;向下捲動觀察上方進度條變化。&lt;/p&gt;
+      &lt;p&gt;良好閱讀 UX 可提高完成率。&lt;/p&gt;
+      &lt;p&gt;（以下填充）&lt;/p&gt;
+      &lt;p&gt;結構/表現/行為是前端三要素。&lt;/p&gt;
+      &lt;p&gt;RWD 讓不同裝置皆可用。&lt;/p&gt;
+      &lt;p&gt;A11y 提升可存取性。&lt;/p&gt;
+      &lt;p&gt;效能優化減少重排。&lt;/p&gt;
+      &lt;p&gt;模組化提升維護性。&lt;/p&gt;
+      &lt;p style=&quot;height:1200px&quot; class=&quot;muted&quot;&gt;(補足高度以展示捲動)&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（progress.css）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">progress.css</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-css" data-filename="progress.css">下載</button>
+          <button class="btn copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">html,body{margin:0;font-family:system-ui,"Noto Sans TC",sans-serif;line-height:1.7}
+.wrap{max-width:820px;margin:20px auto;padding:0 16px}
+.top{position:sticky;top:0;background:#0f172a;color:#e5e7eb;z-index:10}
+.bar{height:6px;background:#111827;border-radius:6px;overflow:hidden}
+.fill{height:100%;width:0;background:#22d3ee}
+.box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;max-height:48vh;overflow:auto;background:#fff}
+h1{margin:.4em 0 .6em}
+.muted{color:#6b7280;font-size:14px}
+</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（progress.js）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">progress.js</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-js" data-filename="progress.js">下載</button>
+          <button class="btn copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(() =&gt; {
+  const area = document.getElementById('area');
+  const fill = document.getElementById('fill');
+  if(!area || !fill){ console.error('[Progress] 缺少 #area 或 #fill'); return; }
+  function onScroll(){
+    const max = area.scrollHeight - area.clientHeight;
+    const pct = Math.min(100, Math.round((area.scrollTop / max) * 100));
+    fill.style.width = pct + '%';
+  }
+  area.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    const dl = e.target.closest('.downloadbtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{ await navigator.clipboard.writeText(text); showToast('已複製到剪貼簿'); }
+      catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+    if(dl){
+      const id = dl.dataset.download;
+      const filename = dl.dataset.filename || 'code.txt';
+      const el = document.getElementById(id);
+      if(!el) return;
+      const blob = new Blob([el.textContent], {type:'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('已下載：' + filename);
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>

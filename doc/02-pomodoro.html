@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜02 番茄鐘（Pomodoro）</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .codehead .btns{display:flex;gap:6px}
+  .codehead button{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .codehead button:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>02｜番茄鐘（Pomodoro） <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>一個番茄鐘計時器：可設定工作/休息分鐘數，提供開始、停止、重設控制，時間到會有簡短提示音，並顯示目前狀態（工作中/休息中）。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>設定「工作(分)」與「休息(分)」值，預設為 25 與 5。</li>
+      <li>按「開始」啟動計時，計時中可按「停止」，或按「重設」回到初始時間。</li>
+      <li>時間歸零時自動在 <code>工作</code> 與 <code>休息</code> 模式間切換並發出提示音。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li><code>setInterval</code> 每秒倒數與畫面更新</li>
+      <li>模式切換（work/break）與狀態文字顯示</li>
+      <li>Web Audio API 產生簡短 <em>beep</em> 提示音（無需外部音檔）</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>pomodoro-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">pomodoro-single.html</div>
+        <div class="btns">
+          <button class="downloadbtn" data-download="code-single" data-filename="pomodoro-single.html">下載</button>
+          <button class="copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;番茄鐘（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    body{
+      font-family: system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Noto Sans TC&quot;, sans-serif;
+      background:#fafafa;color:#1f2937;margin:0;padding:20px;line-height:1.6
+    }
+    .card{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;max-width:520px;margin:auto;box-shadow:0 8px 24px rgba(0,0,0,.08)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    label{display:flex;gap:6px;align-items:center}
+    input[type=number]{width:80px;padding:8px;border:1px solid #e5e7eb;border-radius:8px}
+    button{padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+    button.accent{background:#2563eb;color:#fff}
+    .time{font-size:56px;font-weight:900;text-align:center;margin:8px 0}
+    .small{font-size:12px;color:#6b7280}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;pomo&quot;&gt;
+    &lt;div class=&quot;row&quot; style=&quot;justify-content:center&quot;&gt;
+      &lt;label&gt;工作(分) &lt;input id=&quot;work&quot; type=&quot;number&quot; value=&quot;25&quot; min=&quot;1&quot;&gt;&lt;/label&gt;
+      &lt;label&gt;休息(分) &lt;input id=&quot;rest&quot; type=&quot;number&quot; value=&quot;5&quot; min=&quot;1&quot;&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;time&quot; id=&quot;t&quot;&gt;25:00&lt;/div&gt;
+    &lt;div class=&quot;row&quot; style=&quot;justify-content:center&quot;&gt;
+      &lt;button class=&quot;accent&quot; id=&quot;start&quot;&gt;開始&lt;/button&gt;
+      &lt;button id=&quot;stop&quot;&gt;停止&lt;/button&gt;
+      &lt;button id=&quot;reset&quot;&gt;重設&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;status&quot; class=&quot;small&quot; style=&quot;text-align:center;margin-top:6px&quot;&gt;狀態：工作中&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (() =&gt; {
+      const $ = (q) =&gt; document.querySelector(q);
+      const t = $('#t');
+      const s = $('#status');
+      const w = $('#work');
+      const r = $('#rest');
+      let sec = 25*60, mode = 'work', timer = null;
+
+      const fmt = (s) =&gt; `${String((s/60|0)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+      const beep = () =&gt; {
+        try{
+          const A = new (window.AudioContext||window.webkitAudioContext)();
+          const o = A.createOscillator();
+          const g = A.createGain();
+          o.type = 'sine'; o.frequency.value = 880; o.connect(g); g.connect(A.destination);
+          g.gain.setValueAtTime(.18, A.currentTime);
+          g.gain.exponentialRampToValueAtTime(.0001, A.currentTime + .4);
+          o.start(); o.stop(A.currentTime + .4);
+        }catch{}
+      };
+
+      function tick(){
+        if(sec &lt;= 0){
+          beep();
+          if(mode === 'work'){
+            sec = (+r.value||5)*60; mode = 'break'; s.textContent = '狀態：休息中';
+          }else{
+            sec = (+w.value||25)*60; mode = 'work'; s.textContent = '狀態：工作中';
+          }
+        }
+        t.textContent = fmt(sec--);
+      }
+
+      $('#start').onclick = () =&gt; {
+        if(timer) return;
+        if(t.textContent === '25:00') sec = (+w.value||25)*60;
+        timer = setInterval(tick, 1000);
+      };
+      $('#stop').onclick = () =&gt; { clearInterval(timer); timer = null; };
+      $('#reset').onclick = () =&gt; {
+        clearInterval(timer); timer = null;
+        sec = (+w.value||25)*60; mode = 'work'; s.textContent = '狀態：工作中';
+        t.textContent = fmt(sec);
+      };
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（pomodoro-single-standalone.html）</h2>
+    <div class="muted">請與 <code>pomo.css</code>、<code>pomo.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">pomodoro-single-standalone.html</div>
+        <div class="btns">
+          <button class="downloadbtn" data-download="code-html" data-filename="pomodoro-single-standalone.html">下載</button>
+          <button class="copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;番茄鐘（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./pomo.css&quot; /&gt;
+  &lt;script src=&quot;./pomo.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;pomo&quot;&gt;
+    &lt;div class=&quot;row&quot; style=&quot;justify-content:center&quot;&gt;
+      &lt;label&gt;工作(分) &lt;input id=&quot;work&quot; type=&quot;number&quot; value=&quot;25&quot; min=&quot;1&quot;&gt;&lt;/label&gt;
+      &lt;label&gt;休息(分) &lt;input id=&quot;rest&quot; type=&quot;number&quot; value=&quot;5&quot; min=&quot;1&quot;&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;time&quot; id=&quot;t&quot;&gt;25:00&lt;/div&gt;
+    &lt;div class=&quot;row&quot; style=&quot;justify-content:center&quot;&gt;
+      &lt;button class=&quot;accent&quot; id=&quot;start&quot;&gt;開始&lt;/button&gt;
+      &lt;button id=&quot;stop&quot;&gt;停止&lt;/button&gt;
+      &lt;button id=&quot;reset&quot;&gt;重設&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;status&quot; class=&quot;small&quot; style=&quot;text-align:center;margin-top:6px&quot;&gt;狀態：工作中&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（pomo.css）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">pomo.css</div>
+        <div class="btns">
+          <button class="downloadbtn" data-download="code-css" data-filename="pomo.css">下載</button>
+          <button class="copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+  background:#fafafa;color:#1f2937;margin:0;padding:20px;line-height:1.6
+}
+.card{
+  background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;max-width:520px;margin:auto;
+  box-shadow:0 8px 24px rgba(0,0,0,.08)
+}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+label{display:flex;gap:6px;align-items:center}
+input[type=number]{width:80px;padding:8px;border:1px solid #e5e7eb;border-radius:8px}
+button{padding:8px 12px;border-radius:8px;border:0;cursor:pointer}
+button.accent{background:#2563eb;color:#fff}
+.time{font-size:56px;font-weight:900;text-align:center;margin:8px 0}
+.small{font-size:12px;color:#6b7280}
+</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（pomo.js）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">pomo.js</div>
+        <div class="btns">
+          <button class="downloadbtn" data-download="code-js" data-filename="pomo.js">下載</button>
+          <button class="copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(() =&gt; {
+  const root = document.querySelector('#pomo');
+  if(!root){ console.error('[Pomodoro] 找不到 #pomo'); return; }
+  const $ = (q) =&gt; root.querySelector(q);
+  const t = $('#t');
+  const s = $('#status');
+  const w = $('#work');
+  const r = $('#rest');
+  if(!t || !s || !w || !r){ console.error('[Pomodoro] 必要節點缺失'); return; }
+
+  let sec = 25*60, mode = 'work', timer = null;
+  const fmt = (s) =&gt; `${String((s/60|0)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;
+  const beep = () =&gt; {
+    try{
+      const A = new (window.AudioContext||window.webkitAudioContext)();
+      const o = A.createOscillator();
+      const g = A.createGain();
+      o.type = 'sine'; o.frequency.value = 880; o.connect(g); g.connect(A.destination);
+      g.gain.setValueAtTime(.18, A.currentTime);
+      g.gain.exponentialRampToValueAtTime(.0001, A.currentTime + .4);
+      o.start(); o.stop(A.currentTime + .4);
+    }catch{}
+  };
+  function tick(){
+    if(sec &lt;= 0){
+      beep();
+      if(mode === 'work'){
+        sec = (+r.value||5)*60; mode = 'break'; s.textContent = '狀態：休息中';
+      }else{
+        sec = (+w.value||25)*60; mode = 'work'; s.textContent = '狀態：工作中';
+      }
+    }
+    t.textContent = fmt(sec--);
+  }
+  $('#start').onclick = () =&gt; { if(timer) return; if(t.textContent==='25:00') sec = (+w.value||25)*60; timer = setInterval(tick,1000); };
+  $('#stop').onclick  = () =&gt; { clearInterval(timer); timer = null; };
+  $('#reset').onclick = () =&gt; { clearInterval(timer); timer = null; sec = (+w.value||25)*60; mode='work'; s.textContent='狀態：工作中'; t.textContent = fmt(sec); };
+})();
+</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  document.addEventListener('click', async (e)=>{
+    const copyBtn = e.target.closest('.copybtn');
+    const dlBtn = e.target.closest('.downloadbtn');
+    if(copyBtn){
+      const id = copyBtn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+      }
+      showToast('已複製到剪貼簿');
+    }
+    if(dlBtn){
+      const id = dlBtn.dataset.download;
+      const filename = dlBtn.dataset.filename || 'code.txt';
+      const el = document.getElementById(id);
+      if(!el) return;
+      const blob = new Blob([el.textContent], {type:'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('已下載：' + filename);
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>

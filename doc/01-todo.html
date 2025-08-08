@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜01 極簡 To‑Do（localStorage）</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>01｜極簡 To‑Do（localStorage） <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>一個簡單的待辦清單工具：新增、刪除、勾選完成、直接編輯文字。資料儲存在瀏覽器 <code>localStorage</code>，重新整理後仍會保留。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>在輸入框輸入待辦事項，按「新增」或直接按 <kbd>Enter</kbd>。</li>
+      <li>勾選核取方塊可標記完成；按「刪」可移除。</li>
+      <li>直接點擊待辦文字即可編輯內容。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li>DOM 操作、事件監聽（click / input / keydown）</li>
+      <li><code>localStorage</code> 讀寫 JSON 持久化</li>
+      <li>基礎可用性：Enter 快捷鍵、contenteditable 內聯編輯</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>todo-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">todo-single.html</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-single" data-filename="todo-single.html">下載</button>
+          <button class="btn copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;極簡 To-Do（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Noto Sans TC&quot;, sans-serif;
+      background: #fafafa;
+      color: #1f2937;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 12px;
+      max-width: 480px;
+      margin: auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,.08);
+    }
+    .row { display: flex; gap: 8px; }
+    button {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    button.accent { background: #2563eb; color: #fff; }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0 0;
+      display: grid;
+      gap: 8px;
+    }
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .small { font-size: 12px; color: #6b7280; }
+    kbd {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 6px;
+      padding: 1px 6px;
+      font-family: &quot;Courier New&quot;, monospace;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;todo1&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;input id=&quot;inp&quot; placeholder=&quot;今天要完成什麼？&quot; style=&quot;flex:1&quot; /&gt;
+      &lt;button class=&quot;accent&quot; id=&quot;add&quot;&gt;新增&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;ul id=&quot;list&quot;&gt;&lt;/ul&gt;
+    &lt;div class=&quot;small&quot;&gt;可直接點文字編輯；&lt;kbd&gt;Enter&lt;/kbd&gt; 新增。&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (() =&gt; {
+      const root = document.querySelector(&#x27;#todo1&#x27;);
+      if (!root) return;
+
+      const $ = (q) =&gt; root.querySelector(q);
+      const KEY = &#x27;todo_demo&#x27;;
+      const inp = $(&#x27;#inp&#x27;);
+      const add = $(&#x27;#add&#x27;);
+      const list = $(&#x27;#list&#x27;);
+
+      let items = [];
+      try { items = JSON.parse(localStorage.getItem(KEY) || &#x27;[]&#x27;); } catch { items = []; }
+
+      function save(){ localStorage.setItem(KEY, JSON.stringify(items)); }
+
+      function render(){
+        list.innerHTML = items.map((t,i)=&gt;`
+          &lt;li data-i=&quot;${i}&quot;&gt;
+            &lt;input type=&quot;checkbox&quot; ${t.done ? &#x27;checked&#x27; : &#x27;&#x27;}&gt;
+            &lt;span contenteditable style=&quot;flex:1;${t.done ? &#x27;text-decoration:line-through;opacity:.6&#x27; : &#x27;&#x27;}&quot;&gt;${t.text}&lt;/span&gt;
+            &lt;button class=&quot;del&quot;&gt;刪&lt;/button&gt;
+          &lt;/li&gt;`).join(&#x27;&#x27;);
+      }
+
+      add.addEventListener(&#x27;click&#x27;, () =&gt; {
+        const v = inp.value.trim();
+        if(!v) return;
+        items.push({ text:v, done:false });
+        inp.value = &#x27;&#x27;;
+        save(); render();
+      });
+
+      inp.addEventListener(&#x27;keydown&#x27;, e=&gt;{
+        if(e.key === &#x27;Enter&#x27;) add.click();
+      });
+
+      list.addEventListener(&#x27;click&#x27;, e=&gt;{
+        const li = e.target.closest(&#x27;li&#x27;); if(!li) return;
+        const i = +li.dataset.i;
+        if(e.target.type === &#x27;checkbox&#x27;){ items[i].done = e.target.checked; }
+        else if(e.target.classList.contains(&#x27;del&#x27;)){ items.splice(i,1); }
+        save(); render();
+      });
+
+      list.addEventListener(&#x27;input&#x27;, e=&gt;{
+        const li = e.target.closest(&#x27;li&#x27;); if(!li || e.target.tagName !== &#x27;SPAN&#x27;) return;
+        items[+li.dataset.i].text = e.target.textContent.trim();
+        save();
+      });
+
+      render();
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（todo-standalnoe.html）</h2>
+    <div class="muted">請與 <code>todo.css</code>、<code>todo.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">todo-standalnoe.html</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-html" data-filename="todo-standalone.html">下載</button>
+          <button class="btn copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;極簡 To-Do（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./todo.css&quot; /&gt;
+  &lt;script src=&quot;./todo.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;todo1&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;input id=&quot;inp&quot; placeholder=&quot;今天要完成什麼？&quot; style=&quot;flex:1&quot; /&gt;
+      &lt;button class=&quot;accent&quot; id=&quot;add&quot;&gt;新增&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;ul id=&quot;list&quot;&gt;&lt;/ul&gt;
+    &lt;div class=&quot;small&quot;&gt;可直接點文字編輯；&lt;kbd&gt;Enter&lt;/kbd&gt; 新增。&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（todo.css）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">todo.css</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-css" data-filename="todo.css">下載</button>
+          <button class="btn copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">body {
+  font-family: system-ui, -apple-system, &quot;Segoe UI&quot;, Roboto, &quot;Noto Sans TC&quot;, sans-serif;
+  background: #fafafa;
+  color: #1f2937;
+  margin: 0;
+  padding: 20px;
+  line-height: 1.6;
+}
+.card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 12px;
+  max-width: 480px;
+  margin: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08);
+}
+.row { display: flex; gap: 8px; }
+button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+button.accent { background: #2563eb; color: #fff; }
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: grid;
+  gap: 8px;
+}
+li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+}
+.small { font-size: 12px; color: #6b7280; }
+kbd {
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-family: &quot;Courier New&quot;, monospace;
+}</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（todo.js）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">todo.js</div>
+        <div class="btns">
+          <button class="btn downloadbtn" data-download="code-js" data-filename="todo.js">下載</button>
+          <button class="btn copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(() =&gt; {
+  const root = document.querySelector('#todo1');
+  if (!root) {
+    console.error('[ToDo] 找不到 #todo1');
+    return;
+  }
+
+  const $ = (q) =&gt; root.querySelector(q);
+  const KEY = 'todo_demo';
+  const inp = $('#inp');
+  const add = $('#add');
+  const list = $('#list');
+
+  if (!inp || !add || !list) {
+    console.error('[ToDo] 必要節點缺失 (#inp/#add/#list)');
+    return;
+  }
+
+  let items = [];
+  try {
+    items = JSON.parse(localStorage.getItem(KEY) || '[]');
+  } catch {
+    items = [];
+  }
+
+  function save() {
+    localStorage.setItem(KEY, JSON.stringify(items));
+  }
+
+  function render() {
+    list.innerHTML = items
+      .map(
+        (t, i) =&gt; `
+        &lt;li data-i="${i}"&gt;
+          &lt;input type="checkbox" ${t.done ? 'checked' : ''}&gt;
+          &lt;span contenteditable
+                style="flex:1;${t.done ? 'text-decoration:line-through;opacity:.6' : ''}"&gt;
+            ${t.text}
+          &lt;/span&gt;
+          &lt;button class="del"&gt;刪&lt;/button&gt;
+        &lt;/li&gt;`
+      )
+      .join('');
+  }
+
+  add.addEventListener('click', () =&gt; {
+    const v = inp.value.trim();
+    if (!v) return;
+    items.push({ text: v, done: false });
+    inp.value = '';
+    save();
+    render();
+  });
+
+  inp.addEventListener('keydown', (e) =&gt; {
+    if (e.key === 'Enter') add.click();
+  });
+
+  list.addEventListener('click', (e) =&gt; {
+    const li = e.target.closest('li');
+    if (!li) return;
+    const i = +li.dataset.i;
+    if (e.target.type === 'checkbox') {
+      items[i].done = e.target.checked;
+    } else if (e.target.classList.contains('del')) {
+      items.splice(i, 1);
+    }
+    save();
+    render();
+  });
+
+  list.addEventListener('input', (e) =&gt; {
+    const li = e.target.closest('li');
+    if (!li || e.target.tagName !== 'SPAN') return;
+    items[+li.dataset.i].text = e.target.textContent.trim();
+    save();
+  });
+
+  render();
+})();</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    const dl = e.target.closest('.downloadbtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+    if(dl){
+      const id = dl.dataset.download;
+      const filename = dl.dataset.filename || 'code.txt';
+      const el = document.getElementById(id);
+      if(!el) return;
+      const blob = new Blob([el.textContent], {type:'text/plain'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      showToast('已下載：' + filename);
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>

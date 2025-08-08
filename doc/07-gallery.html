@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜07 作品集 Gallery（Filter + 輕量燈箱）</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px;gap:8px}
+  .codehead .title{font-weight:700}
+  .btns{display:flex;gap:8px}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:#e5e7eb;color:#111827;cursor:pointer}
+  .btn.accent{background:var(--accent);color:#fff}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>07｜作品集 Gallery（Filter + 輕量燈箱） <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>功能描述</h2>
+    <p>單頁式作品集：上方為篩選按鈕（全部 / 標籤），下方為圖片方塊網格。點擊卡片會開啟燈箱顯示大圖，按 <kbd>ESC</kbd> 或點背景可關閉。</p>
+
+    <h2>使用方法</h2>
+    <ol class="list">
+      <li>點選篩選標籤切換分類（例如：全部、網頁、UI、插畫）。</li>
+      <li>點擊任一卡片開啟燈箱，燈箱中可查看大圖。</li>
+      <li>按 <kbd>ESC</kbd> 或點擊半透明背景關閉燈箱。</li>
+    </ol>
+
+    <h2>應用技術</h2>
+    <ul class="list">
+      <li>CSS Grid 產生自適應卡片網格。</li>
+      <li>事件委派處理篩選、卡片點擊與燈箱關閉。</li>
+      <li>鍵盤事件（<code>Escape</code>）改善可用性。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>完整可執行（單檔內嵌版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>gallery-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">gallery-single.html</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-single" data-fn="gallery-single.html">下載</button>
+          <button class="btn accent copybtn" data-copy="code-single">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-single" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;作品集 Gallery（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;line-height:1.6}
+    .wrap{max-width:960px;margin:auto;padding:20px}
+    .controls{display:flex;gap:8px;flex-wrap:wrap}
+    button{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#f3f4f6;color:#111827;cursor:pointer}
+    button.active{background:var(--accent);color:#fff;border-color:transparent}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
+    .card{aspect-ratio:1/1;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;transition:transform .1s}
+    .card:hover{transform:translateY(-2px)}
+    .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
+    .lightbox.show{display:flex}
+    .lightbox img{max-width:92vw;max-height:84vh;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;wrap&quot;&gt;
+    &lt;h2&gt;作品集&lt;/h2&gt;
+    &lt;div class=&quot;controls&quot; id=&quot;ctl&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;grid&quot; id=&quot;grid&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;lightbox&quot; id=&quot;box&quot;&gt;&lt;img alt=&quot;preview&quot;&gt;&lt;/div&gt;
+
+  &lt;script&gt;
+    (()=>{
+      const data=[
+        {t:'網頁',img:'https://picsum.photos/seed/a/800'},
+        {t:'UI',img:'https://picsum.photos/seed/b/800'},
+        {t:'插畫',img:'https://picsum.photos/seed/c/800'},
+        {t:'網頁',img:'https://picsum.photos/seed/d/800'},
+        {t:'UI',img:'https://picsum.photos/seed/e/800'},
+        {t:'插畫',img:'https://picsum.photos/seed/f/800'}
+      ].map((x,i)=&gt;({...x,id:i}));
+
+      const tags=['全部',...new Set(data.map(d=&gt;d.t))];
+      const ctl=document.getElementById('ctl');
+      const grid=document.getElementById('grid');
+      const box=document.getElementById('box');
+      const img=box.querySelector('img');
+      let cur='全部';
+
+      ctl.innerHTML=tags.map(t=&gt;`&lt;button data-t=&quot;${t}&quot; class=&quot;${t===cur?'active':''}&quot;&gt;${t}&lt;/button&gt;`).join('');
+
+      function render(){
+        const list=cur==='全部'?data:data.filter(d=&gt;d.t===cur);
+        grid.innerHTML=list.map(d=&gt;`&lt;div class=&quot;card&quot; data-id=&quot;${d.id}&quot;&gt;${d.t}&lt;/div&gt;`).join('');
+      }
+      render();
+
+      ctl.addEventListener('click',e=&gt;{
+        const b=e.target.closest('button'); if(!b) return;
+        cur=b.dataset.t;
+        [...ctl.children].forEach(x=&gt;x.classList.remove('active'));
+        b.classList.add('active');
+        render();
+      });
+
+      grid.addEventListener('click',e=&gt;{
+        const c=e.target.closest('.card'); if(!c) return;
+        const d=data.find(x=&gt;x.id==c.dataset.id);
+        img.src=d.img; box.classList.add('show');
+      });
+
+      document.addEventListener('keydown',e=&gt;{ if(e.key==='Escape') box.classList.remove('show'); });
+      box.addEventListener('click',e=&gt;{ if(e.target===box) box.classList.remove('show'); });
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：HTML（<code>gallery-standalone.html</code>）</h2>
+    <div class="muted">請與 <code>gallery.css</code>、<code>gallery.js</code> 放在同一資料夾。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">gallery-standalone.html</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-html" data-fn="gallery-standalone.html">下載</button>
+          <button class="btn accent copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot; /&gt;
+  &lt;title&gt;作品集 Gallery（分離版）&lt;/title&gt;
+  &lt;link rel=&quot;stylesheet&quot; href=&quot;./gallery.css&quot; /&gt;
+  &lt;script src=&quot;./gallery.js&quot; defer&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;wrap&quot;&gt;
+    &lt;h2&gt;作品集&lt;/h2&gt;
+    &lt;div class=&quot;controls&quot; id=&quot;ctl&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;grid&quot; id=&quot;grid&quot;&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;lightbox&quot; id=&quot;box&quot;&gt;&lt;img alt=&quot;preview&quot;&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：CSS（<code>gallery.css</code>）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">gallery.css</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-css" data-fn="gallery.css">下載</button>
+          <button class="btn accent copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css" class="language-css">:root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif;line-height:1.6}
+.wrap{max-width:960px;margin:auto;padding:20px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+button{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#f3f4f6;color:#111827;cursor:pointer}
+button.active{background:var(--accent);color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
+.card{aspect-ratio:1/1;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;transition:transform .1s}
+.card:hover{transform:translateY(-2px)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
+.lightbox.show{display:flex}
+.lightbox img{max-width:92vw;max-height:84vh;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>分離版：JavaScript（<code>gallery.js</code>）</h2>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">gallery.js</div>
+        <div class="btns">
+          <button class="btn" data-dl="code-js" data-fn="gallery.js">下載</button>
+          <button class="btn accent copybtn" data-copy="code-js">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js" class="language-js">(()=>{
+
+  const data=[
+    {t:'網頁',img:'https://picsum.photos/seed/a/800'},
+    {t:'UI',img:'https://picsum.photos/seed/b/800'},
+    {t:'插畫',img:'https://picsum.photos/seed/c/800'},
+    {t:'網頁',img:'https://picsum.photos/seed/d/800'},
+    {t:'UI',img:'https://picsum.photos/seed/e/800'},
+    {t:'插畫',img:'https://picsum.photos/seed/f/800'}
+  ].map((x,i)=>({...x,id:i}));
+
+  const tags=['全部',...new Set(data.map(d=>d.t))];
+
+  const root=document;
+  const ctl=root.getElementById('ctl');
+  const grid=root.getElementById('grid');
+  const box=root.getElementById('box');
+  const img=box.querySelector('img');
+  let cur='全部';
+
+  // 建立篩選鈕
+  ctl.innerHTML=tags.map(t=>`<button data-t="${t}" class="${t===cur?'active':''}">${t}</button>`).join('');
+
+  function render(){
+    const list=cur==='全部'?data:data.filter(d=>d.t===cur);
+    grid.innerHTML=list.map(d=>`<div class="card" data-id="${d.id}">${d.t}</div>`).join('');
+  }
+  render();
+
+  // 切換標籤
+  ctl.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    cur=b.dataset.t;
+    [...ctl.children].forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    render();
+  });
+
+  // 點卡片開燈箱
+  grid.addEventListener('click',e=>{
+    const c=e.target.closest('.card'); if(!c) return;
+    const d=data.find(x=>x.id==c.dataset.id);
+    img.src=d.img; box.classList.add('show');
+  });
+
+  // 關閉燈箱（ESC 或點背景）
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') box.classList.remove('show'); });
+  box.addEventListener('click',e=>{ if(e.target===box) box.classList.remove('show'); });
+
+})();</code></pre>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast">完成</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script>
+  // 複製
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(!btn) return;
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if(!el) return;
+    const text = el.textContent;
+    try{
+      await navigator.clipboard.writeText(text);
+      showToast('已複製到剪貼簿');
+    }catch{
+      const ta=document.createElement('textarea');
+      ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('已複製到剪貼簿');
+    }
+  }, {passive:true});
+
+  // 下載
+  document.addEventListener('click', (e)=>{
+    const b = e.target.closest('button[data-dl]');
+    if(!b) return;
+    const codeId = b.getAttribute('data-dl');
+    const fn = b.getAttribute('data-fn') || 'download.txt';
+    const el = document.getElementById(codeId);
+    if(!el) return;
+    const blob = new Blob([el.textContent], {type: 'text/plain;charset=utf-8'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fn;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(a.href);
+    a.remove();
+    showToast('已下載：' + fn);
+  }, {passive:true});
+
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>
