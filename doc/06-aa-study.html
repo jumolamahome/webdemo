@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜AA 分帳（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>AA 分帳（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>今天要做的是「AA 分帳」：把每個品項與金額輸入，計算出總金額與每人應付。你會學到：<em>狀態（state，資料的當前值）</em>、<em>渲染（render，將資料轉換成畫面）</em>、<em>事件（event，使用者操作觸發的行為）</em>、以及 <em>表單輸入處理（form input handling）</em>。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>這是單檔示範：<strong>HTML/CSS/JS</strong> 寫在同一支檔案裡，瀏覽器（browser，顯示網頁的應用程式）直接開啟就能運行。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;AA 分帳（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">單檔對新手最友善：一個檔案即可 Demo；正式專案再做資源分離與壓縮。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>介面由三個區塊組成：新增一筆的「輸入列」、動態顯示所有品項的「清單」、以及「總金額與人數」區。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;
+  &lt;h2&gt;AA 分帳&lt;/h2&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;input id=&quot;name&quot; placeholder=&quot;品項：披薩&quot;&gt;
+    &lt;input id=&quot;price&quot; type=&quot;number&quot; placeholder=&quot;金額&quot;&gt;
+    &lt;button id=&quot;add&quot;&gt;加入&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;list&quot; id=&quot;list&quot;&gt;&lt;/div&gt;
+  &lt;div&gt;總金額：&lt;span id=&quot;sum&quot;&gt;0&lt;/span&gt; 元&lt;/div&gt;
+  &lt;div style=&quot;margin-top:6px&quot;&gt;
+    人數：&lt;input id=&quot;p&quot; type=&quot;number&quot; value=&quot;2&quot; style=&quot;width:80px&quot;&gt; → 每人 &lt;b id=&quot;each&quot;&gt;0&lt;/b&gt; 元
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#name</code>：品項名稱輸入框。</li>
+      <li><code>#price</code>：金額輸入框（<code>type="number"</code> 只接受數字）。</li>
+      <li><code>#add</code>：把輸入的品項加入清單。</li>
+      <li><code>#list</code>：渲染（render）所有品項的區域。</li>
+      <li><code>#sum</code>/<code>#each</code>：顯示總金額與每人應付金額。</li>
+      <li><code>#p</code>：參與人數，改變時會重新計算。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>沿用卡片風格：圓角、陰影、間距，專注於可讀性。以下片段可直接帶走用在自己的專案。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">body{
+  margin:0;background:#0f172a;color:#e5e7eb;
+  font-family:system-ui,"Noto Sans TC",sans-serif;
+  min-height:100vh;display:grid;place-items:center;
+}
+.card{
+  background:#0b1220;border:1px solid #1f2937;border-radius:18px;
+  padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw);
+}
+input,button{
+  padding:10px 12px;border-radius:10px;border:1px solid #1f2937;
+  background:#0b1220;color:#e5e7eb;
+}
+button{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+.list{display:grid;gap:8px;margin:10px 0}
+.row{display:grid;grid-template-columns:1fr 100px 60px;gap:8px}
+</code></pre>
+    </div>
+    <p class="muted">設計要點：用 <code>grid</code> 排輸入列，<code>gap</code> 控制間距；卡片寬度用 <code>min()</code> 讓手機與桌機都好看。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>狀態使用陣列（array） <code>items</code> 保存所有品項；每次變更後呼叫 <code>render()</code> 重新產生列表，並用 <code>calc()</code> 計算總金額與每人應付。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">初始化與 render/calc 骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-skel">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-skel" class="language-js">(()=>{
+  let items=[]; // 狀態（state）
+  const $=q=>document.querySelector(q); // 小工具（querySelector）
+  const list=$('#list');
+
+  function render(){
+    list.innerHTML=items.map((it,i)=>`
+      &lt;div class="row"&gt;
+        &lt;input value="${it.name}" data-i="${i}" class="n"&gt;
+        &lt;input type="number" value="${it.price}" data-i="${i}" class="v"&gt;
+        &lt;button data-i="${i}" class="del"&gt;刪&lt;/button&gt;
+      &lt;/div&gt;`).join('');
+    calc();
+  }
+
+  function calc(){
+    const sum=items.reduce((a,b)=>a+(+b.price||0),0); // reduce（累加）
+    document.getElementById('sum').textContent=sum;
+    const p=+document.getElementById('p').value||1; // 轉數字並避免 0
+    document.getElementById('each').textContent=Math.round(sum/p);
+  }
+})();</code></pre>
+    </div>
+    <p>注意 <code>+b.price||0</code> 與 <code>+document.getElementById('p').value||1</code>：前者避免非數字造成 <code>NaN</code>，後者則避免除以 0。</p>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>互動包含：新增一筆、在清單內即時編輯、刪除一筆、與更改人數時重算。這些都透過事件（event）觸發。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">1) 新增一筆</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-add">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-add" class="language-js">document.getElementById('add').onclick=()=>{
+  const n=document.getElementById('name').value.trim(); // trim（去除前後空白）
+  const v=+document.getElementById('price').value||0;
+  if(!n) return; // 名稱必填
+  items.push({name:n,price:v}); // push（陣列尾端新增）
+  document.getElementById('name').value='';
+  document.getElementById('price').value='';
+  render();
+};</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">2) 清單內即時編輯（input 事件）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-edit">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-edit" class="language-js">list.oninput=e=>{
+  const i=e.target.dataset.i; // dataset（data-* 存取）
+  if(e.target.classList.contains('n')) items[i].name=e.target.value;
+  if(e.target.classList.contains('v')) items[i].price=+e.target.value||0;
+  calc(); // 只需重算，不必整個重繪
+};</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">3) 刪除一筆（事件委派）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-del">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-del" class="language-js">list.onclick=e=>{
+  if(e.target.classList.contains('del')){
+    items.splice(+e.target.dataset.i,1); // splice（刪除一筆）
+    render();
+  }
+};</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">4) 更改人數即時重算</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-p">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-p" class="language-js">document.getElementById('p').oninput=calc; // oninput（內容改變就觸發）</code></pre>
+    </div>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>新增或編輯或刪除項目 → 更新 <code>items</code>。</li>
+      <li>呼叫 <code>render()</code> 重新建立清單 HTML（或只 <code>calc()</code> 重算）。</li>
+      <li>更新總金額與每人金額，畫面同步。</li>
+    </ol>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">一次看懂（可直接貼上執行）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-all">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-all" class="language-js">(()=>{
+  let items=[];const $=q=>document.querySelector(q);const list=$('#list');
+  function render(){list.innerHTML=items.map((it,i)=>`&lt;div class="row"&gt;\n  &lt;input value="${it.name}" data-i="${i}" class="n"&gt;\n  &lt;input type="number" value="${it.price}" data-i="${i}" class="v"&gt;\n  &lt;button data-i="${i}" class="del"&gt;刪&lt;/button&gt;\n&lt;/div&gt;`).join('');calc()}
+  function calc(){const sum=items.reduce((a,b)=>a+(+b.price||0),0);document.getElementById('sum').textContent=sum;const p=+document.getElementById('p').value||1;document.getElementById('each').textContent=Math.round(sum/p)}
+  document.getElementById('add').onclick=()=>{const n=document.getElementById('name').value.trim();const v=+document.getElementById('price').value||0;if(!n)return;items.push({name:n,price:v});document.getElementById('name').value='';document.getElementById('price').value='';render()}
+  list.oninput=e=>{const i=e.target.dataset.i;if(e.target.classList.contains('n'))items[i].name=e.target.value;if(e.target.classList.contains('v'))items[i].price=+e.target.value||0;calc()}
+  list.onclick=e=>{if(e.target.classList.contains('del')){items.splice(+e.target.dataset.i,1);render()}}
+  document.getElementById('p').oninput=calc
+})();</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>每人金額是 NaN：</strong>確認 <code>#p</code> 不是 0 或空值；或輸入金額是否為非數字。</li>
+      <li><strong>刪除失敗：</strong>檢查是否用了 <code>data-i</code> 保存索引，並用 <code>splice()</code> 刪除。</li>
+      <li><strong>清單沒更新：</strong>新增/刪除後記得呼叫 <code>render()</code>，或在即時編輯時至少呼叫 <code>calc()</code>。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>加入「統計表」：顯示品項數量、平均單價、最高/最低價。</li>
+      <li>支援本地儲存：把 <code>items</code> 存到 <code>localStorage（瀏覽器提供的本地儲存空間）</code>，重新整理不會消失。</li>
+      <li>允許輸入多位小數並四捨五入到整數或兩位小數。</li>
+      <li>把 UI 改為手機優先（mobile first），讓輸入更順手。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  // 複製按鈕（Clipboard API + 後援方案）
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

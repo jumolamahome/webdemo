@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜便利貼（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>便利貼（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>要做的是「可拖曳、可編輯、可儲存」的便利貼。你會學到：<em>狀態（state，資料的當前值）</em>、<em>渲染（render，將資料轉換成畫面）</em>、<em>事件（event，使用者操作觸發的行為）</em>、<em>拖曳（drag，按住滑鼠移動元素的互動）</em>，以及 <em>localStorage（瀏覽器提供的本地儲存空間）</em>。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>本範例為單檔：<strong>HTML/CSS/JS</strong> 都在同一支檔案，瀏覽器（browser，顯示網頁的應用程式）打開就能用。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns"><button class="btn copybtn" data-copy="code-skel">複製</button></div>
+      </div>
+      <pre><code id="code-skel" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- RWD 可視區 --&gt;
+  &lt;title&gt;便利貼（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;toolbar&quot;&gt;...&lt;/div&gt;
+  &lt;div class=&quot;board&quot; id=&quot;board&quot;&gt;&lt;/div&gt;
+  &lt;script&gt;/* JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>只有三個主要元素：工具列（新增/清空）、白板（擺放便利貼的容器）、便利貼本體（含可編輯的 <code>&lt;textarea&gt;</code>）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">重點 HTML</div><div class="btns"><button class="btn copybtn" data-copy="code-html-core">複製</button></div></div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;toolbar&quot;&gt;
+  &lt;button id=&quot;new&quot;&gt;新增便利貼&lt;/button&gt;
+  &lt;button id=&quot;clear&quot;&gt;清空&lt;/button&gt;
+&lt;/div&gt;
+&lt;div class=&quot;board&quot; id=&quot;board&quot;&gt;&lt;/div&gt;
+&lt;!-- 便利貼會由 JS 動態插入為 .note --&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>.toolbar</code>：置中固定在上方的控制區。</li>
+      <li><code>#board</code>：全螢幕白板，所有便利貼都放在這裡。</li>
+      <li><code>.note</code>：單張便利貼，含一個 <code>&lt;textarea&gt;</code> 可直接編輯內容。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>我們讓白板充滿視窗、工具列固定在頂部、便利貼有淡黃背景與陰影，模擬真實紙張。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">關鍵樣式片段</div><div class="btns"><button class="btn copybtn" data-copy="code-css-core">複製</button></div></div>
+      <pre><code id="code-css-core" class="language-css">html,body{height:100%}
+body{margin:0;background:#fffbe6;font-family:system-ui,"Noto Sans TC",sans-serif}
+.toolbar{position:fixed;top:10px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:5}
+button{padding:8px 12px;border-radius:999px;border:0;background:#2563eb;color:#fff;cursor:pointer;font-weight:700}
+.board{position:relative;width:100%;height:100%}
+.note{position:absolute;width:200px;min-height:120px;background:#fff59d;border:1px solid #f59e0b;border-radius:12px;padding:10px;box-shadow:2px 6px 18px #0002;cursor:grab}
+.note:active{cursor:grabbing}
+.note textarea{width:100%;height:100px;border:0;background:transparent;resize:vertical}
+</code></pre>
+    </div>
+    <p class="muted">小提醒：<code>position:absolute</code> 讓每張便利貼可以自由放置；拖曳時以滑鼠座標更新 <code>left/top</code>。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>狀態存成陣列（array） <code>notes</code>：每筆包含 <code>id</code>、<code>x</code>、<code>y</code>、<code>t</code>（文字）。用 <strong>render（將資料轉換成畫面）</strong> 產生 HTML；用 <strong>localStorage（瀏覽器提供的本地儲存空間）</strong> 持久化。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">初始化與基本函式</div><div class="btns"><button class="btn copybtn" data-copy="code-js-init">複製</button></div></div>
+      <pre><code id="code-js-init" class="language-js">const KEY='sticky.v1';
+const board=document.getElementById('board');
+let notes=[];
+try{ notes=JSON.parse(localStorage.getItem(KEY)||'[]'); }catch{ notes=[]; }
+
+function save(){ localStorage.setItem(KEY, JSON.stringify(notes)); }
+function add(x=60,y=70,t=''){ notes.push({id:Date.now()+Math.random(), x, y, t}); render(); save(); }
+function render(){
+  board.innerHTML=notes.map(n=>`&lt;div class=\"note\" data-id=\"${n.id}\" style=\"left:${n.x}px;top:${n.y}px\"&gt;\n  &lt;textarea&gt;${n.t}&lt;/textarea&gt;\n&lt;/div&gt;`).join('');
+}
+render();</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>JSON.parse/stringify</code>：在物件與字串間轉換，才能寫入 <code>localStorage</code>。</li>
+      <li><code>Date.now()+Math.random()</code>：快速產生不重複的 <code>id</code>。</li>
+    </ul>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>互動包含：新增、清空、拖曳移動、即時編輯內容。都會在更新資料後 <strong>save()</strong> 並 <strong>render()</strong>。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">1) 新增 / 清空</div><div class="btns"><button class="btn copybtn" data-copy="code-js-addclear">複製</button></div></div>
+      <pre><code id="code-js-addclear" class="language-js">document.getElementById('new').onclick=()=>add();
+document.getElementById('clear').onclick=()=>{
+  if(confirm('確定清空？')){ notes=[]; render(); save(); }
+};</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">2) 拖曳（mousedown / mousemove / mouseup）</div><div class="btns"><button class="btn copybtn" data-copy="code-js-drag">複製</button></div></div>
+      <pre><code id="code-js-drag" class="language-js">let drag=null; // 目前被拖曳的便利貼狀態
+board.addEventListener('mousedown',e=>{
+  const el=e.target.closest('.note'); if(!el) return;
+  const id=+el.dataset.id;
+  const n=notes.find(n=>n.id===id);
+  drag={id, dx:e.clientX-n.x, dy:e.clientY-n.y}; // 記錄滑鼠與左上角的位移
+});
+window.addEventListener('mousemove',e=>{
+  if(!drag) return;
+  const n=notes.find(n=>n.id===drag.id);
+  n.x=e.clientX-drag.dx; n.y=e.clientY-drag.dy; // 依滑鼠位置更新座標
+  render();
+});
+window.addEventListener('mouseup',()=>{ if(drag){ save(); drag=null; } });</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">3) 編輯內容（input）</div><div class="btns"><button class="btn copybtn" data-copy="code-js-edit">複製</button></div></div>
+      <pre><code id="code-js-edit" class="language-js">board.addEventListener('input',e=>{
+  const el=e.target.closest('.note'); if(!el) return;
+  const id=+el.dataset.id;
+  const n=notes.find(n=>n.id===id);
+  n.t=e.target.value; // 直接把內容寫回狀態
+  save();
+});</code></pre>
+    </div>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>初始化：從 <code>localStorage</code> 載入 <code>notes</code> → <code>render()</code>。</li>
+      <li>新增/拖曳/編輯：更新 <code>notes</code> → <code>save()</code> 持久化 → 視情況 <code>render()</code> 重繪。</li>
+      <li>清空：把 <code>notes</code> 設為空陣列 → 重繪 → 儲存。</li>
+    </ol>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead"><div class="title">一次看懂（可直接貼上執行）</div><div class="btns"><button class="btn copybtn" data-copy="code-js-all">複製</button></div></div>
+      <pre><code id="code-js-all" class="language-html">&lt;div class=&quot;toolbar&quot;&gt;&lt;button id=&quot;new&quot;&gt;新增便利貼&lt;/button&gt;&lt;button id=&quot;clear&quot;&gt;清空&lt;/button&gt;&lt;/div&gt;
+&lt;div class=&quot;board&quot; id=&quot;board&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+const KEY='sticky.v1';
+const board=document.getElementById('board');
+let notes=[];try{notes=JSON.parse(localStorage.getItem(KEY)||'[]')}catch{notes=[]}
+function save(){localStorage.setItem(KEY,JSON.stringify(notes))}
+function add(x=60,y=70,t=''){notes.push({id:Date.now()+Math.random(),x,y,t});render();save()}
+function render(){board.innerHTML=notes.map(n=>`&lt;div class=\"note\" data-id=\"${n.id}\" style=\"left:${n.x}px;top:${n.y}px\"&gt;&lt;textarea&gt;${n.t}&lt;/textarea&gt;&lt;/div&gt;`).join('')}
+render();
+document.getElementById('new').onclick=()=>add();
+document.getElementById('clear').onclick=()=>{if(confirm('確定清空？')){notes=[];render();save()}};
+let drag=null;board.addEventListener('mousedown',e=>{const el=e.target.closest('.note');if(!el)return;const id=+el.dataset.id;const n=notes.find(n=>n.id===id);drag={id,dx:e.clientX-n.x,dy:e.clientY-n.y}});
+window.addEventListener('mousemove',e=>{if(!drag)return;const n=notes.find(n=>n.id===drag.id);n.x=e.clientX-drag.dx;n.y=e.clientY-drag.dy;render()});
+window.addEventListener('mouseup',()=>{if(drag){save();drag=null}});
+board.addEventListener('input',e=>{const el=e.target.closest('.note');if(!el)return;const id=+el.dataset.id;const n=notes.find(n=>n.id===id);n.t=e.target.value;save()});
+&lt;/script&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>重新整理後資料不見：</strong>請確認沒有在瀏覽器的無痕模式；或檢查是否正確呼叫 <code>save()</code>。</li>
+      <li><strong>拖曳很卡：</strong>目前做法是每次 <code>mousemove</code> 就 <code>render()</code>，可改成移動中的元素直接改 <code>style.left/top</code>，放開滑鼠後再重繪與儲存。</li>
+      <li><strong>textarea 不能選字：</strong>拖曳監聽綁在 <code>#board</code>，若想在輸入框內正常選字，可要求按住邊框才可拖（加把手）。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>加入刪除按鈕與顏色切換（不同顏色代表不同類別）。</li>
+      <li>支援鍵盤：<kbd>Ctrl/Cmd</kbd> + <kbd>N</kbd> 新增，<kbd>Delete</kbd> 刪除目前選中便利貼。</li>
+      <li>加入邊界限制與吸附格線（grid snap），拖曳更整齊。</li>
+      <li>將資料序列化為 JSON 匯出/匯入，或同步到雲端。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  // 複製按鈕（Clipboard API + 後援方案）
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

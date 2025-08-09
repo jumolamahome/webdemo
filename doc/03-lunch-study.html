@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜今天吃什麼（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>今天吃什麼？（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>這份教學帶你從 <strong>HTML（超文字標記語言，定義網頁結構）</strong>、<strong>CSS（層疊樣式表，設定外觀）</strong>、到 <strong>JavaScript（用來控制網頁互動的程式語言）</strong>，一步步拆解一個「隨機抽餐」的小工具。你會學到：<em>狀態（state，資料的當前值）</em>、<em>渲染（render，將資料轉換成畫面）</em>、<em>事件（event，使用者操作觸發的行為）</em>、<em>localStorage（瀏覽器提供的本地儲存空間）</em> 與 <em>Web Animations API（瀏覽器內建動畫介面）</em>。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>本專案是「單檔版」，也就是把 <strong>HTML / CSS / JS</strong> 放在同一支檔案中，瀏覽器（browser，顯示網頁的應用程式）直接開啟就能運行。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;今天吃什麼？（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 這裡放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 這裡放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">重點：<code>&lt;style&gt;</code> 與 <code>&lt;script&gt;</code> 直接內嵌（inline，寫在同一檔案），部署最單純。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>頁面核心由：標題、輸入框與加入按鈕、選項標籤區、隨機抽按鈕、結果區組成。每個元素都有 <em>id（識別碼，頁面唯一）</em> 或 <em>class（樣式分類，可重複）</em>，方便 JS/ CSS 操作。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;
+  &lt;h2&gt;今天吃什麼？&lt;/h2&gt;
+  &lt;div style=&quot;display:flex;gap:8px&quot;&gt;
+    &lt;input id=&quot;inp&quot; placeholder=&quot;拉麵、便當、咖哩…&quot; style=&quot;flex:1&quot;&gt;
+    &lt;button id=&quot;add&quot;&gt;加入&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;list&quot; id=&quot;list&quot;&gt;&lt;/div&gt;
+  &lt;button id=&quot;go&quot; style=&quot;width:100%;margin-top:8px&quot;&gt;抽！&lt;/button&gt;
+  &lt;div id=&quot;result&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#inp</code>：輸入新的餐點選項。</li>
+      <li><code>#add</code>：把輸入框內容加入清單。</li>
+      <li><code>#list</code>：用來顯示所有選項，會渲染（render）成可點擊的標籤（tag）。</li>
+      <li><code>#go</code>：進行隨機抽取。</li>
+      <li><code>#result</code>：顯示抽到的餐點結果。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>實作使用簡潔的卡片風格：圓角、陰影、間距、與可讀性佳的字型。以下片段示範排版重點。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">body{margin:0;background:#0f172a;color:#e5e7eb;font-family:system-ui,"Noto Sans TC",sans-serif;display:grid;place-items:center;min-height:100vh}
+.card{background:#0b1220;border:1px solid #1f2937;border-radius:18px;padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw)}
+input,button{padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#e5e7eb}
+button{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+.list{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.tag{padding:8px 10px;background:#0f1a30;border:1px solid #1f2937;border-radius:999px;cursor:pointer}
+#result{font-size:34px;font-weight:900;margin:12px 0;min-height:48px;text-align:center}
+</code></pre>
+    </div>
+    <p class="muted">設計重點：卡片（card）置中、按鈕有強烈主色、標籤（tag）可點擊、結果區（result）字體較大以吸睛。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>資料會存在一個陣列（array） <code>items</code> 內，並同步寫入 <strong>localStorage（瀏覽器提供的本地儲存空間）</strong>。畫面更新由 <code>render()</code> 完成。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">初始化與工具函式</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-init">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-init" class="language-js">const KEY='lunch.list.v1';
+let items=JSON.parse(localStorage.getItem(KEY)||'["便當","火鍋","咖哩","拉麵","水餃"]');
+const $=q=>document.querySelector(q), list=$('#list'), result=$('#result');</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>KEY</code>：在 <code>localStorage</code> 裡的儲存鍵名（key）。</li>
+      <li><code>JSON.parse()</code>：把 JSON 字串轉回陣列或物件。</li>
+      <li><code>$()</code>：小工具函式，透過 <code>document.querySelector()</code>（DOM（文件物件模型）API）快速抓元素。</li>
+    </ul>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">render()：把 items 轉成標籤</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-render">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-render" class="language-js">function render(){
+  list.innerHTML=items.map((t,i)=&gt;`&lt;span class="tag" data-i="${i}"&gt;${t} ✕&lt;/span&gt;`).join('');
+}
+render();</code></pre>
+    </div>
+    <p>每個標籤用 <code>data-i</code>（自訂屬性 data-*）記錄索引（index），方便後續刪除。</p>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>主要有三個互動：加入、刪除、抽選。都在使用者觸發事件（event）時更新資料 → 儲存 → 重新渲染（render）。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">1) 加入項目</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-add">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-add" class="language-js">$('#add').onclick=()=>{
+  const v=$('#inp').value.trim(); // trim（去除前後空白）
+  if(!v) return; // 空字串不處理
+  items.push(v); // push（陣列尾端新增）
+  save(); render();
+  $('#inp').value='';
+}</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">2) 刪除（事件委派）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-del">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-del" class="language-js">list.onclick=e=>{
+  const el=e.target.closest('.tag'); // closest（往上找符合選擇器的父節點）
+  if(!el) return;
+  items.splice(+el.dataset.i,1); // dataset（data-* 存取），+ 轉數字
+  save(); render();
+}</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">3) 抽選與動畫</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-go">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-go" class="language-js">$('#go').onclick=()=>{
+  if(!items.length) return; // 沒資料就不動
+  const pick=items[(Math.random()*items.length)|0]; // Math.random（0~1 亂數），|0 取整數
+  result.textContent=pick; // 顯示結果
+  result.animate([
+    {transform:'scale(.9)'},
+    {transform:'scale(1.08)'},
+    {transform:'scale(1)'}
+  ],{duration:420,easing:'ease'}); // Web Animations API（瀏覽器內建動畫）
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <p>每次互動的共同步驟：<strong>改動 <code>items</code> → <code>save()</code> 寫回 <code>localStorage</code> → <code>render()</code> 重繪</strong>。流程簡潔、容易維護。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">保存函式</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-save">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-save" class="language-js">function save(){
+  localStorage.setItem(KEY, JSON.stringify(items)); // JSON.stringify（物件/陣列 → 字串）
+}</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>按下「加入」沒反應：</strong>檢查輸入值是否為空，或是否有抓到 <code>#add</code>、<code>#inp</code>。</li>
+      <li><strong>刪除點不到：</strong>確認事件有綁在 <code>#list</code>，並使用 <code>closest('.tag')</code> 取得被點擊的標籤。</li>
+      <li><strong>抽選沒結果：</strong>確認 <code>items</code> 是否為空陣列；或是否有把結果寫到 <code>#result</code> 的 <code>textContent</code>。</li>
+      <li><strong>資料消失：</strong>無痕模式或清除網站資料會清掉 <code>localStorage</code>。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>避免重複：加入前檢查是否已存在相同選項。</li>
+      <li>加上「清單預設值」與「重置」按鈕。</li>
+      <li>支援 Enter 快捷加入與 Esc 清空輸入。</li>
+      <li>把樣式切成獨立 <code>CSS</code> 檔、腳本切成 <code>JS</code> 檔（練習分離版）。</li>
+      <li>用 <code>Intl.Segmenter</code>（國際化分詞）處理中英文逗號分隔的一次多項加入。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text); // Clipboard API（剪貼簿）
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

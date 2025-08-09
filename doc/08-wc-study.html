@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜即時字數／閱讀時間（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>即時字數／閱讀時間（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>我們要做一個「即時字數 / 閱讀時間估算」小工具：使用者在文字框中輸入或貼上文字，下方會即時顯示字數、句子數、與預估閱讀分鐘數。你會學到：<em>字串處理（string processing，像是比對與分割）</em>、<em>正規表達式（Regular Expression，文字樣式比對語法）</em>、<em>事件（event，使用者操作觸發的行為）</em>、<em>節流/防抖（throttle/debounce，降低頻繁觸發次數）</em> 與 <em>render（將資料轉換成畫面）</em> 的基本概念。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>本範例採「單檔」：<strong>HTML/CSS/JS</strong> 寫在同一支檔案，瀏覽器（browser，顯示網頁的應用程式）直接開啟即可使用。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;即時字數 / 閱讀時間（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 這裡放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 這裡放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">單檔好上手、易分享；正式專案可再做資源分離與壓縮。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>介面包含一個多行輸入框（<code>&lt;textarea&gt;</code>）與三個統計徽章（顯示字數、句數、估計閱讀時間）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;card&quot; id=&quot;app&quot;&gt;
+  &lt;h2&gt;即時字數 / 閱讀時間&lt;/h2&gt;
+  &lt;textarea id=&quot;ta&quot; placeholder=&quot;貼上或輸入文字...&quot;&gt;&lt;/textarea&gt;
+  &lt;div class=&quot;stats&quot;&gt;
+    &lt;div class=&quot;badge&quot;&gt;字數：&lt;b id=&quot;w&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+    &lt;div class=&quot;badge&quot;&gt;句子：&lt;b id=&quot;s&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+    &lt;div class=&quot;badge&quot;&gt;估計閱讀：&lt;b id=&quot;m&quot;&gt;0&lt;/b&gt; 分&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#ta</code>：輸入區，偵測 <code>input</code> 事件（當內容改變時觸發）。</li>
+      <li><code>#w</code>/<code>#s</code>/<code>#m</code>：分別顯示字數、句數、預估分鐘數（minutes）。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>採卡片風格與膠囊徽章，讓資訊易讀。<code>min()</code> 幫助在桌機與手機都保持舒適寬度。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">body{margin:0;min-height:100vh;display:grid;place-items:center;background:#fafafa;color:#111827;font-family:system-ui,"Noto Sans TC",sans-serif}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:24px 28px;width:min(720px,92vw)}
+textarea{width:100%;min-height:180px;padding:12px;border-radius:12px;border:1px solid #e5e7eb;background:#fff;color:#111827}
+.stats{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+.badge{padding:8px 12px;border-radius:999px;background:#f3f4f6;color:#111827;border:1px solid #e5e7eb}
+</code></pre>
+    </div>
+    <p class="muted">可用 <code>line-height</code> 調整輸入框文字行距；<code>border-radius</code> 與陰影讓元件更有層次。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>核心流程：讀取輸入文字 → 用正規表達式（Regular Expression）計算字數/句數 → 以固定速率估算閱讀時間 → 更新畫面（render）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">初始化與常數</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-init">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-init" class="language-js">const $=q=>document.querySelector(q);
+const ta=$('#ta'), w=$('#w'), s=$('#s'), m=$('#m');
+const WPM=300; // 每分鐘約 300 字（Words Per Minute，閱讀速率）</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">calc()：計算並更新畫面</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-calc">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-calc" class="language-js">function calc(){
+  const text=ta.value.trim(); // 去除前後空白（trim）
+  const words=(text.match(/\S+/g)||[]).length; // \S+：連續非空白視為一個「字詞」
+  const sentences=(text.match(/[。！？.!?]+/g)||[]).length; // 句號/驚嘆號/問號做為句尾
+  const minutes=Math.ceil(words/WPM); // 無條件進位（ceil）
+  w.textContent=words; s.textContent=sentences; m.textContent=minutes; // render（把資料寫回 DOM）
+}</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">防抖（debounce）避免高頻觸發</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-debounce">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-debounce" class="language-js">let t=null; // 計時器 id（timeout handle）
+ta.addEventListener('input',()=>{
+  clearTimeout(t); // 清除上一個排程
+  t=setTimeout(calc,120); // 120ms 後再計算（防抖 debounce）
+});
+calc(); // 初始化</code></pre>
+    </div>
+    <p class="muted">為何要防抖？使用者每打一個字就觸發 <code>input</code>，加上短延遲可以減少重複計算，提升效能。</p>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>唯一需要的互動是監聽 <code>#ta</code> 的 <strong>input（輸入改變）</strong> 事件。事件發生後執行防抖邏輯並呼叫 <code>calc()</code>。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">事件監聽</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-event">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-event" class="language-js">ta.addEventListener('input',()=>{ clearTimeout(t); t=setTimeout(calc,120); });</code></pre>
+    </div>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>使用者輸入文字 → 觸發 <code>input</code> 事件。</li>
+      <li>防抖計時器結束後呼叫 <code>calc()</code>。</li>
+      <li><code>calc()</code> 使用正規表達式計數並更新 <code>#w/#s/#m</code>。</li>
+    </ol>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">一次看懂（可直接貼上執行）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-all">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-all" class="language-html">&lt;div class=&quot;card&quot;&gt;
+  &lt;h2&gt;即時字數 / 閱讀時間&lt;/h2&gt;
+  &lt;textarea id=&quot;ta&quot; placeholder=&quot;貼上或輸入文字...&quot;&gt;&lt;/textarea&gt;
+  &lt;div class=&quot;stats&quot;&gt;
+    &lt;div class=&quot;badge&quot;&gt;字數：&lt;b id=&quot;w&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+    &lt;div class=&quot;badge&quot;&gt;句子：&lt;b id=&quot;s&quot;&gt;0&lt;/b&gt;&lt;/div&gt;
+    &lt;div class=&quot;badge&quot;&gt;估計閱讀：&lt;b id=&quot;m&quot;&gt;0&lt;/b&gt; 分&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+const $=q=>document.querySelector(q);const ta=$('#ta'), w=$('#w'), s=$('#s'), m=$('#m');
+const WPM=300;function calc(){const text=ta.value.trim();const words=(text.match(/\S+/g)||[]).length;const sentences=(text.match(/[。！？.!?]+/g)||[]).length;const minutes=Math.ceil(words/WPM);w.textContent=words;s.textContent=sentences;m.textContent=minutes}
+let t=null;ta.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(calc,120)});calc();
+&lt;/script&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>字數永遠是 0：</strong>確認是否有呼叫 <code>calc()</code> 初始化；或正規表達式是否誤改導致 <code>match()</code> 回傳 <code>null</code>。</li>
+      <li><strong>句數看起來怪：</strong>中文「、」不是句尾；若需要更精準可把分號、換行也視為句尾，自行擴充正則。</li>
+      <li><strong>效能差：</strong>輸入非常長時可增加防抖延遲（例如 250ms），或把計算切分。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>顯示「字元數」與「段落數」（以雙換行或空行判斷）。</li>
+      <li>支援英/中不同閱讀速率（例如英文 200 wpm、中文 300 wpm）。</li>
+      <li>把結果寫進 <code>localStorage（瀏覽器提供的本地儲存空間）</code>，或做匯出 <code>.txt</code> 功能。</li>
+      <li>把計算邏輯抽成模組，做成可複用的 <code>count(text)</code> 函式。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  // 複製按鈕（Clipboard API + 後援方案）
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

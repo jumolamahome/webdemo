@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜01 極簡 To‑Do（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>01｜極簡 To‑Do（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>導覽</h2>
+    <p>這份教學以你提供的單檔 <code>todo-single.html</code> 為範例，帶你從 <strong>HTML（超文字標記語言，定義網頁結構）</strong>、<strong>CSS（層疊樣式表，設定外觀）</strong>、到 <strong>JavaScript（用來控制網頁互動的程式語言）</strong> 一步步理解。只要學會幾個核心觀念：<em>狀態（state，資料的當前值）</em>、<em>渲染（render，將資料轉換成畫面）</em>、<em>事件（events，使用者操作觸發的行為）</em>、<em>持久化（localStorage，瀏覽器提供的本地儲存空間）</em>，你就能做出屬於自己的小工具。</p>
+  </section>
+
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>單檔版（HTML/CSS/JS 都在同一檔，分別為結構、樣式、行為）讓瀏覽器（browser，顯示網頁的應用程式）直接開啟就能運行（執行程式碼並顯示結果）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;極簡 To-Do（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 這裡放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;todo1&quot;&gt; ... &lt;/div&gt;
+  &lt;script&gt;/* 這裡放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">重點：<code>&lt;style&gt;</code> 與 <code>&lt;script&gt;</code> 直接內嵌（inline，寫在同一檔案），部署最單純。</p>
+  </section>
+
+  <section class="card">
+    <h2>HTML：介面有哪些元素？</h2>
+    <p>核心就三個：輸入框（<code>&lt;input&gt;</code>，表單元素之一）、按鈕（<code>&lt;button&gt;</code>，可觸發動作）、清單（<code>&lt;ul&gt;</code>/<code>&lt;li&gt;</code>，無序列表）。每個元素都有 <em>id（識別碼，頁面唯一）</em>，方便 JS 取得節點（node，HTML 元素在 DOM（Document Object Model，文件物件模型）樹中的表示）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點標記的 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;card&quot; id=&quot;todo1&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;input id=&quot;inp&quot; placeholder=&quot;今天要完成什麼？&quot; style=&quot;flex:1&quot; /&gt;
+    &lt;button class=&quot;accent&quot; id=&quot;add&quot;&gt;新增&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;ul id=&quot;list&quot;&gt;&lt;/ul&gt;
+  &lt;div class=&quot;small&quot;&gt;可直接點文字編輯；&lt;kbd&gt;Enter&lt;/kbd&gt; 新增。&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#inp</code>：輸入新待辦。</li>
+      <li><code>#add</code>：新增按鈕。</li>
+      <li><code>#list</code>：顯示所有待辦（JS 會把陣列渲染成 <code>&lt;li&gt;</code>）。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>CSS：簡潔好讀的版面</h2>
+    <p>版面走「卡片（card，一種 UI 區塊）+ 間距（gap，項目之間的距離）」風格，初學者只要抓住幾個屬性（property，用來設定樣式的鍵值）就能做出專業感。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", sans-serif; /* 字體宣告（font-family） */
+  background: #fafafa; /* 柔和底色 */
+  color: #1f2937;      /* 深灰文字 */
+  margin: 0; padding: 20px; line-height: 1.6;
+}
+.card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; /* 圓角（border-radius） */
+  padding: 12px; max-width: 480px; margin: auto;
+  box-shadow: 0 8px 24px rgba(0,0,0,.08); /* 陰影（box-shadow）更有層次 */
+}
+.row { display: flex; gap: 8px; } /* Flex（彈性排版） + gap（間距） */
+button { padding: 6px 10px; border-radius: 8px; border: none; cursor: pointer; }
+button.accent { background: #2563eb; color: #fff; }
+ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 8px; }
+li { display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
+.small { font-size: 12px; color: #6b7280; }
+kbd { background:#eef2ff; border:1px solid #c7d2fe; border-radius:6px; padding:1px 6px; font-family:"Courier New", monospace; }
+</code></pre>
+    </div>
+    <p class="muted">技巧：<code>.row</code> 用 <code>display:flex</code> + <code>gap</code> 簡化水平排版；清單用 <code>display:grid</code> 排整齊。</p>
+  </section>
+
+  <section class="card">
+    <h2>JavaScript：用「狀態」驅動畫面</h2>
+    <p>JS 核心是三件事：<strong>1) 取得節點（<code>querySelector</code>，DOM API 用來找元素）</strong>、<strong>2) 管理資料（<code>items</code> 陣列 array）</strong>、<strong>3) <code>render()</code> 把資料轉成 HTML（<code>innerHTML</code>，元素內容屬性）</strong>。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">初始化與取節點</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-init">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-init" class="language-js">(() =&gt; { /* IIFE（Immediately Invoked Function Expression，立即執行函式） */
+  const root = document.querySelector('#todo1');
+  if (!root) return; // 找不到容器就直接結束
+
+  const $ = (q) =&gt; root.querySelector(q); // 只在 root 底下找元素
+  const KEY = 'todo_demo';      // localStorage 的鍵名（key，名稱）
+  const inp = $('#inp');
+  const add = $('#add');
+  const list = $('#list');
+</code></pre>
+    </div>
+    <p>這裡用一個小工具函式 <code>$()</code>（箭頭函式 arrow function 的簡寫）來簡化查詢；只在 <code>#todo1</code> 容器裡找，避免撞到其他區塊。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">讀取/保存資料（localStorage）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-storage">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-storage" class="language-js">let items = []; // 陣列（Array）
+try {
+  items = JSON.parse(localStorage.getItem(KEY) || '[]'); // JSON.parse（把字串轉物件/陣列）
+} catch {
+  items = [];
+}
+
+function save(){
+  localStorage.setItem(KEY, JSON.stringify(items)); // JSON.stringify（把物件/陣列轉字串）
+}</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>localStorage</code> 只能存字串（string），所以用 <code>JSON.stringify</code>/<code>JSON.parse</code> 在字串與物件/陣列間轉換。</li>
+      <li>用 <code>try...catch</code>（錯誤處理結構）防呆：就算資料不合法，也不會把整個程式卡死。</li>
+    </ul>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">render()：把陣列變成清單</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-render">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-render" class="language-js">function render(){
+  list.innerHTML = items.map((t,i)=&gt;`  /* 模板字串（Template String） */
+    &lt;li data-i="${i}"&gt;
+      &lt;input type="checkbox" ${t.done ? 'checked' : ''}&gt;  /* 三元運算子（? :） */
+      &lt;span contenteditable style="flex:1;${t.done ? 'text-decoration:line-through;opacity:.6' : ''}"&gt;${t.text}&lt;/span&gt;
+      &lt;button class="del"&gt;刪&lt;/button&gt;
+    &lt;/li&gt;`).join('');
+}</code></pre>
+    </div>
+    <p>渲染策略：直接用 <code>Array.map()</code> 產生字串後一次塞進 <code>innerHTML</code>。每個 <code>&lt;li&gt;</code> 用 <code>data-i</code>（自訂屬性 data-* ）存自己的索引（index），後面事件處理就知道要改哪一筆。</p>
+  </section>
+
+  <section class="card">
+    <h2>事件綁定：讓介面動起來</h2>
+    <p>四種互動：新增、Enter 快捷、勾選/刪除（事件委派 event delegation）、內聯編輯。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">1) 新增待辦</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-add">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-add" class="language-js">add.addEventListener('click', () =&gt; { // 事件監聽（addEventListener）
+  const v = inp.value.trim(); // trim（去除前後空白）
+  if(!v) return; // 空字串就不處理
+  items.push({ text:v, done:false }); // push（陣列尾端加入）
+  inp.value = '';
+  save(); render();
+});</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">2) Enter 快捷鍵</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-enter">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-enter" class="language-js">inp.addEventListener('keydown', e=&gt;{ // keydown（鍵盤按下事件）
+  if(e.key === 'Enter') add.click();
+});</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">3) 勾選完成 &amp; 刪除（事件委派）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-delegate">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-delegate" class="language-js">list.addEventListener('click', e=&gt;{ // 把監聽綁在父層（事件委派）
+  const li = e.target.closest('li'); if(!li) return; // closest（往上找符合的父元素）
+  const i = +li.dataset.i; // dataset（data-* 存取），+ 轉數字
+  if(e.target.type === 'checkbox'){
+    items[i].done = e.target.checked; // 布林值（Boolean）
+  } else if(e.target.classList.contains('del')){
+    items.splice(i,1); // splice（刪除第 i 筆）
+  }
+  save(); render(); // 記得重繪
+});</code></pre>
+    </div>
+    <p>為什麼用「事件委派」？因為 <code>&lt;li&gt;</code> 是 render 時才動態生成的，直接綁在父層 <code>#list</code> 上最省事。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">4) 內聯編輯（contenteditable）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-edit">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-edit" class="language-js">list.addEventListener('input', e=&gt;{ // input（輸入改變事件）
+  const li = e.target.closest('li');
+  if(!li || e.target.tagName !== 'SPAN') return;
+  items[+li.dataset.i].text = e.target.textContent.trim(); // textContent（純文字）
+  save();
+});</code></pre>
+    </div>
+    <p class="muted">提醒：<code>contenteditable</code> 讓 <code>&lt;span&gt;</code> 可以直接編輯，但也會讓使用者貼上帶格式的內容；本例用 <code>.textContent.trim()</code> 只收純文字，樣式用 <code>opacity</code>（透明度）與 <code>text-decoration</code> 区分完成與未完成。</p>
+  </section>
+
+  <section class="card">
+    <h2>把流程串起來</h2>
+    <p>當使用者做任一動作（新增、勾選、刪除、編輯）時，流程都是：<strong>更新 <code>items</code> → <code>save()</code>（寫入 <code>localStorage</code>）→ <code>render()</code>（重繪畫面）</strong>。只要遵守這條鐵律，畫面與資料就會保持同步（state 與 UI 一致）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">完整 IIFE 包裝</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-full">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-full" class="language-js">(() =&gt; { // IIFE（立即執行函式）
+  const root = document.querySelector('#todo1');
+  if (!root) return;
+  const $ = (q) =&gt; root.querySelector(q);
+  const KEY = 'todo_demo';
+  const inp = $('#inp');
+  const add = $('#add');
+  const list = $('#list');
+  let items = [];
+  try { items = JSON.parse(localStorage.getItem(KEY) || '[]'); } catch { items = []; }
+  function save(){ localStorage.setItem(KEY, JSON.stringify(items)); }
+  function render(){
+    list.innerHTML = items.map((t,i)=&gt;`
+      &lt;li data-i="${i}"&gt;
+        &lt;input type="checkbox" ${t.done ? 'checked' : ''}&gt;
+        &lt;span contenteditable style="flex:1;${t.done ? 'text-decoration:line-through;opacity:.6' : ''}"&gt;${t.text}&lt;/span&gt;
+        &lt;button class="del"&gt;刪&lt;/button&gt;
+      &lt;/li&gt;`).join('');
+  }
+  add.addEventListener('click', () =&gt; { const v = inp.value.trim(); if(!v) return; items.push({ text:v, done:false }); inp.value=''; save(); render(); });
+  inp.addEventListener('keydown', e=&gt;{ if(e.key === 'Enter') add.click(); });
+  list.addEventListener('click', e=&gt;{ const li = e.target.closest('li'); if(!li) return; const i = +li.dataset.i; if(e.target.type==='checkbox'){ items[i].done = e.target.checked; } else if(e.target.classList.contains('del')){ items.splice(i,1); } save(); render(); });
+  list.addEventListener('input', e=&gt;{ const li = e.target.closest('li'); if(!li || e.target.tagName!=='SPAN') return; items[+li.dataset.i].text = e.target.textContent.trim(); save(); });
+  render(); // 首次渲染（initial render）
+})();</code></pre>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>常見錯誤與除錯小技巧</h2>
+    <ul class="list">
+      <li><strong>畫面沒出現：</strong>檢查容器 <code>#todo1</code> 是否存在；或是 Console（主控台，開發者工具）是否有錯誤訊息。</li>
+      <li><strong>新增沒反應：</strong>看 <code>inp.value</code> 是否為空；或事件是否綁到正確按鈕。</li>
+      <li><strong>勾選/刪除沒動作：</strong>是否使用 <code>closest('li')</code> 取得父層？<code>data-i</code> 轉數字用了 <code>+li.dataset.i</code> 嗎？</li>
+      <li><strong>資料不見了：</strong>瀏覽器無痕模式或清除網站資料會影響 <code>localStorage</code>。</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>加入「顯示全部/未完成/已完成」篩選（filter）。</li>
+      <li>拖拉排序（Drag and Drop API）。</li>
+      <li>改為雙擊（double click）才啟用 <code>contenteditable</code>，避免誤觸。</li>
+      <li>拆成三檔（HTML/CSS/JS 分離），學會 <code>&lt;link&gt;</code> 與 <code>defer</code>（延後執行）。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text); // Clipboard API（剪貼簿）
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

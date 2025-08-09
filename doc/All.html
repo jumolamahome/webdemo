@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html data-theme="light" lang="zh-Hant"><head><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1" name="viewport"/><title>10 大實用前端範例（亮色系 + 主題切換）</title>
 <style>
 /* ===== 主題變數 ===== */
@@ -53,7 +54,7 @@ html[data-theme="western"] .nav button.active{background:#f1e4c9}html[data-theme
 <div class="view" id="view">
 <!-- 1 To-Do -->
 <section class="section active" data-title="1) 待辦（localStorage）" id="s1">
-<h2><a href="01-todo.html">1) 極簡 To-Do <span class="badge">localStorage</span></a></h2>
+<h2>1) 極簡 To-Do <span class="badge">localStorage</span> <span style="font-size:0.5em;font-weight:normal"><a href="01-todo.html">簡易解說</a> | <a href="01-todo-study.html">詳細解說</a></span></h2>
 <div class="card" id="todo1"><div class="row">
 <input id="inp" placeholder="今天要完成什麼？" style="flex:1"/><button class="accent" id="add">新增</button>
 </div><ul id="list" style="list-style:none;padding:0;margin:10px 0 0;display:grid;gap:8px"></ul>
@@ -62,7 +63,7 @@ html[data-theme="western"] .nav button.active{background:#f1e4c9}html[data-theme
 </section>
 <!-- 2 Pomodoro -->
 <section class="section" data-title="2) 番茄鐘" id="s2">
-<h2><a href="02-pomodoro.html">2) 番茄鐘 <span class="badge">計時</span></a></h2>
+<h2>2) 番茄鐘 <span class="badge">計時</span> <span style="font-size:0.5em;font-weight:normal"><a href="02-pomodoro.html">簡易解說</a> | <a href="02-pomodoro-study.html">詳細解說</a></span></h2>
 <div class="card" id="pomo"><div class="row" style="justify-content:center">
 <label>工(分)<input id="work" min="1" style="width:70px" type="number" value="25"/></label>
 <label>休(分)<input id="rest" min="1" style="width:70px" type="number" value="5"/></label>
@@ -72,13 +73,13 @@ html[data-theme="western"] .nav button.active{background:#f1e4c9}html[data-theme
 </section>
 <!-- 3 吃什麼 -->
 <section class="section" data-title="3) 吃什麼決定器" id="s3">
-<h2><a href="03-lunch.html">3) 吃什麼 <span class="badge">隨機</span></a></h2>
+<h2>3) 吃什麼 <span class="badge">隨機</span> <span style="font-size:0.5em;font-weight:normal"><a href="03-lunch.html">簡易解說</a> | <a href="03-lunch-study.html">詳細解說</a></span></h2>
 <div class="card" id="lunch"><div class="row"><input id="inp" placeholder="拉麵、便當、咖哩…" style="flex:1"/><button class="accent" id="add">加入</button></div><div class="row" id="list" style="margin-top:6px;flex-wrap:wrap"></div><button class="accent" id="go" style="width:100%">抽！</button><div id="result" style="font-size:30px;font-weight:900;min-height:38px;text-align:center;margin-top:6px"></div></div>
 <script>(()=>{const r=document.querySelector('#lunch'),$=q=>r.querySelector(q),KEY='v2.lunch',L=$('#list'),R=$('#result');let items=JSON.parse(localStorage.getItem(KEY)||'["便當","火鍋","咖哩","拉麵","水餃"]');const save=()=>localStorage.setItem(KEY,JSON.stringify(items)),ren=()=>L.innerHTML=items.map((t,i)=>`<span class="tag" data-i="${i}" style="padding:6px 10px;background:color-mix(in oklab,var(--accent) 10%,#fff);border:1px solid var(--line);border-radius:999px;margin:3px;cursor:pointer">${t} ✕</span>`).join('');ren();$('#add').onclick=()=>{const v=$('#inp').value.trim();if(!v)return;items.push(v);$('#inp').value='';save();ren()};L.onclick=e=>{const el=e.target.closest('.tag');if(!el)return;items.splice(+el.dataset.i,1);save();ren()};$('#go').onclick=()=>{if(!items.length)return;const pick=items[(Math.random()*items.length)|0];R.textContent=pick;R.animate([{transform:'scale(.9)'},{transform:'scale(1.05)'},{transform:'scale(1)'}],{duration:420,easing:'ease'})}})();</script>
 </section>
 <!-- 4 進度條 -->
 <section class="section" data-title="4) 閱讀進度條" id="s4">
-<h2><a href="04-progress.html">4) 閱讀進度條 <span class="badge">scroll %</span></a></h2>
+<h2>4) 閱讀進度條 <span class="badge">scroll %</span> <span style="font-size:0.5em;font-weight:normal"><a href="04-progress.html">簡易解說</a> | <a href="04-progress-study.html">詳細解說</a></span></h2>
 <div class="card" id="prog"><div style="position:sticky;top:0;border:1px solid var(--line);border-radius:10px;overflow:hidden"><div style="height:8px;background:var(--line)"><div id="fill" style="height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div></div></div>
 <div id="area" style="max-height:38vh;overflow:auto;border:1px dashed var(--line);border-radius:10px;margin-top:6px;padding:10px">
 <h3>長文示例</h3><p>向下捲動觀察上方進度條變化。</p><p>良好閱讀 UX 可提高完成率。</p><p>（以下填充）</p><p>結構/表現/行為是前端三要素。</p><p>RWD 讓不同裝置皆可用。</p><p>A11y 提升可存取性。</p><p>效能優化減少重排。</p><p>模組化提升維護性。</p><p style="height:700px"></p></div></div>
@@ -86,7 +87,7 @@ html[data-theme="western"] .nav button.active{background:#f1e4c9}html[data-theme
 </section>
 <!-- 5 倒數+iCal -->
 <section class="section" data-title="5) 倒數 + iCal" id="s5">
-<h2><a href="05-countdown-ical.html">5) 倒數 + iCal <span class="badge">Blob</span></a></h2>
+<h2>5) 倒數 + iCal <span class="badge">Blob</span> <span style="font-size:0.5em;font-weight:normal"><a href="05-countdown-ical.html">簡易解說</a> | <a href="05-countdown-ical-study.html">詳細解說</a></span></h2>
 <div class="card" id="ical">
 <div class="row">
 <input id="title" placeholder="事件名稱" style="flex:1"/>
@@ -114,13 +115,13 @@ $('#dl').onclick=()=>{const title=$('#title').value||'我的事件',v=$('#time')
 </section>
 <!-- 6 AA 分帳 -->
 <section class="section" data-title="6) AA 分帳" id="s6">
-<h2><a href="06-aa.html">6) AA 分帳 <span class="badge">reduce</span></a></h2>
+<h2>6) AA 分帳 <span class="badge">reduce</span> <span style="font-size:0.5em;font-weight:normal"><a href="06-aa.html">簡易解說</a> | <a href="06-aa-study.html">詳細解說</a></span></h2>
 <div class="card" id="aa"><div class="row"><input id="name" placeholder="品項" style="flex:2"/><input id="price" placeholder="金額" style="flex:1" type="number"/><button class="accent" id="add">加入</button></div><div id="list" style="display:grid;gap:6px;margin:8px 0"></div><div>總金額：<b id="sum">0</b> 元</div><div class="row" style="align-items:center;margin-top:4px"><span>人數：</span><input id="p" style="width:80px" type="number" value="2"/><span>→ 每人 <b id="each">0</b> 元</span></div></div>
 <script>(()=>{const r=document.querySelector('#aa'),$=q=>r.querySelector(q);let items=[];const list=$('#list'),calc=()=>{const sum=items.reduce((a,b)=>a+(+b.price||0),0);$('#sum').textContent=sum;$('#each').textContent=Math.round(sum/(+$('#p').value||1))},ren=()=>{list.innerHTML=items.map((it,i)=>`<div style="display:grid;grid-template-columns:1fr 110px 60px;gap:6px"><input value="${it.name}" data-i="${i}" class="n"><input type="number" value="${it.price}" data-i="${i}" class="v"><button data-i="${i}" class="del">刪</button></div>`).join('');calc()};$('#add').onclick=()=>{const n=$('#name').value.trim(),v=+$('#price').value||0;if(!n)return;items.push({name:n,price:v});$('#name').value='';$('#price').value='';ren()};list.oninput=e=>{const i=e.target.dataset.i;if(e.target.classList.contains('n'))items[i].name=e.target.value;else if(e.target.classList.contains('v'))items[i].price=+e.target.value||0;calc()};list.onclick=e=>{if(e.target.classList.contains('del')){items.splice(+e.target.dataset.i,1);ren()}};$('#p').oninput=calc})();</script>
 </section>
 <!-- 7 Gallery -->
 <section class="section" data-title="7) Gallery（Filter + 燈箱）" id="s7">
-<h2><a href="07-gallery.html">7) 作品集 <span class="badge">Grid + 篩選</span></a></h2>
+<h2>7) 作品集 <span class="badge">Grid + 篩選</span> <span style="font-size:0.5em;font-weight:normal"><a href="07-gallery.html">簡易解說</a> | <a href="07-gallery-study.html">詳細解說</a></span></h2>
 <div class="card" id="gal"><div class="row" id="ctl" style="flex-wrap:wrap"></div><div id="grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:6px"></div></div>
 <div id="box" style="position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center"><img style="max-width:92vw;max-height:84vh;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)"/></div>
 <script>(()=>{const data=[{t:'網頁',img:'https://picsum.photos/seed/a/800'},{t:'UI',img:'https://picsum.photos/seed/b/800'},{t:'插畫',img:'https://picsum.photos/seed/c/800'},{t:'網頁',img:'https://picsum.photos/seed/d/800'},{t:'UI',img:'https://picsum.photos/seed/e/800'},{t:'插畫',img:'https://picsum.photos/seed/f/800'}].map((x,i)=>({...x,id:i}));const tags=['全部',...new Set(data.map(d=>d.t))];const root=document.querySelector('#gal'),ctl=root.querySelector('#ctl'),grid=root.querySelector('#grid'),box=document.querySelector('#box'),img=box.querySelector('img');let cur='全部';ctl.innerHTML=tags.map(t=>`<button data-t="${t}" class="${t===cur?'accent':''}" style="border:0;padding:6px 12px;border-radius:999px;background:${t===cur?'color-mix(in oklab,var(--accent) 20%,#fff)':'#f3f4f6'}">${t}</button>`).join('');function ren(){const list=cur==='全部'?data:data.filter(d=>d.t===cur);grid.innerHTML=list.map(d=>`<div class="card" data-id="${d.id}" style="aspect-ratio:1/1;display:grid;place-items:center;cursor:pointer">${d.t}</div>`).join('');}
@@ -128,19 +129,19 @@ ren();ctl.onclick=e=>{const b=e.target.closest('button');if(!b)return;cur=b.data
 </section>
 <!-- 8 字數 -->
 <section class="section" data-title="8) 字數/閱讀時間" id="s8">
-<h2><a href="08-wc.html">8) 字數/閱讀時間 <span class="badge">throttle</span></a></h2>
+<h2>8) 字數/閱讀時間 <span class="badge">throttle</span> <span style="font-size:0.5em;font-weight:normal"><a href="08-wc.html">簡易解說</a> | <a href="08-wc-study.html">詳細解說</a></span></h2>
 <div class="card" id="wc"><textarea id="ta" placeholder="貼上或輸入文字..." style="width:100%;min-height:170px"></textarea><div class="row" style="margin-top:6px;flex-wrap:wrap"><div class="badge">字數：<b id="w">0</b></div><div class="badge">句子：<b id="s">0</b></div><div class="badge">估計閱讀：<b id="m">0</b> 分</div></div></div>
 <script>(()=>{const r=document.querySelector('#wc'),$=q=>r.querySelector(q),ta=$('#ta'),w=$('#w'),s=$('#s'),m=$('#m');function calc(){const text=ta.value.trim(),words=(text.match(/\S+/g)||[]).length,sent=(text.match(/[。！？.!?]+/g)||[]).length,min=Math.ceil(words/300);w.textContent=words;s.textContent=sent;m.textContent=min}let t=null;ta.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(calc,120)});calc()})();</script>
 </section>
 <!-- 9 便利貼 -->
 <section class="section" data-title="9) 便利貼（拖曳+存檔）" id="s9">
-<h2><a href="09-sticky.html">9) 便利貼 <span class="badge">拖曳+localStorage</span></a></h2>
+<h2>9) 便利貼 <span class="badge">拖曳+localStorage</span> <span style="font-size:0.5em;font-weight:normal"><a href="09-sticky.html">簡易解說</a> | <a href="09-sticky-study.html">詳細解說</a></span></h2>
 <div class="card" id="boardWrap" style="position:relative;height:56vh;overflow:hidden"><div class="row" style="position:absolute;top:8px;left:8px;z-index:5"><button class="accent" id="new">新增便利貼</button><button id="clear">清空</button></div><div class="board" id="board" style="position:absolute;inset:0;background:#fffbe6"></div></div>
 <script>(()=>{const w=document.querySelector('#boardWrap'),b=w.querySelector('#board'),KEY='v2.sticky',load=()=>JSON.parse(localStorage.getItem(KEY)||'[]'),save=t=>localStorage.setItem(KEY,JSON.stringify(t));let notes=load();const ren=()=>b.innerHTML=notes.map(n=>`<div class="note" data-id="${n.id}" style="position:absolute;left:${n.x}px;top:${n.y}px;width:190px;min-height:110px;background:#fff59d;border:1px solid var(--warn);border-radius:10px;padding:8px;box-shadow:2px 6px 18px #0002;cursor:grab"><textarea style="width:100%;height:96px;border:0;background:transparent;resize:vertical">${n.t}</textarea></div>`).join('');const add=(x=60,y=70,t='')=>{notes.push({id:Date.now()+Math.random(),x,y,t});ren();save(notes)};ren();w.querySelector('#new').onclick=()=>add();w.querySelector('#clear').onclick=()=>{if(confirm('確定清空？')){notes=[];ren();save(notes)}};let drag=null;b.onmousedown=e=>{const el=e.target.closest('.note');if(!el)return;const id=+el.dataset.id,n=notes.find(n=>n.id===id);drag={id,dx:e.clientX-n.x,dy:e.clientY-n.y}};onmousemove=e=>{if(!drag)return;const n=notes.find(n=>n.id===drag.id);n.x=e.clientX-drag.dx;n.y=e.clientY-drag.dy;ren()};onmouseup=()=>{if(drag){save(notes);drag=null}};b.oninput=e=>{const el=e.target.closest('.note');if(!el)return;const n=notes.find(n=>n.id==el.dataset.id);n.t=e.target.value;save(notes)}})();</script>
 </section>
 <!-- 10 天氣卡 -->
 <section class="section" data-title="10) 天氣卡（免費 API）" id="s10">
-<h2><a href="10-weather.html">10) 天氣卡 <span class="badge">fetch</span></a></h2>
+<h2>10) 天氣卡 <span class="badge">fetch</span> <span style="font-size:0.5em;font-weight:normal"><a href="10-weather.html">簡易解說</a> | <a href="10-weather-study.html">詳細解說</a></span></h2>
 <div class="card" id="wx"><div class="row"><input id="q" placeholder="輸入城市：Taipei" style="flex:1"/><button class="accent" id="go">查詢</button></div><div id="out" style="margin-top:8px"><div class="skel"></div></div><div class="small">示例來源：wttr.in JSON</div></div>
 <script>(()=>{const r=document.querySelector('#wx'),$=q=>r.querySelector(q);async function get(c){const res=await fetch(`https://wttr.in/${encodeURIComponent(c)}?format=j1`);if(!res.ok)throw new Error('API');return res.json()}$('#go').onclick=async()=>{const c=$('#q').value.trim()||'Taipei';$('#out').innerHTML='<div class="skel"></div>';try{const d=await get(c),cur=d.current_condition?.[0],area=d.nearest_area?.[0]?.areaName?.[0]?.value||c;$('#out').innerHTML=`<div style="font-size:26px;font-weight:800">${area}</div><div style="font-size:38px;font-weight:900">${cur.temp_C}°C</div><div>${cur.weatherDesc?.[0]?.value||''}</div>`}catch{$('#out').textContent='查詢失敗'}}})();</script>
 </section>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜閱讀進度條（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>閱讀進度條（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>我們要做一個「長文閱讀進度條」：當使用者在內容區塊中捲動時，上方的進度條會隨著閱讀量增加而填滿。你會學到：<em>捲動事件（scroll event，使用者在區塊內捲動時觸發）</em>、<em>元素尺寸與內容高度（clientHeight / scrollHeight）</em>、<em>捲動位置（scrollTop）</em>、以及如何用 <strong>render（將資料轉換成畫面）</strong> 的概念更新 UI。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>本範例採「單檔」形式：<strong>HTML/CSS/JS</strong> 都寫在同一支檔案裡，瀏覽器（browser，顯示網頁的應用程式）直接開啟即可使用。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;閱讀進度條（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 這裡放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;wrap&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 這裡放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">重點：單檔好上手，適合教學與 Demo；正式專案建議做資源分離與壓縮。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>進度條由三層元素組成：容器 <code>.bar</code>、填充條 <code>.fill</code>、以及外圍固定在頂部的 <code>.top</code>。內容區塊 <code>#area</code> 是可捲動的長文區。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;wrap&quot;&gt;
+  &lt;div class=&quot;top&quot;&gt;
+    &lt;div class=&quot;bar&quot;&gt;
+      &lt;div class=&quot;fill&quot; id=&quot;fill&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;box&quot; id=&quot;area&quot;&gt;
+    &lt;h1&gt;長文內容&lt;/h1&gt;
+    &lt;h3&gt;長文示例&lt;/h3&gt;
+    &lt;p&gt;向下捲動觀察上方進度條變化。&lt;/p&gt;
+    &lt;p&gt;為了方便示範，我們加入一個很高的填充區塊。&lt;/p&gt;
+    &lt;p style=&quot;height:1200px&quot; class=&quot;muted&quot;&gt;(補足高度以展示捲動)&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#fill</code>：真正顯示進度的藍色填滿條，會更新寬度（width）。</li>
+      <li><code>#area</code>：可捲動的內容區（scroll container）。</li>
+      <li><code>.top</code>：固定在頂部（sticky）的包裹層，內含進度條。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>我們用簡單的圓角與陰影，讓卡片更有層次；進度條則靠寬度（width）變化製造填滿效果。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">body{margin:0;font-family:system-ui,"Noto Sans TC",sans-serif;line-height:1.7}
+.wrap{max-width:820px;margin:20px auto;padding:0 16px}
+.top{position:sticky;top:0;background:#0f172a;color:#e5e7eb;z-index:10}
+.bar{height:6px;background:#111827;border-radius:6px;overflow:hidden}
+.fill{height:100%;width:0;background:#22d3ee}
+.box{border:1px solid #e5e7eb;border-radius:12px;padding:14px;max-height:48vh;overflow:auto;background:#fff}
+h1{margin:.4em 0 0.6em}
+.muted{color:#6b7280;font-size:14px}
+</code></pre>
+    </div>
+    <p class="muted">注意：<code>.box</code> 設定了 <code>max-height</code> 與 <code>overflow:auto</code>，讓內容變成一個可捲動（scrollable）的區塊。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>計算進度的公式：<code>百分比 = (scrollTop / (scrollHeight - clientHeight)) * 100</code>，再把結果限制在 0～100 之間，最後更新 <code>#fill</code> 的 <code>style.width</code>。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">邏輯核心</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-core" class="language-js">const area=document.getElementById('area');
+const fill=document.getElementById('fill');
+function onScroll(){
+  const max=area.scrollHeight-area.clientHeight; // 總可捲動高度
+  const pct=Math.min(100, Math.round((area.scrollTop/max)*100)); // 百分比
+  fill.style.width=pct+"%"; // 更新寬度
+}
+area.addEventListener('scroll', onScroll, {passive:true}); // passive（提示瀏覽器事件不會取消）
+onScroll(); // 初次同步狀態
+</code></pre>
+    </div>
+    <p>這裡的 <code>passive:true</code> 代表「此事件監聽不會呼叫 <code>preventDefault()</code>」，瀏覽器（browser）可以做更多滾動優化。</p>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>唯一需要監聽的是 <code>#area</code> 的 <strong>scroll（捲動事件）</strong>。每次捲動就重算百分比並更新進度條。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">事件監聽</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-event">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-event" class="language-js">area.addEventListener('scroll', onScroll, {passive:true});</code></pre>
+    </div>
+    <p class="muted">小提醒：若改用整頁滾動（監聽 <code>window</code> 的 <code>scroll</code>），公式也相同，但 <code>scrollTop/clientHeight/scrollHeight</code> 要換成 <code>document.documentElement</code> 或 <code>window</code> 相關屬性。</p>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>使用者在 <code>#area</code> 捲動 → 觸發 <code>scroll</code> 事件。</li>
+      <li>呼叫 <code>onScroll()</code> 計算百分比。</li>
+      <li>更新 <code>#fill</code> 的寬度，視覺上呈現進度。</li>
+    </ol>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">一次看懂</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-all">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-all" class="language-js">const area=document.getElementById('area');
+const fill=document.getElementById('fill');
+function onScroll(){
+  const max=area.scrollHeight-area.clientHeight;
+  const pct=Math.min(100, Math.round((area.scrollTop/max)*100));
+  fill.style.width=pct+"%";
+}
+area.addEventListener('scroll', onScroll, {passive:true});
+onScroll();</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>進度永遠是 0%：</strong>檢查 <code>max</code> 是否為 0。內容不夠高時，請增加內容高度或降低 <code>max-height</code>。</li>
+      <li><strong>捲動無反應：</strong>監聽錯對象了嗎？本例監聽的是 <code>#area</code> 不是 <code>window</code>。</li>
+      <li><strong>卡頓：</strong>避免在 <code>scroll</code> 事件內做昂貴運算；可加上 <code>passive:true</code> 或節流（throttle）。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>在進度條右側顯示數字百分比（例如 73%）。</li>
+      <li>閱讀完成後顯示「已讀完」動畫或訊息。</li>
+      <li>改成全頁進度條：監聽 <code>window</code> 的滾動並計算整頁比例。</li>
+      <li>加上 <code>IntersectionObserver</code>（交集觀察器）做章節錨點高亮。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  // 複製按鈕（Clipboard API + 後援方案）
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast('已複製到剪貼簿');
+      }catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

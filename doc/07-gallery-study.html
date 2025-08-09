@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜作品集 Gallery（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>作品集 Gallery（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>這個小專案要做的是「可篩選的作品集（Gallery）」：上方按標籤切換分類，下方以網格（grid，格線排版）顯示卡片，點卡片會打開燈箱（lightbox，覆蓋在頁面上的大圖預覽）。你會學到：<em>資料結構（array/object，陣列/物件）</em>、<em>狀態（state，資料的當前值）</em>、<em>渲染（render，將資料轉換成畫面）</em>、<em>事件（event，使用者操作觸發的行為）</em>、以及 <em>事件委派（event delegation，把監聽綁在父層處理子元素）</em>。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>這是單檔示範：<strong>HTML/CSS/JS</strong> 寫在同一支檔案裡，瀏覽器（browser，顯示網頁的應用程式）直接開啟就能運行。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;作品集 Gallery（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;wrap&quot;&gt;...&lt;/div&gt;
+  &lt;div class=&quot;lightbox&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">單檔對新手最友善：一個檔案即可 Demo；正式專案再做資源分離與壓縮。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>頁面核心由四個部分組成：頁首標題、控制區（顯示所有分類按鈕）、作品網格、以及燈箱。每個可以互動的元素都會有 <em>id（識別碼，頁面唯一）</em> 或 <em>class（樣式分類，可重複）</em>，方便 JS/CSS 操作。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;wrap&quot;&gt;
+  &lt;h2&gt;作品集&lt;/h2&gt;
+  &lt;div class=&quot;controls&quot; id=&quot;ctl&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid&quot; id=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;lightbox&quot; id=&quot;box&quot;&gt;
+  &lt;img alt=&quot;preview&quot;&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#ctl</code>：分類按鈕容器，由 JS 動態產生。</li>
+      <li><code>#grid</code>：作品網格（CSS Grid 佈局）。</li>
+      <li><code>#box</code>：燈箱覆蓋層，控制顯示/隱藏。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>我們用卡片 + 網格的方式排版，按鈕用膠囊造型，燈箱則做半透明遮罩與置中大圖，互動時加一點位移效果。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">:root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,"Noto Sans TC",sans-serif;line-height:1.6}
+.wrap{max-width:960px;margin:auto;padding:20px}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+button{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:#f3f4f6;color:#111827;cursor:pointer}
+button.active{background:var(--accent);color:#fff;border-color:transparent}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:12px}
+.card{aspect-ratio:1/1;border-radius:12px;background:#fff;border:1px solid var(--line);display:grid;place-items:center;cursor:pointer;transition:transform .1s}
+.card:hover{transform:translateY(-2px)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center}
+.lightbox.show{display:flex}
+.lightbox img{max-width:92vw;max-height:84vh;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+</code></pre>
+    </div>
+    <p class="muted">小提醒：<code>repeat(auto-fill,minmax(180px,1fr))</code> 讓網格在不同螢幕自動塞滿；<code>aspect-ratio</code> 保持縮圖比例一致。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>邏輯分為：<strong>資料</strong>、<strong>標籤</strong>、<strong>狀態</strong>、<strong>渲染</strong>、<strong>燈箱</strong>。用 IIFE（Immediately Invoked Function Expression，立即執行函式）避免汙染全域命名空間。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">資料與狀態</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-data">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-data" class="language-js">const data=[
+  {t:'網頁',img:'https://picsum.photos/seed/a/800'},
+  {t:'UI',img:'https://picsum.photos/seed/b/800'},
+  {t:'插畫',img:'https://picsum.photos/seed/c/800'},
+  {t:'網頁',img:'https://picsum.photos/seed/d/800'},
+  {t:'UI',img:'https://picsum.photos/seed/e/800'},
+  {t:'插畫',img:'https://picsum.photos/seed/f/800'}
+].map((x,i)=>({...x,id:i})); // 給每筆補上一個 id（識別）
+
+const tags=['全部',...new Set(data.map(d=>d.t))]; // 以 Set（集合）去重
+let cur='全部'; // 目前選中的分類（state）</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">產生分類按鈕與渲染網格</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-render">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-render" class="language-js">const ctl=document.getElementById('ctl');
+const grid=document.getElementById('grid');
+ctl.innerHTML=tags.map(t=>`&lt;button data-t="${t}" class="${t===cur?'active':''}"&gt;${t}&lt;/button&gt;`).join('');
+
+function render(){
+  const list=cur==='全部'?data:data.filter(d=>d.t===cur);
+  grid.innerHTML=list.map(d=>`&lt;div class="card" data-id="${d.id}"&gt;${d.t}&lt;/div&gt;`).join('');
+}
+render();</code></pre>
+    </div>
+    <p>渲染策略：依 <code>cur</code> 篩出清單再用 <code>innerHTML</code> 一次塞入；卡片上用 <code>data-id</code>（自訂屬性 data-*）保存索引。</p>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">燈箱與關閉機制</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-lightbox">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-lightbox" class="language-js">const box=document.getElementById('box');
+const img=box.querySelector('img');
+
+grid.addEventListener('click',e=>{ // 事件委派：點任何卡片都能觸發
+  const c=e.target.closest('.card'); if(!c) return;
+  const d=data.find(x=>x.id==c.dataset.id);
+  img.src=d.img; box.classList.add('show');
+});
+
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') box.classList.remove('show'); });
+box.addEventListener('click',e=>{ if(e.target===box) box.classList.remove('show'); });</code></pre>
+    </div>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>互動包含三件事：切換分類、點卡片開燈箱、按下 <kbd>Esc</kbd> 或點遮罩關閉燈箱。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">1) 切換分類</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-filter">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-filter" class="language-js">ctl.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  cur=b.dataset.t; // 更新狀態（state）
+  [...ctl.children].forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  render();
+});</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">2) 點卡片打開燈箱</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-open">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-open" class="language-js">grid.addEventListener('click',e=>{
+  const c=e.target.closest('.card'); if(!c) return;
+  const d=data.find(x=>x.id==c.dataset.id);
+  img.src=d.img; box.classList.add('show');
+});</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">3) 關閉燈箱（Esc 或點遮罩）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-close">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-close" class="language-js">document.addEventListener('keydown',e=>{ if(e.key==='Escape') box.classList.remove('show'); });
+box.addEventListener('click',e=>{ if(e.target===box) box.classList.remove('show'); });</code></pre>
+    </div>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>初始化：建立 <code>data</code> 與 <code>tags</code>、把分類按鈕渲染出來。</li>
+      <li>依 <code>cur</code> 計算要顯示的清單並渲染網格。</li>
+      <li>使用者互動後更新 <code>cur</code> 或打開/關閉燈箱，再次渲染或切換 class。</li>
+    </ol>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">一次看懂（可直接貼上執行）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-all">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-all" class="language-html">&lt;div class=&quot;wrap&quot;&gt;
+  &lt;h2&gt;作品集&lt;/h2&gt;
+  &lt;div class=&quot;controls&quot; id=&quot;ctl&quot;&gt;&lt;/div&gt;
+  &lt;div class=&quot;grid&quot; id=&quot;grid&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&quot;lightbox&quot; id=&quot;box&quot;&gt;&lt;img alt=&quot;preview&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+(()=>{
+  const data=[{t:'網頁',img:'https://picsum.photos/seed/a/800'},{t:'UI',img:'https://picsum.photos/seed/b/800'},{t:'插畫',img:'https://picsum.photos/seed/c/800'},{t:'網頁',img:'https://picsum.photos/seed/d/800'},{t:'UI',img:'https://picsum.photos/seed/e/800'},{t:'插畫',img:'https://picsum.photos/seed/f/800'}].map((x,i)=>({...x,id:i}));
+  const tags=['全部',...new Set(data.map(d=>d.t))];
+  const ctl=document.getElementById('ctl');
+  const grid=document.getElementById('grid');
+  const box=document.getElementById('box');
+  const img=box.querySelector('img');
+  let cur='全部';
+  ctl.innerHTML=tags.map(t=>`&lt;button data-t="${t}" class="${t===cur?'active':''}"&gt;${t}&lt;/button&gt;`).join('');
+  function render(){const list=cur==='全部'?data:data.filter(d=>d.t===cur);grid.innerHTML=list.map(d=>`&lt;div class="card" data-id="${d.id}"&gt;${d.t}&lt;/div&gt;`).join('')}
+  render();
+  ctl.addEventListener('click',e=>{const b=e.target.closest('button'); if(!b) return; cur=b.dataset.t; [...ctl.children].forEach(x=>x.classList.remove('active')); b.classList.add('active'); render();});
+  grid.addEventListener('click',e=>{const c=e.target.closest('.card'); if(!c) return; const d=data.find(x=>x.id==c.dataset.id); img.src=d.img; box.classList.add('show');});
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape') box.classList.remove('show'); });
+  box.addEventListener('click',e=>{ if(e.target===box) box.classList.remove('show'); });
+})();
+&lt;/script&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>按鈕沒反應：</strong>檢查是否把監聽綁在 <code>#ctl</code> 並用 <code>closest('button')</code> 取得實際按鈕。</li>
+      <li><strong>網格沒更新：</strong>是否有呼叫 <code>render()</code>？或 <code>cur</code> 值沒有改？</li>
+      <li><strong>燈箱無法關閉：</strong>是否有監聽 <code>keydown</code> 的 <kbd>Escape</kbd> 與點擊遮罩（比較的是 <code>e.target===box</code>）。</li>
+      <li><strong>圖片跨域問題：</strong>正式上線請改用自己的圖庫或 CDN，確保可跨站讀取。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>縮圖：在網格中放入實際縮圖（<code>&lt;img loading="lazy"&gt;</code>），卡片顯示標題疊一層半透明黑底。</li>
+      <li>鍵盤導覽：左右鍵在燈箱切換上一張/下一張。</li>
+      <li>URL 狀態：把目前分類或燈箱開啟的作品 id 寫入查詢字串（query string），可直接分享。</li>
+      <li>資料來源：改為從 <code>JSON</code> 檔或 API（應用程式介面）載入。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  // 複製按鈕（Clipboard API + 後援方案）
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{ await navigator.clipboard.writeText(text); showToast('已複製到剪貼簿'); }
+      catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

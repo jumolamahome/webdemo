@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜事件倒數 + iCal（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>事件倒數 + iCal（單檔版）詳細解說 <span class="badge">HTML（超文字標記語言） / CSS（層疊樣式表） / JS（JavaScript，用來控制網頁互動的程式語言）</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>這個小工具能針對某個日期時間開始<strong>倒數</strong>，並一鍵產生 <code>.ics</code> 行事曆檔，讓你匯入 Google/Apple 行事曆。會用到：<em>日期物件（Date，表示時間點）</em>、<em>計時器（setInterval，固定間隔執行）</em>、<em>Blob（瀏覽器內的二進位檔案容器）</em>、<em>URL.createObjectURL（把 Blob 變成可下載連結）</em>、以及 <em>local 時區寫法（TZID，時區識別碼）</em>。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>本範例採用「單檔」：<strong>HTML / CSS / JS</strong> 全寫在同一檔，瀏覽器（browser，顯示網頁的應用程式）直接開啟即可使用。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區設定 --&gt;
+  &lt;title&gt;事件倒數 + iCal（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 這裡放 CSS（層疊樣式表） */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;ical&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 這裡放 JS（JavaScript） */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">重點：單檔很適合教學與 Demo；正式專案通常會把資源分離與壓縮。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>介面包含：事件名稱、日期時間輸入、開始倒數按鈕、目前剩餘時間、下載 iCal 按鈕、與時區提示。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-html-core" class="language-html">&lt;div class=&quot;card&quot; id=&quot;ical&quot;&gt;
+  &lt;h2&gt;事件倒數&lt;/h2&gt;
+  &lt;div style=&quot;display:grid;gap:8px;grid-template-columns:1fr 1fr&quot;&gt;
+    &lt;input id=&quot;title&quot; placeholder=&quot;事件名稱：面試 / Demo Day&quot;&gt;
+    &lt;input id=&quot;time&quot; type=&quot;datetime-local&quot;&gt;
+  &lt;/div&gt;
+  &lt;button id=&quot;start&quot; style=&quot;margin-top:8px&quot;&gt;開始倒數&lt;/button&gt;
+  &lt;div class=&quot;time&quot; id=&quot;t&quot;&gt;請設定時間&lt;/div&gt;
+  &lt;button id=&quot;dl&quot; style=&quot;margin-top:8px&quot;&gt;下載 iCal&lt;/button&gt;
+  &lt;div class=&quot;small&quot; style=&quot;color:#9ca3af;margin-top:6px&quot;&gt;時間以 &lt;b&gt;Asia/Taipei&lt;/b&gt; 寫入；預設結束時間 +25 分鐘。&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#title</code>：事件名稱欄位。</li>
+      <li><code>#time</code>：目標時間（<code>type="datetime-local"</code> 本地日期時間輸入）。</li>
+      <li><code>#t</code>：顯示「剩餘時間」的區域。</li>
+      <li><code>#dl</code>：產生並下載 <code>.ics</code> 檔（iCalendar 格式）。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>介面採深色卡片、圓角與陰影，讓重點（剩餘時間與按鈕）更突出。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵樣式片段</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css-core">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-css-core" class="language-css">body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0f172a;color:#e5e7eb;font-family:system-ui,"Noto Sans TC",sans-serif}
+.card{background:#0b1220;border:1px solid #1f2937;border-radius:18px;padding:24px 28px;box-shadow:0 10px 30px #0006;width:min(560px,90vw)}
+input,button{padding:10px 12px;border-radius:10px;border:1px solid #1f2937;background:#0b1220;color:#e5e7eb}
+button{background:#22d3ee;color:#00343d;border:0;font-weight:800;cursor:pointer}
+.time{font-size:28px;font-weight:800;margin-top:8px}
+</code></pre>
+    </div>
+    <p class="muted">小提醒：<code>width:min(560px,90vw)</code> 讓卡片在手機與桌機都有良好寬度。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>邏輯拆成四塊：<strong>狀態</strong>（目標時間 <code>target</code> 與計時器 <code>timer</code>）、<strong>格式化</strong>（補零 <code>pad</code> 與 <code>fmtICS</code>）、<strong>倒數</strong>（<code>tick</code> 計算剩餘天/時/分/秒）、<strong>事件</strong>（開始倒數、下載 iCal）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">工具函式：pad / fmtICS</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-utils">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-utils" class="language-js">const pad=n=>String(n).padStart(2,'0'); // padStart（不足位數前面補零）
+const fmtICS=d=>(
+  d.getFullYear()+
+  pad(d.getMonth()+1)+pad(d.getDate())+'T'+
+  pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds())
+); // 轉成 iCal 需要的 YYYYMMDDTHHmmss 格式</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">核心：tick（每秒刷新倒數）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-tick">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-tick" class="language-js">let target=null,timer=null; // 狀態（state）
+const T=document.getElementById('t');
+function tick(){
+  const diff=target-new Date();
+  if(diff<=0){
+    T.textContent='到時囉！';
+    clearInterval(timer); timer=null; return;
+  }
+  const s=((diff/1000)|0)%60,
+        m=((diff/60000)|0)%60,
+        h=((diff/3600000)|0)%24,
+        d=(diff/86400000)|0;
+  T.textContent=`${d} 天 ${pad(h)}:${pad(m)}:${pad(s)}`;
+}</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">事件：開始倒數 / 下載 iCal</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-events">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-events" class="language-js">document.getElementById('start').onclick=()=>{
+  const v=document.getElementById('time').value;
+  if(!v) return alert('請選時間');
+  target=new Date(v); // 由 datetime-local 產生本地時間
+  clearInterval(timer);
+  timer=setInterval(tick,1000); // setInterval（固定間隔執行）
+  tick();
+};
+
+document.getElementById('dl').onclick=()=>{
+  const title=document.getElementById('title').value||'我的事件';
+  const v=document.getElementById('time').value;
+  if(!v) return alert('請先選時間');
+  const start=new Date(v);
+  const end=new Date(start.getTime()+25*60*1000); // 預設 +25 分鐘
+  const ics=`BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Demo//iCal//TW\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n`+
+`BEGIN:VTIMEZONE\nTZID:Asia/Taipei\nX-LIC-LOCATION:Asia/Taipei\nBEGIN:STANDARD\nTZOFFSETFROM:+0800\nTZOFFSETTO:+0800\nTZNAME:CST\nDTSTART:19700101T000000\nEND:STANDARD\nEND:VTIMEZONE\n`+
+`BEGIN:VEVENT\nUID:${Date.now()}@demo\nDTSTAMP:${fmtICS(new Date())}\nDTSTART;TZID=Asia/Taipei:${fmtICS(start)}\nDTEND;TZID=Asia/Taipei:${fmtICS(end)}\nSUMMARY:${title}\nEND:VEVENT\nEND:VCALENDAR`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'})); // Blob（瀏覽器檔案容器）
+  a.download='event.ics';
+  a.click();
+  URL.revokeObjectURL(a.href);
+};</code></pre>
+    </div>
+  </section>
+
+  <!-- 事件綁定（總覽） -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <ul class="list">
+      <li><code>#start</code>：點擊後讀取輸入時間、設定 <code>target</code>、啟動 <code>setInterval</code> 更新倒數。</li>
+      <li><code>#dl</code>：點擊後把 <code>title/time</code> 組成 iCal 文字，建立 Blob 下載。</li>
+    </ul>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>使用者選好時間 → 按下「開始倒數」。</li>
+      <li>每秒呼叫 <code>tick()</code> 計算剩餘 <em>天/時/分/秒</em> 並更新畫面（render，將資料轉成畫面）。</li>
+      <li>需要加入行事曆時，按下「下載 iCal」，產生 <code>.ics</code> 檔並自動下載。</li>
+    </ol>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">一次看懂（可直接執行）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-all">複製</button>
+        </div>
+      </div>
+      <pre><code id="code-js-all" class="language-html">&lt;div class=&quot;card&quot; id=&quot;ical&quot;&gt;...（同上 HTML）&lt;/div&gt;
+&lt;script&gt;
+let target=null,timer=null;const T=document.getElementById('t');
+const pad=n=>String(n).padStart(2,'0');
+const fmtICS=d=>d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate())+'T'+pad(d.getHours())+pad(d.getMinutes())+pad(d.getSeconds());
+function tick(){const diff=target-new Date();if(diff<=0){T.textContent='到時囉！';clearInterval(timer);timer=null;return}const s=((diff/1e3)|0)%60,m=((diff/6e4)|0)%60,h=((diff/36e5)|0)%24,d=(diff/864e5)|0;T.textContent=`${d} 天 ${pad(h)}:${pad(m)}:${pad(s)}`}
+document.getElementById('start').onclick=()=>{const v=document.getElementById('time').value;if(!v)return alert('請選時間');target=new Date(v);clearInterval(timer);timer=setInterval(tick,1e3);tick()};
+document.getElementById('dl').onclick=()=>{const title=document.getElementById('title').value||'我的事件',v=document.getElementById('time').value;if(!v)return alert('請先選時間');const start=new Date(v),end=new Date(start.getTime()+25*60*1000);const ics='BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Demo//iCal//TW\nCALSCALE:GREGORIAN\nMETHOD:PUBLISH\n'+'BEGIN:VTIMEZONE\nTZID:Asia/Taipei\nX-LIC-LOCATION:Asia/Taipei\nBEGIN:STANDARD\nTZOFFSETFROM:+0800\nTZOFFSETTO:+0800\nTZNAME:CST\nDTSTART:19700101T000000\nEND:STANDARD\nEND:VTIMEZONE\n'+'BEGIN:VEVENT\nUID:'+Date.now()+'@demo\nDTSTAMP:'+fmtICS(new Date())+'\nDTSTART;TZID=Asia/Taipei:'+fmtICS(start)+'\nDTEND;TZID=Asia/Taipei:'+fmtICS(end)+'\nSUMMARY:'+title+'\nEND:VEVENT\nEND:VCALENDAR';const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='event.ics';a.click();URL.revokeObjectURL(a.href)}
+&lt;/script&gt;</code></pre>
+    </div>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>時間沒選就按開始：</strong>會跳出 <code>alert</code> 提醒；請先選擇 <code>datetime-local</code>。</li>
+      <li><strong>倒數不動：</strong>確認是否有建立 <code>setInterval</code>，或 <code>target</code> 時間早於現在。</li>
+      <li><strong>.ics 檔無法匯入：</strong>檢查是否包含 <code>BEGIN:VCALENDAR / END:VCALENDAR</code> 與時區標頭（<code>VTIMEZONE</code>）。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>支援秒錶模式（倒數結束後自動迴圈或播放音效）。</li>
+      <li>新增「結束時間」欄位，讓使用者自訂非 25 分鐘的時長。</li>
+      <li>加入「倒數完成時建立通知」（Notification API）。</li>
+      <li>自動偵測使用者時區，或提供 TZID 選單。</li>
+    </ol>
+  </section>
+</main>
+
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+<script>
+  // 複製按鈕（Clipboard API + 後援方案）
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(btn){
+      const id = btn.dataset.copy;
+      const el = document.getElementById(id);
+      if(!el) return;
+      const text = el.textContent;
+      try{ await navigator.clipboard.writeText(text); showToast('已複製到剪貼簿'); }
+      catch{
+        const ta=document.createElement('textarea');
+        ta.value=text; document.body.appendChild(ta); ta.select();
+        document.execCommand('copy'); document.body.removeChild(ta);
+        showToast('已複製到剪貼簿');
+      }
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);} 
+</script>
+</body>
+</html>

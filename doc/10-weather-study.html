@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>教學｜天氣卡（單檔版）詳細解說</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+<style>
+  :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;line-height:1.65}
+  header{position:sticky;top:0;background:#ffffffcc;backdrop-filter:blur(8px);border-bottom:1px solid var(--line);z-index:10}
+  .container{max-width:1000px;margin:auto;padding:14px 16px}
+  h1{margin:0;font-size:clamp(20px,3.2vw,30px)}
+  h2{margin:18px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:16px;margin:14px 0}
+  .badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#eef2ff;color:#1e3a8a;font-size:12px}
+  .muted{color:var(--muted)}
+  .codeblock{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .codehead{display:flex;align-items:center;justify-content:space-between;background:#f3f4f6;border-bottom:1px solid var(--line);padding:8px 10px}
+  .codehead .title{font-weight:700}
+  .btn{padding:6px 10px;border:0;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer}
+  .btn:active{transform:translateY(1px)}
+  pre{margin:0;max-height:70vh;overflow:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111827;color:#fff;padding:10px 14px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s ease}
+  .toast.show{opacity:1}
+  ul.list,ol.list{padding-left:1.25em;margin:6px 0}
+  kbd{background:#eef2ff;border:1px solid #c7d2fe;border-radius:6px;padding:1px 6px;font-family:"Courier New",monospace}
+  code, pre code {font-family:"Courier New",monospace}
+</style>
+</head>
+<body>
+<header>
+  <div class="container">
+    <h1>教學｜天氣卡（單檔版）詳細解說 <span class="badge">HTML / CSS / JS</span></h1>
+  </div>
+</header>
+
+<main class="container">
+  <!-- 導覽 -->
+  <section class="card">
+    <h2>導覽</h2>
+    <p>本教學示範如何用 <strong>HTML（超文字標記語言，定義網頁結構）</strong>、<strong>CSS（層疊樣式表，設定外觀）</strong>、<strong>JavaScript（用來控制網頁互動的程式語言）</strong> 做出一張可查詢城市天氣的「天氣卡」。資料來源使用 <strong>API（應用程式介面，對外提供資料/功能的服務）</strong>，透過 <strong>fetch（以 HTTP 取資料的 Web API）</strong> 取得 <strong>JSON（資料交換格式，長得像物件/陣列的字串）</strong>，再把資料渲染（render，把資料變成畫面）到頁面。</p>
+  </section>
+
+  <!-- 整體結構概觀 -->
+  <section class="card">
+    <h2>整體結構概觀</h2>
+    <p>單檔版（把 HTML/CSS/JS 寫在同一檔）適合入門與演示，瀏覽器（browser，顯示網頁的應用程式）直接開啟就能執行。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">檔案骨架</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-skeleton">複製</button>
+        </div>
+      </div>
+<pre><code id="code-skeleton" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt; &lt;!-- UTF-8（萬國碼，支援多語系） --&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt; &lt;!-- 行動裝置可視區 --&gt;
+  &lt;title&gt;天氣卡（單檔版）&lt;/title&gt;
+  &lt;style&gt;/* 這裡放 CSS */&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;wx&quot;&gt;...&lt;/div&gt;
+  &lt;script&gt;/* 這裡放 JS */&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+    <p class="muted">重點：<code>&lt;style&gt;</code> 與 <code>&lt;script&gt;</code> 內嵌（inline）最簡單；之後可改「三檔分離」。</p>
+  </section>
+
+  <!-- HTML 元素解說 -->
+  <section class="card">
+    <h2>HTML 元素解說</h2>
+    <p>介面包含：城市輸入框（<code>&lt;input&gt;</code>）、查詢按鈕（<code>&lt;button&gt;</code>）、結果區（<code>&lt;div id="out"&gt;</code>）。每個元素有對應的 <strong>id（識別碼，頁面唯一）</strong> 以便 JS 取得。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">重點 HTML</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-html">複製</button>
+        </div>
+      </div>
+<pre><code id="code-html" class="language-html">&lt;div class=&quot;card&quot; id=&quot;wx&quot;&gt;
+  &lt;div class=&quot;row&quot;&gt;
+    &lt;input id=&quot;q&quot; placeholder=&quot;輸入城市：Taipei&quot; style=&quot;flex:1&quot;&gt;
+    &lt;button id=&quot;go&quot;&gt;查詢&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;div id=&quot;out&quot; style=&quot;margin-top:8px&quot;&gt;&lt;div class=&quot;skel&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;div style=&quot;font-size:12px;color:var(--muted);margin-top:6px&quot;&gt;示例來源：wttr.in JSON&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+    <ul class="list">
+      <li><code>#q</code>：輸入城市名稱；預設提示文字用 <code>placeholder</code>。</li>
+      <li><code>#go</code>：按下觸發查詢。</li>
+      <li><code>#out</code>：顯示天氣資訊；預設先顯示骨架載入（skeleton）。</li>
+    </ul>
+  </section>
+
+  <!-- CSS 版面設計 -->
+  <section class="card">
+    <h2>CSS 版面設計</h2>
+    <p>視覺走卡片（card）與乾淨留白。使用 <strong>CSS 變數（自訂屬性，重複使用顏色/間距）</strong>、<strong>Flex（彈性排版）</strong>，並設計了一個簡單的骨架載入動畫（用 <code>@keyframes</code>）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">關鍵 CSS</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-css">複製</button>
+        </div>
+      </div>
+<pre><code id="code-css" class="language-css">:root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--fg);font-family:system-ui,"Noto Sans TC",sans-serif}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:24px 28px;width:min(420px,92vw)}
+.row{display:flex;gap:8px}
+input,button{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+button{background:var(--accent);color:#fff;border-color:transparent;cursor:pointer}
+.skel{height:24px;border-radius:8px;background:linear-gradient(90deg,#f3f4f6,#e5e7eb,#f3f4f6);background-size:200% 100%;animation:sh 1.2s infinite}
+@keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}</code></pre>
+    </div>
+    <p class="muted">技巧：<code>place-items:center</code> 讓整頁置中；<code>width:min(420px,92vw)</code> 讓卡片在手機也好看。</p>
+  </section>
+
+  <!-- JavaScript 邏輯 -->
+  <section class="card">
+    <h2>JavaScript 邏輯</h2>
+    <p>核心流程：1) 取得節點 → 2) 取得資料（<code>fetch</code>）→ 3) 解析 <code>JSON</code> → 4) 渲染結果。這裡使用 <strong>IIFE（Immediately Invoked Function Expression，立即執行函式）</strong> 包住變數，避免汙染全域（global）。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">初始化與工具函式</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-init">複製</button>
+        </div>
+      </div>
+<pre><code id="code-js-init" class="language-js">(()=>{                      // IIFE
+  const r=document.getElementById('wx');
+  const $=q=>r.querySelector(q); // 只在卡片內查找元素
+</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">撈資料（fetch + async/await）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-fetch">複製</button>
+        </div>
+      </div>
+<pre><code id="code-js-fetch" class="language-js">  async function get(city){
+    const url = `https://wttr.in/${encodeURIComponent(city)}?format=j1`;
+    const res = await fetch(url);                 // fetch（以 HTTP 取資料）
+    if(!res.ok) throw new Error('API');           // 狀態碼非 2xx 視為錯誤
+    return res.json();                            // 解析為 JSON 物件
+  }</code></pre>
+    </div>
+
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">渲染結果（render）</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-render">複製</button>
+        </div>
+      </div>
+<pre><code id="code-js-render" class="language-js">  async function query(){
+    const c = $('#q').value.trim() || 'Taipei';
+    $('#out').innerHTML = '&lt;div class="skel"&gt;&lt;/div&gt;'; // 骨架載入
+    try{
+      const d = await get(c);
+      const cur = d.current_condition?.[0];
+      const area = d.nearest_area?.[0]?.areaName?.[0]?.value || c; // 可選鏈（optional chaining）
+      $('#out').innerHTML =
+        `&lt;div style="font-size:26px;font-weight:800"&gt;${area}&lt;/div&gt;`+
+        `&lt;div style="font-size:38px;font-weight:900"&gt;${cur.temp_C}°C&lt;/div&gt;`+
+        `&lt;div&gt;${cur.weatherDesc?.[0]?.value||''}&lt;/div&gt;`;
+    }catch{
+      $('#out').textContent = '查詢失敗';
+    }
+  }</code></pre>
+    </div>
+  </section>
+
+  <!-- 事件綁定 -->
+  <section class="card">
+    <h2>事件綁定</h2>
+    <p>把查詢按鈕點擊（<strong>click 事件</strong>）與輸入框按下 Enter（<strong>keydown 事件</strong>）都導向同一個 <code>query()</code>，讓體驗一致。</p>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">事件綁定與啟動</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-js-events">複製</button>
+        </div>
+      </div>
+<pre><code id="code-js-events" class="language-js">  $('#go').addEventListener('click', query);
+  $('#q').addEventListener('keydown', e => { if(e.key === 'Enter') query(); });
+  query(); // 頁面載入先查一次預設城市
+})();</code></pre>
+    </div>
+    <p class="muted">提醒：<code>encodeURIComponent</code> 可避免「台北市」這種含空白/非英文字元組成的 URL 出錯。</p>
+  </section>
+
+  <!-- 完整流程 -->
+  <section class="card">
+    <h2>完整流程</h2>
+    <ol class="list">
+      <li>使用者輸入城市 → 按下 <kbd>Enter</kbd> 或「查詢」。</li>
+      <li>顯示骨架載入 → 發送 <code>fetch</code> 請求至 wttr.in。</li>
+      <li>收到 <code>JSON</code> → 解析目前天氣（溫度、文字描述）與地區名稱。</li>
+      <li>將資料透過 <code>innerHTML</code> 渲染到 <code>#out</code>。</li>
+      <li>若錯誤（網路、API 格式變動），顯示「查詢失敗」。</li>
+    </ol>
+  </section>
+
+  <!-- 常見錯誤 -->
+  <section class="card">
+    <h2>常見錯誤</h2>
+    <ul class="list">
+      <li><strong>查無結果：</strong>城市拼錯或 API 限制；改輸入英文城市名測試。</li>
+      <li><strong>「查詢失敗」：</strong>網路中斷、<code>res.ok</code> 為 <code>false</code>、或跨來源（CORS，瀏覽器的同源安全限制）問題。</li>
+      <li><strong>顯示 <code>undefined</code>：</strong>API 欄位變動；使用可選鏈 <code>?.</code> 並提供預設值。</li>
+      <li><strong>中文字亂碼：</strong>請確認 <code>&lt;meta charset="UTF-8"&gt;</code>。</li>
+    </ul>
+  </section>
+
+  <!-- 挑戰與延伸 -->
+  <section class="card">
+    <h2>挑戰與延伸</h2>
+    <ol class="list">
+      <li>顯示最高/最低溫、體感溫度、風速；搭配單位切換（°C/°F）。</li>
+      <li>新增「最近查詢」功能，保存在 <strong>localStorage（瀏覽器提供的本地儲存空間）</strong>。</li>
+      <li>根據天氣狀況切換圖示（icon）或背景色。</li>
+      <li>加上「定位查詢」（<strong>Geolocation API（地理位置介面）</strong>），自動帶入所在城市。</li>
+      <li>把單檔改成「三檔分離」，學會 <code>&lt;link&gt;</code> 與 <code>defer（延後執行）</code> 的載入差異。</li>
+    </ol>
+  </section>
+
+  <!-- 完整可執行單檔（整合版） -->
+  <section class="card">
+    <h2>完整可執行（單檔整合版）</h2>
+    <div class="muted">把下方程式碼另存為 <code>weather-single.html</code>，直接開啟即可。</div>
+    <div class="codeblock" style="margin-top:10px">
+      <div class="codehead">
+        <div class="title">weather-single.html</div>
+        <div class="btns">
+          <button class="btn copybtn" data-copy="code-full">複製</button>
+        </div>
+      </div>
+<pre><code id="code-full" class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;zh-Hant&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot;&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+  &lt;title&gt;天氣卡（單檔版）&lt;/title&gt;
+  &lt;style&gt;
+    :root{--bg:#fafafa;--card:#fff;--fg:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#2563eb}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--fg);font-family:system-ui,&quot;Noto Sans TC&quot;,sans-serif}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.08);padding:24px 28px;width:min(420px,92vw)}
+    .row{display:flex;gap:8px}
+    input,button{padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--fg)}
+    button{background:var(--accent);color:#fff;border-color:transparent;cursor:pointer}
+    .skel{height:24px;border-radius:8px;background:linear-gradient(90deg,#f3f4f6,#e5e7eb,#f3f4f6);background-size:200% 100%;animation:sh 1.2s infinite}
+    @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class=&quot;card&quot; id=&quot;wx&quot;&gt;
+    &lt;div class=&quot;row&quot;&gt;
+      &lt;input id=&quot;q&quot; placeholder=&quot;輸入城市：Taipei&quot; style=&quot;flex:1&quot;&gt;
+      &lt;button id=&quot;go&quot;&gt;查詢&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;out&quot; style=&quot;margin-top:8px&quot;&gt;&lt;div class=&quot;skel&quot;&gt;&lt;/div&gt;&lt;/div&gt;
+    &lt;div style=&quot;font-size:12px;color:var(--muted);margin-top:6px&quot;&gt;示例來源：wttr.in JSON&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    (()=&gt;{
+      const r=document.getElementById('wx');
+      const $=q=&gt;r.querySelector(q);
+
+      async function get(city){
+        const res = await fetch(`https://wttr.in/${encodeURIComponent(city)}?format=j1`);
+        if(!res.ok) throw new Error('API');
+        return res.json();
+      }
+
+      async function query(){
+        const c = $('#q').value.trim()||'Taipei';
+        $('#out').innerHTML = '&lt;div class=&quot;skel&quot;&gt;&lt;/div&gt;';
+        try{
+          const d = await get(c);
+          const cur = d.current_condition?.[0];
+          const area = d.nearest_area?.[0]?.areaName?.[0]?.value || c;
+          $('#out').innerHTML =
+            `&lt;div style=&quot;font-size:26px;font-weight:800&quot;&gt;${area}&lt;/div&gt;`+
+            `&lt;div style=&quot;font-size:38px;font-weight:900&quot;&gt;${cur.temp_C}°C&lt;/div&gt;`+
+            `&lt;div&gt;${cur.weatherDesc?.[0]?.value||''}&lt;/div&gt;`;
+        }catch{
+          $('#out').textContent = '查詢失敗';
+        }
+      }
+
+      document.getElementById('go').addEventListener('click', query);
+      document.getElementById('q').addEventListener('keydown', e=&gt;{ if(e.key==='Enter') query(); });
+      query();
+    })();
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </div>
+  </section>
+</main>
+
+<!-- Toast -->
+<div id="toast" class="toast">已複製到剪貼簿</div>
+
+<!-- Prism -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<!-- Copy 按鈕 -->
+<script>
+  document.addEventListener('click', async (e)=>{
+    const btn = e.target.closest('.copybtn');
+    if(!btn) return;
+    const id = btn.dataset.copy;
+    const el = document.getElementById(id);
+    if(!el) return;
+    const text = el.textContent;
+    try{
+      await navigator.clipboard.writeText(text); // Clipboard API（剪貼簿）
+      showToast('已複製到剪貼簿');
+    }catch{
+      const ta=document.createElement('textarea');
+      ta.value=text; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('已複製到剪貼簿');
+    }
+  }, {passive:true});
+  const toast=document.getElementById('toast');
+  function showToast(msg){toast.textContent=msg;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1100);}
+</script>
+</body>
+</html>
