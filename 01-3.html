@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Google 表單送出不轉跳</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>表單填寫</h1>
+
+    <!-- 隱藏 iframe，接收 Google 回應 -->
+    <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+    <form id="myForm"
+          action="https://docs.google.com/forms/d/e/1FAIpQLScAgIczOq-iYpS6AtdSs2piUXfOggQJS5M3F-bKQluSvQK5mQ/formResponse"
+          method="POST"
+          target="hidden_iframe"
+          onsubmit="handleFormSubmit(event)">
+
+        <label>姓名：</label>
+        <input name="entry.1956658542" type="text" required><br>
+
+        <label>性別：</label>
+        <select name="entry.1017185803" required>
+            <option value="">請選擇</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+            <option value="其他">其他</option>
+        </select><br>
+
+        <label>年齡：</label>
+        <input name="entry.112581059" type="text" required><br>
+
+        <label>電話：</label>
+        <input name="entry.1904384187" type="text" required><br>
+
+        <label>喜歡顏色：</label>
+        <select name="entry.1272817813" required>
+            <option value="">請選擇</option>
+            <option value="紅色">紅色</option>
+            <option value="橙色">橙色</option>
+            <option value="黃色">黃色</option>
+            <option value="綠色">綠色</option>
+            <option value="藍色">藍色</option>
+            <option value="紫色">紫色</option>
+            <option value="粉紅色">粉紅色</option>
+            <option value="黑色">黑色</option>
+            <option value="白色">白色</option>
+            <option value="灰色">灰色</option>
+            <option value="棕色">棕色</option>
+            <option value="其他">其他</option>
+        </select><br>
+
+        <button type="submit">送出</button>
+    </form>
+
+    <div class="message" id="message">已送出，謝謝您的填寫！</div>
+    <button class="reset-button" id="resetButton" style="display:none;">重新填寫</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
