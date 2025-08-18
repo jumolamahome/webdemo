@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
   A([開始：是否有舊制證照？])
 
