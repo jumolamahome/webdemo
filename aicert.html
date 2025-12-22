@@ -8,6 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- html2canvas & jsPDF for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         
@@ -40,9 +43,55 @@
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Certificate Styling for PDF Capture */
+        #certificate-template {
+            position: absolute;
+            left: -9999px;
+            top: -9999px;
+            width: 800px;
+            height: 600px;
+            background: white;
+            padding: 40px;
+            border: 20px solid #1e293b;
+            text-align: center;
+            color: #1e293b;
+        }
+        .cert-inner {
+            border: 2px solid #e2e8f0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+
+    <!-- Hidden Certificate Template -->
+    <div id="certificate-template">
+        <div class="cert-inner">
+            <h3 style="font-size: 24px; margin-bottom: 10px; color: #64748b; letter-spacing: 4px;">CERTIFICATE OF COMPLETION</h3>
+            <h1 style="font-size: 48px; margin-bottom: 20px; font-weight: 900;">企業級 AI 行銷職能認證</h1>
+            <p style="font-size: 20px; color: #64748b; margin-bottom: 40px;">謹此證明</p>
+            <h2 id="cert-user-name" style="font-size: 42px; margin-bottom: 20px; text-decoration: underline;">使用者姓名</h2>
+            <p style="font-size: 18px; line-height: 1.6; max-width: 500px; margin-bottom: 40px;">
+                成功通過認證考試，展現了其在 AI 基礎概念、技術核心、系統架構、應用實務及策略倫理等全方位 AI 行銷領域的專業職能。
+            </p>
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 20px;">
+                <div style="text-align: left;">
+                    <p style="font-size: 14px; color: #94a3b8;">認證日期：<span id="cert-date">2023-01-01</span></p>
+                    <p style="font-size: 14px; color: #94a3b8;">證書編號：<span id="cert-id">AI-2023-XXXX</span></p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 16px; font-weight: bold;">認證總分：<span id="cert-score">0</span> 分</p>
+                    <p style="font-size: 14px; color: #64748b; border-top: 1px solid #1e293b; margin-top: 5px; padding-top: 5px;">認證中心負責人簽署</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="app" class="flex-grow flex flex-col">
         <!-- 內容將由 JavaScript 動態渲染 -->
@@ -84,7 +133,7 @@
             { id: 502, level: "L5", question: "歐盟 AI 法案 (EU AI Act) 主要採用哪種方式來規範 AI？", A: "全面禁止 AI", B: "基於風險的分級管理", C: "只規範軍事用途", D: "放任市場自由發展", ans: "B" },
             { id: 503, level: "L5", question: "企業導入 AI 轉型時，最常見的失敗原因通常是？", A: "選錯演算法", B: "缺乏明確商業目標與文化變革", C: "電腦不夠快", D: "沒有使用雲端", ans: "B" },
             { id: 504, level: "L5", question: "負責任的 AI (Responsible AI) 強調要消除數據中的什麼？", A: "所有數字", B: "偏見 (Bias) 與歧視", C: "標點符號", D: "重複內容", ans: "B" },
-            { id: 505, level: "L5", question: "AI 在未來職場中被視為『賦能』工具，這意味著？", A: "人類將停止思考", B: "協助人類提升效率與創造力", C: "AI 將統治人類", D: "所有工作都將消失", ans: "B" }
+            { id: 505, level: "L5", question: "AI 在未來職場中被視為『賦能』工具，這意味著？", A: "人類將思考能力授權給 AI", B: "協助人類提升效率與創造力", C: "AI 將完全取代人類決策", D: "所有工作都將由 AI 完成", ans: "B" }
         ];
 
         // --- 應用程式狀態 ---
@@ -178,6 +227,38 @@
             clearInterval(state.timerInterval);
             state.view = 'result';
             render();
+        }
+
+        function downloadPDF(score) {
+            const btn = document.getElementById('download-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '正在生成證書...';
+            btn.disabled = true;
+
+            // Update template data
+            document.getElementById('cert-user-name').innerText = state.userName;
+            document.getElementById('cert-score').innerText = score;
+            const now = new Date();
+            document.getElementById('cert-date').innerText = now.toISOString().split('T')[0];
+            document.getElementById('cert-id').innerText = 'CERT-' + now.getTime().toString().slice(-8).toUpperCase();
+
+            const cert = document.getElementById('certificate-template');
+            
+            html2canvas(cert, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('landscape', 'px', [800, 600]);
+                pdf.addImage(imgData, 'PNG', 0, 0, 800, 600);
+                pdf.save(`AI_Certification_${state.userName}.pdf`);
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                alert('證書生成失敗，請稍後再試。');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
         }
 
         // --- 渲染函數 ---
@@ -344,6 +425,14 @@
                                 </div>
                             </div>
                         </div>
+
+                        ${isPass ? `
+                        <div class="fade-in">
+                            <button id="download-btn" onclick="downloadPDF(${score})" class="w-full bg-white text-emerald-600 border-2 border-emerald-600 hover:bg-emerald-50 font-black py-4 rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 text-xl">
+                                📄 下載電子認證證書 (PDF)
+                            </button>
+                        </div>
+                        ` : ''}
 
                         <div class="grid md:grid-cols-2 gap-8">
                             <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
