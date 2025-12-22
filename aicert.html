@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 職能模擬測驗系統</title>
+    <title>AI 職能測驗系統</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -38,7 +38,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 隱藏捲軸但保持功能 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -50,28 +49,48 @@
     </div>
 
     <script>
-        // --- 完整題庫數據 ---
+        // --- 內嵌入題庫 (硬編碼於 HTML) ---
         const QUESTION_BANK = [
-            { id: 1, level: "L1", question: "在 AI 專案管理中，定義問題的階段通常在哪個環節？", A: "專案啟動", B: "數據清理", C: "模型部署", D: "模型優化", ans: "A" },
-            { id: 2, level: "L1", question: "機器學習中，標記數據 (Labeled Data) 主要用於哪種學習方式？", A: "非監督式學習", B: "監督式學習", C: "強化學習", D: "半監督式學習", ans: "B" },
-            { id: 3, level: "L1", question: "下列何者屬於生成式 AI (AIGC) 的典型應用？", A: "基於規則的加法運算", B: "依據提示詞生成圖像", C: "讀取條碼資訊", D: "固定程序的自動化操作", ans: "B" },
-            { id: 4, level: "L2", question: "在神經網路中，『權重』的主要作用是什麼？", A: "決定學習率", B: "調節輸入信號的重要性", C: "定義神經元數量", D: "儲存模型架構", ans: "B" },
-            { id: 5, level: "L2", question: "『過擬合』 (Overfitting) 最主要的特徵是？", A: "訓練集表現差，測試集表現好", B: "訓練集表現好，測試集表現差", C: "模型運算速度過快", D: "數據標籤錯誤", ans: "B" },
-            { id: 6, level: "L2", question: "下列哪種技術最常用於處理圖像數據？", A: "RNN", B: "CNN (卷積神經網路)", C: "線性回歸", D: "決策樹", ans: "B" },
-            { id: 7, level: "L3", question: "建立 Data Pipeline 的主要目的是？", A: "減少存儲空間", B: "確保數據流轉的自動化與穩定性", C: "防止病毒入侵", D: "取代所有的人工決策", ans: "B" },
-            { id: 8, level: "L3", question: "關於 RAG (檢索增強生成)，其核心價值在於？", A: "優化翻譯能力", B: "透過外部知識庫輔助生成精確內容", C: "減少模型參數", D: "提高運行頻率", ans: "B" },
-            { id: 9, level: "L3", question: "向量資料庫 (Vector Database) 適合處理什麼？", A: "傳統關聯式表格", B: "高維度數據的相似度檢索", C: "簡單加減計算", D: "靜態網頁存儲", ans: "B" },
-            { id: 10, level: "L4", question: "評估模型性能時，若正負樣本極度不均，應參考哪項指標？", A: "Accuracy (準確率)", B: "F1-Score (F1 分數)", C: "Latency (延遲)", D: "Loss (損失函數)", ans: "B" },
-            { id: 11, level: "L4", question: "LLM 的微調 (Fine-tuning) 是指？", A: "修改提示詞", B: "在特定數據上進一步訓練模型權重", C: "增加記憶體", D: "更換開發語言", ans: "B" },
-            { id: 12, level: "L4", question: "下列何者描述了 Prompt Engineering 的核心？", A: "撰寫 C++ 代碼", B: "設計優質提示詞以獲得更好的輸出", C: "優化 GPU 算力", D: "清理緩存數據", ans: "B" },
-            { id: 13, level: "L5", question: "AI 倫理中的『可解釋性』是指？", A: "代碼是否公開", B: "人類是否能理解模型做出判斷的原因", C: "運行時是否耗電", D: "文本是否通順", ans: "B" },
-            { id: 14, level: "L5", question: "在企業數位轉型中，AI 最適合扮演什麼角色？", A: "取代人類決策", B: "作為提升效率與創造價值的賦能引擎", C: "單純成本支出", D: "臨時性宣傳", ans: "B" },
-            { id: 15, level: "L5", question: "面對生成式 AI 興起，人才最重要的能力是？", A: "背誦代碼", B: "問題定義與批判性思考能力", C: "數據輸入速度", D: "硬體維護", ans: "B" }
+            // L1: 基礎概念
+            { id: 101, level: "L1", question: "在 AI 專案週期中，定義問題 (Problem Definition) 通常發生在哪個階段？", A: "專案啟動前", B: "模型訓練後", C: "資料清理時", D: "部署上線後", ans: "A" },
+            { id: 102, level: "L1", question: "下列何者是監督式學習 (Supervised Learning) 的必要條件？", A: "獎勵機制", B: "標註過的資料 (Labeled Data)", C: "生成對抗網絡", D: "未標註的原始數據", ans: "B" },
+            { id: 103, level: "L1", question: "機器學習中的『特徵 (Feature)』是指什麼？", A: "模型的價格", B: "數據的輸入屬性", C: "輸出的預測結果", D: "電腦的硬體規格", ans: "B" },
+            { id: 104, level: "L1", question: "什麼是『訓練集 (Training Set)』的主要用途？", A: "測試模型最終效能", B: "讓模型學習參數與規律", C: "驗證超參數", D: "儲存使用者資料", ans: "B" },
+            { id: 105, level: "L1", question: "人工智慧 (AI)、機器學習 (ML) 與深度學習 (DL) 的包含關係為何？", A: "DL ⊂ ML ⊂ AI", B: "AI ⊂ ML ⊂ DL", C: "ML ⊂ AI ⊂ DL", D: "三者無關", ans: "A" },
+            
+            // L2: 技術核心
+            { id: 201, level: "L2", question: "在類神經網絡中，Activation Function (激活函數) 的主要功能為何？", A: "引入非線性特性", B: "減少計算量", C: "儲存權重", D: "增加資料維度", ans: "A" },
+            { id: 202, level: "L2", question: "若模型發生 Overfitting (過擬合)，下列哪種處理方式最合適？", A: "增加模型複雜度", B: "減少訓練資料", C: "使用 Regularization (正規化)", D: "增加學習率", ans: "C" },
+            { id: 203, level: "L2", question: "CNN (卷積神經網絡) 最常被應用於哪類任務？", A: "股票預測", B: "圖像識別", C: "語音合成", D: "推薦系統", ans: "B" },
+            { id: 204, level: "L2", question: "下列哪個指標最適合評估類別分布不平衡 (Imbalanced) 的分類模型？", A: "Accuracy", B: "F1-Score", C: "MSE", D: "R-Squared", ans: "B" },
+            { id: 205, level: "L2", question: "Transformer 架構中的『Self-Attention』機制主要解決了什麼問題？", A: "圖像像素過多", B: "長序列依賴與平行運算", C: "梯度消失", D: "儲存空間不足", ans: "B" },
+
+            // L3: 系統架構
+            { id: 301, level: "L3", question: "在 MLOps 中，Model Registry 的主要用途是什麼？", A: "版本化管理模型", B: "監控 GPU 溫度", C: "清洗原始數據", D: "生成前端網頁", ans: "A" },
+            { id: 302, level: "L3", question: "RAG (檢索增強生成) 架構通常需要搭配哪種資料庫？", A: "關聯式資料庫", B: "向量資料庫 (Vector DB)", C: "鍵值資料庫", D: "圖形資料庫", ans: "B" },
+            { id: 303, level: "L3", question: "資料管線 (Data Pipeline) 中的 ETL 代表什麼？", A: "Extract, Transform, Load", B: "Evaluate, Test, Launch", C: "Edit, Type, Log", D: "Energy, Time, Level", ans: "A" },
+            { id: 304, level: "L3", question: "部署模型時，使用 Container (如 Docker) 的主要優勢為何？", A: "提升運算速度", B: "環境一致性與可移植性", C: "自動生成代碼", D: "降低雲端費用", ans: "B" },
+            { id: 305, level: "L3", question: "API Gateway 在 AI 微服務架構中的角色為何？", A: "訓練模型", B: "統一入口與流量管理", C: "儲存數據", D: "繪製圖表", ans: "B" },
+
+            // L4: 應用實務
+            { id: 401, level: "L4", question: "微調 (Fine-tuning) LLM 時，PEFT 技術的優點是？", A: "需要更多顯卡記憶體", B: "只更新少量參數，降低訓練成本", C: "會降低模型準確度", D: "只能用於圖像模型", ans: "B" },
+            { id: 402, level: "L4", question: "在推薦系統中，冷啟動 (Cold Start) 問題是指？", A: "伺服器過熱", B: "新用戶或新商品缺乏歷史數據", C: "模型訓練時間過長", D: "網路延遲過高", ans: "B" },
+            { id: 403, level: "L4", question: "使用 Prompt Engineering 優化輸出時，『Chain-of-Thought』是指？", A: "連續提問", B: "引導模型逐步推理出答案", C: "限制回答長度", D: "翻譯成多種語言", ans: "B" },
+            { id: 404, level: "L4", question: "在自動化客服中，Intent Classification (意圖分類) 的目的是？", A: "判斷用戶的情緒", B: "識別用戶想要執行的動作", C: "生成隨機回應", D: "記錄通話時間", ans: "B" },
+            { id: 405, level: "L4", question: "A/B Testing 在 AI 產品迭代中的作用是？", A: "同時測試兩個模型以比較表現", B: "檢查程式碼錯誤", C: "節省伺服器成本", D: "備份資料庫", ans: "A" },
+
+            // L5: 策略與倫理
+            { id: 501, level: "L5", question: "AI 治理 (AI Governance) 中的『可解釋性』為何重要？", A: "為了讓電腦跑得更快", B: "建立信任並符合法規監管需求", C: "減少硬體成本", D: "增加模型複雜度", ans: "B" },
+            { id: 502, level: "L5", question: "歐盟 AI 法案 (EU AI Act) 主要採用哪種方式來規範 AI？", A: "全面禁止 AI", B: "基於風險的分級管理", C: "只規範軍事用途", D: "放任市場自由發展", ans: "B" },
+            { id: 503, level: "L5", question: "企業導入 AI 轉型時，最常見的失敗原因通常是？", A: "選錯演算法", B: "缺乏明確商業目標與文化變革", C: "電腦不夠快", D: "沒有使用雲端", ans: "B" },
+            { id: 504, level: "L5", question: "負責任的 AI (Responsible AI) 強調要消除數據中的什麼？", A: "所有數字", B: "偏見 (Bias) 與歧視", C: "標點符號", D: "重複內容", ans: "B" },
+            { id: 505, level: "L5", question: "AI 在未來職場中被視為『賦能』工具，這意味著？", A: "人類將停止思考", B: "協助人類提升效率與創造力", C: "AI 將統治人類", D: "所有工作都將消失", ans: "B" }
         ];
 
         // --- 應用程式狀態 ---
         let state = {
-            view: 'home', // home, quiz, result
+            view: 'login', // login, home, quiz, result
+            userName: '',
             questions: [],
             currentIndex: 0,
             answers: {},
@@ -82,18 +101,39 @@
 
         const appContainer = document.getElementById('app');
 
-        // --- 核心函數 ---
+        // --- 流程控制 ---
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('login-name').value;
+            if (nameInput.trim() === '') {
+                alert('請輸入姓名');
+                return;
+            }
+            state.userName = nameInput;
+            state.view = 'home';
+            render();
+        }
 
         function startExam() {
-            // 隨機抽題邏輯：L1-L5 各隨機選 2 題
+            // 隨機抽題：L1-L5 各抽 2 題
             const selected = [];
-            ['L1', 'L2', 'L3', 'L4', 'L5'].forEach(lv => {
+            const levels = ['L1', 'L2', 'L3', 'L4', 'L5'];
+            
+            levels.forEach(lv => {
                 const pool = QUESTION_BANK.filter(q => q.level === lv);
                 const shuffled = pool.sort(() => Math.random() - 0.5);
                 selected.push(...shuffled.slice(0, 2));
             });
+
+            // 如果題庫不足 10 題 (防呆)，隨機補足
+            if (selected.length < 10) {
+                const remaining = QUESTION_BANK.filter(q => !selected.includes(q));
+                const extra = remaining.sort(() => Math.random() - 0.5).slice(0, 10 - selected.length);
+                selected.push(...extra);
+            }
             
-            state.questions = selected.sort(() => Math.random() - 0.5);
+            state.questions = selected.sort(() => Math.random() - 0.5).slice(0, 10);
             state.answers = {};
             state.flags = {};
             state.currentIndex = 0;
@@ -126,13 +166,6 @@
         function selectAnswer(opt) {
             state.answers[state.currentIndex] = opt;
             render();
-            
-            // 檢查是否全部答完
-            if (Object.keys(state.answers).length === 10) {
-                setTimeout(() => {
-                    if (confirm("您已完成所有作答，是否現在交卷？")) submitExam();
-                }, 300);
-            }
         }
 
         function toggleFlag() {
@@ -141,37 +174,72 @@
         }
 
         function submitExam(isAuto = false) {
-            if (!isAuto && !confirm("確定要提交考卷結束測驗嗎？")) return;
+            if (!isAuto && !confirm("確定要提交考卷嗎？")) return;
             clearInterval(state.timerInterval);
             state.view = 'result';
             render();
         }
 
-        // --- 渲染視圖 ---
+        // --- 渲染函數 ---
 
         function render() {
             appContainer.innerHTML = '';
             
-            if (state.view === 'home') renderHome();
+            if (state.view === 'login') renderLogin();
+            else if (state.view === 'home') renderHome();
             else if (state.view === 'quiz') renderQuiz();
             else if (state.view === 'result') renderResult();
         }
 
-        function renderHome() {
+        function renderLogin() {
             const html = `
                 <div class="flex-grow flex items-center justify-center p-6">
-                    <div class="max-w-xl w-full bg-white rounded-3xl shadow-2xl p-10 text-center border border-slate-100 fade-in">
-                        <div class="w-20 h-20 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-8 transform rotate-3 text-blue-600">
-                            <span class="text-4xl">🏆</span>
+                    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border border-slate-100 fade-in text-center">
+                        <div class="text-6xl mb-6">🔑</div>
+                        <h1 class="text-2xl font-black text-slate-800 tracking-tight mb-2">測驗系統登入</h1>
+                        <p class="text-slate-400 text-sm mb-8">請輸入您的考生資訊</p>
+                        <form onsubmit="handleLogin(event)" class="space-y-6 text-left">
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">考生姓名</label>
+                                <input id="login-name" type="text" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="請輸入您的真實姓名">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-slate-700 mb-2">登入密碼</label>
+                                <input id="login-pwd" type="password" required class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="請輸入密碼">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-xl shadow-lg transition-all active:scale-95">
+                                確認登入
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+            appContainer.innerHTML = html;
+        }
+
+        function renderHome() {
+            const html = `
+                <div class="flex-grow flex flex-col items-center justify-center p-6">
+                    <header class="fixed top-0 w-full bg-white border-b px-6 py-4 flex justify-between items-center shadow-sm">
+                        <div class="font-black text-slate-800 flex items-center gap-2">
+                           <span class="text-blue-600">●</span> AI 職能系統
                         </div>
-                        <h1 class="text-3xl font-black text-slate-800 mb-4 tracking-tight">AI 職能認證模擬測驗</h1>
-                        <p class="text-slate-500 mb-10 leading-relaxed">
-                            這是一個專業的職能評量系統。<br/>
-                            我們將從五個維度隨機抽取 10 個題目。<br/>
-                            及格標準：<span class="text-blue-600 font-bold">70 分</span> | 限時：<span class="text-red-500 font-bold">30 分鐘</span>
+                        <div class="text-sm font-bold text-slate-500">考生：${state.userName}</div>
+                    </header>
+                    <div class="max-w-xl w-full bg-white rounded-3xl shadow-2xl p-10 text-center border border-slate-100 fade-in mt-16">
+                        <div class="w-20 h-20 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-8 text-indigo-600">
+                            <span class="text-4xl">📝</span>
+                        </div>
+                        <h1 class="text-3xl font-black text-slate-800 mb-4 tracking-tight">你好，${state.userName}</h1>
+                        <p class="text-slate-500 mb-10 leading-relaxed text-left px-4 bg-slate-50 py-6 rounded-2xl border border-slate-100">
+                            <strong class="text-slate-700 block mb-2 underline decoration-blue-500 decoration-2">測驗說明：</strong>
+                            • 題庫已加載：共 ${QUESTION_BANK.length} 題。<br/>
+                            • 系統隨機抽題：L1-L5 各抽 2 題，合計 10 題。<br/>
+                            • 及格標準：<span class="font-bold text-blue-600">70 分</span>。<br/>
+                            • 計時：<span class="font-bold text-red-500">30 分鐘</span>。
                         </p>
-                        <button onclick="startExam()" class="w-full bg-slate-900 hover:bg-black text-white font-bold py-5 rounded-2xl transition-all shadow-xl active:scale-95 flex items-center justify-center gap-2 text-xl">
-                            立即開始測驗 🚀
+                        <button onclick="startExam()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-5 rounded-2xl transition-all shadow-xl active:scale-95 text-xl">
+                            進入考試
                         </button>
                     </div>
                 </div>
@@ -186,7 +254,7 @@
                     <header class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-20 shadow-sm">
                         <div class="flex items-center gap-3">
                             <span class="bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-widest">${q.level}</span>
-                            <span class="font-bold text-slate-400 font-mono">Q${state.currentIndex + 1}/10</span>
+                            <div class="hidden md:block text-xs font-bold text-slate-400">考生：${state.userName}</div>
                         </div>
                         <div id="timer-text" class="px-4 py-1 rounded-full font-mono text-xl font-black bg-slate-50 text-slate-700">
                             ${formatTime(state.timeLeft)}
@@ -221,13 +289,24 @@
                                 </button>
                             `).join('')}
                         </div>
+
+                        ${state.currentIndex === 9 ? `
+                            <div class="fade-in mb-8">
+                                <button onclick="submitExam()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 text-xl">
+                                    ✅ 確認提交交卷
+                                </button>
+                            </div>
+                        ` : ''}
                     </main>
 
                     <footer class="bg-white border-t p-6 sticky bottom-0 z-20 shadow-lg">
-                        <div class="max-w-3xl mx-auto flex items-center justify-between">
-                            <button onclick="if(state.currentIndex > 0){state.currentIndex--; render();}" ${state.currentIndex === 0 ? 'disabled' : ''} class="px-5 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 disabled:opacity-20 transition-all">上一題</button>
-                            <button onclick="submitExam()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-black shadow-lg transition-all active:scale-95">提交交卷</button>
-                            <button onclick="if(state.currentIndex < 9){state.currentIndex++; render();}" ${state.currentIndex === 9 ? 'disabled' : ''} class="px-5 py-3 rounded-xl font-bold text-slate-400 hover:bg-slate-50 disabled:opacity-20 transition-all">下一題</button>
+                        <div class="max-w-3xl mx-auto flex items-center justify-between gap-4">
+                            <button onclick="if(state.currentIndex > 0){state.currentIndex--; render();}" ${state.currentIndex === 0 ? 'disabled' : ''} class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-4 rounded-xl font-black shadow-md disabled:opacity-20 transition-all flex items-center justify-center gap-2 border-b-4 border-indigo-900">
+                                ⬅ 上一題
+                            </button>
+                            <button onclick="if(state.currentIndex < 9){state.currentIndex++; render();}" ${state.currentIndex === 9 ? 'disabled' : ''} class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-4 rounded-xl font-black shadow-md disabled:opacity-20 transition-all flex items-center justify-center gap-2 border-b-4 border-indigo-900">
+                                下一題 ➡
+                            </button>
                         </div>
                     </footer>
                 </div>
@@ -239,9 +318,10 @@
             let score = 0;
             const levelStats = { L1: 0, L2: 0, L3: 0, L4: 0, L5: 0 };
             state.questions.forEach((q, i) => {
+                const lv = q.level;
                 if (state.answers[i] === q.ans) {
                     score += 10;
-                    levelStats[q.level]++;
+                    levelStats[lv]++;
                 }
             });
 
@@ -254,11 +334,12 @@
                         <div class="rounded-[2.5rem] p-10 md:p-12 text-white shadow-2xl relative overflow-hidden bg-${color}-600">
                             <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
                                 <div>
-                                    <h1 class="text-5xl font-black mb-4">${isPass ? '測驗及格' : '測驗不及格'}</h1>
-                                    <p class="text-lg opacity-80">您的得分為 <span class="font-bold underline">${score}</span> / 100 分</p>
+                                    <h1 class="text-4xl font-black mb-4">考生：${state.userName}</h1>
+                                    <h2 class="text-5xl font-black mb-2">${isPass ? '測驗及格' : '測驗不及格'}</h2>
+                                    <p class="text-lg opacity-80">及格標準：70 分 | 本次得分：${score}</p>
                                 </div>
                                 <div class="bg-white/20 px-8 py-6 rounded-3xl border border-white/30 backdrop-blur-sm">
-                                    <div class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">分值權重</div>
+                                    <div class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-1">Total Score</div>
                                     <div class="text-6xl font-black">${score}</div>
                                 </div>
                             </div>
@@ -266,41 +347,41 @@
 
                         <div class="grid md:grid-cols-2 gap-8">
                             <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                                <h3 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">📊 章節能力分布</h3>
+                                <h3 class="text-xl font-bold text-slate-800 mb-6 tracking-tight">📊 能力分佈雷達圖</h3>
                                 <div class="chart-container">
                                     <canvas id="radarCanvas"></canvas>
                                 </div>
                             </div>
 
-                            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between">
-                                <div>
-                                    <h3 class="text-xl font-bold text-slate-800 mb-6">主題掌握度</h3>
-                                    <div class="space-y-5">
-                                        ${Object.entries(levelStats).map(([lv, count]) => `
-                                            <div class="space-y-1">
-                                                <div class="flex justify-between text-[10px] font-black text-slate-400 tracking-widest uppercase">
-                                                    <span>${lv} 階段</span>
-                                                    <span>${count}/2</span>
-                                                </div>
-                                                <div class="h-3 bg-slate-50 rounded-full overflow-hidden p-0.5 shadow-inner">
-                                                    <div class="h-full rounded-full ${count === 2 ? 'bg-emerald-500' : count === 1 ? 'bg-blue-500' : 'bg-rose-400'}" style="width: ${(count / 2) * 100}%"></div>
-                                                </div>
+                            <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 space-y-6">
+                                <h3 class="text-xl font-bold text-slate-800 mb-2">章節數據統計</h3>
+                                <div class="space-y-5">
+                                    ${Object.entries(levelStats).map(([lv, count]) => `
+                                        <div class="space-y-1">
+                                            <div class="flex justify-between text-[10px] font-black text-slate-400 tracking-widest uppercase">
+                                                <span>${lv} 級別</span>
+                                                <span class="text-slate-700">${count}/2 正確</span>
                                             </div>
-                                        `).join('')}
-                                    </div>
+                                            <div class="h-2.5 bg-slate-50 rounded-full overflow-hidden p-0.5 shadow-inner border border-slate-100">
+                                                <div class="h-full rounded-full ${count === 2 ? 'bg-emerald-500' : count === 1 ? 'bg-indigo-500' : 'bg-rose-400'}" style="width: ${(count / 2) * 100}%"></div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
                                 </div>
-                                <button onclick="state.view = 'home'; render();" class="w-full mt-10 bg-slate-900 hover:bg-black text-white font-black py-4 rounded-2xl transition-all shadow-xl active:scale-95">重新測驗</button>
+                                <div class="pt-6 border-t border-slate-50 text-sm text-slate-400 font-medium italic">
+                                    分析：您在 ${Object.entries(levelStats).sort((a,b)=>a[1]-b[1])[0][0]} 階段仍有進步空間。
+                                </div>
                             </div>
                         </div>
 
                         <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
-                            <h3 class="text-xl font-bold text-slate-800 mb-6">答案快速校對</h3>
+                            <h3 class="text-xl font-bold text-slate-800 mb-6">答題詳細解析</h3>
                             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                                 ${state.questions.map((q, i) => `
                                     <div class="p-4 rounded-2xl border-2 flex flex-col items-center gap-1 ${state.answers[i] === q.ans ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-rose-50 border-rose-100 text-rose-600'}">
                                         <span class="text-[10px] font-black opacity-40 uppercase">Q${i+1}</span>
                                         <span class="text-xl font-black">${state.answers[i] === q.ans ? '✓' : '✗'}</span>
-                                        <span class="text-[10px] font-bold opacity-70">正確: ${q.ans}</span>
+                                        <span class="text-[10px] font-bold opacity-70">正確答案: ${q.ans}</span>
                                     </div>
                                 `).join('')}
                             </div>
@@ -310,20 +391,18 @@
             `;
             appContainer.innerHTML = html;
 
-            // 繪製雷達圖
             const ctx = document.getElementById('radarCanvas').getContext('2d');
             new Chart(ctx, {
                 type: 'radar',
                 data: {
                     labels: ['L1 基礎', 'L2 核心', 'L3 架構', 'L4 應用', 'L5 策略'],
                     datasets: [{
-                        label: '正確率',
+                        label: '得分率 %',
                         data: ['L1', 'L2', 'L3', 'L4', 'L5'].map(lv => (levelStats[lv] / 2) * 100),
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
                         borderWidth: 3,
-                        pointBackgroundColor: 'rgba(59, 130, 246, 1)',
-                        pointRadius: 4
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)'
                     }]
                 },
                 options: {
@@ -342,7 +421,7 @@
             });
         }
 
-        // 初始化
+        // 初始渲染
         render();
 
     </script>
