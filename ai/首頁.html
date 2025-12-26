@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首頁 | 企業級 AI 行銷職能認證</title>
+    <style>
+        /* 頁面專屬 CSS */
+        :root {
+            --primary-color: #0056b3;
+            --btn-blue: #1a5da6;
+            --btn-green: #4cae4c;
+            --btn-yellow: #eebc51; 
+            --btn-yellow-hover: #d4a540;
+            --text-color: #333;
+            --bg-light: #f4f7f6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; line-height: 1.6; color: var(--text-color); background-color: #fff; padding-top: 80px; }
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+        
+        /* 頁面切換控制 */
+        .view-section { display: none; animation: fadeIn 0.5s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* [HOME VIEW] 樣式 */
+        .values-section { background-color: #f8fbff; padding: 60px 0; text-align: center; }
+        .section-header-center { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 40px; }
+        .values-grid { display: flex; justify-content: center; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .value-card { background: #fff; border-radius: 10px; padding: 40px 20px; width: 300px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); text-align: center; }
+        .value-icon { font-size: 48px; margin-bottom: 20px; display: block; }
+
+        .info-split-section { max-width: 1200px; margin: 0 auto; padding: 60px 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
+        .info-title { font-size: 24px; color: #444; font-weight: bold; border-left: 5px solid var(--primary-color); padding-left: 15px; margin-bottom: 30px; }
+        .news-list li { padding: 15px 0; border-bottom: 1px solid #eee; display: flex; align-items: baseline; }
+        .news-date { color: #666; margin-right: 15px; font-family: monospace; font-size: 16px; }
+        
+        .exam-info-container { display: flex; gap: 20px; }
+        .exam-box { flex: 1; background-color: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 30px 20px; text-align: center; }
+        .exam-box h4 { font-size: 18px; margin-bottom: 20px; color: #333; }
+
+        .btn { display: inline-block; padding: 10px 25px; border-radius: 4px; color: #fff; font-size: 16px; cursor: pointer; border: none; transition: opacity 0.3s; }
+        .btn:hover { opacity: 0.9; }
+        .btn-blue { background-color: var(--btn-blue); }
+        .btn-green { background-color: var(--btn-green); }
+
+        .partners-section { background-color: #fff; padding: 50px 0; border-top: 1px solid #eee; margin-top: 20px; }
+        .partners-header { text-align: center; margin-bottom: 30px; }
+        .partners-header h2 { color: var(--primary-color); font-size: 28px; font-weight: bold; }
+        .marquee-container { width: 100%; overflow: hidden; white-space: nowrap; background: #fafafa; padding: 30px 0; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        .partner-logo { display: inline-block; height: 60px; width: 150px; background-color: #ddd; margin: 0 30px; vertical-align: middle; color: #666; line-height: 60px; text-align: center; border-radius: 4px; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* [EXAM LIST VIEW] 樣式 */
+        .exam-list-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
+        .exam-list-header { text-align: center; margin-bottom: 50px; }
+        .exam-list-header h2 { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: #333; }
+        .exam-list-header p { color: #666; font-size: 16px; }
+
+        .exam-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
+        
+        .exam-card-item { background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
+        .exam-card-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+        .card-img-placeholder { height: 150px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; position: relative; }
+        .card-icon { font-size: 40px; }
+        .card-badge { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 14px; }
+
+        .card-body { padding: 25px 20px; text-align: center; display: flex; flex-direction: column; flex-grow: 1; }
+        .card-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #333; }
+        .card-tag { display: inline-block; background-color: #333; color: #fff; padding: 4px 15px; border-radius: 20px; font-size: 13px; margin: 0 auto 20px auto; }
+        
+        .card-btn { margin-top: auto; display: block; width: 100%; padding: 12px 0; background-color: var(--btn-yellow); color: #fff; font-size: 16px; font-weight: bold; border-radius: 4px; transition: background 0.3s; }
+        .card-btn:hover { background-color: var(--btn-yellow-hover); }
+
+        /* RWD */
+        @media (max-width: 1024px) { .exam-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 768px) { .values-grid { flex-direction: column; align-items: center; } .info-split-section { grid-template-columns: 1fr; } .exam-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 480px) { .exam-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <div id="home-view" class="view-section active">
+        <section class="values-section">
+            <h2 class="section-header-center">認證核心價值</h2>
+            <div class="values-grid">
+                <div class="value-card"><span class="value-icon">🎓</span><h3>履歷加分</h3><p>提升職場競爭力</p></div>
+                <div class="value-card"><span class="value-icon">🏢</span><h3>企業採用</h3><p>業界廣泛認可</p></div>
+                <div class="value-card"><span class="value-icon">🛠️</span><h3>實務導向</h3><p>強調實際操作</p></div>
+            </div>
+        </section>
+
+        <section class="info-split-section">
+            <div>
+                <div class="info-title">最新公告</div>
+                <ul class="news-list">
+                    <li><span class="news-date">2026/02/15</span><a href="#" class="news-link">AI 行銷企劃師報名開始</a></li>
+                    <li><span class="news-date">2026/01/28</span><a href="#" class="news-link">企業團報優惠方案</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="info-title">考試資訊</div>
+                <div class="exam-info-container">
+                    <div class="exam-box">
+                        <h4>近期考試</h4>
+                        <button class="btn btn-blue" onclick="switchView('exam-list')">報名考試</button>
+                    </div>
+                    <div class="exam-box">
+                        <h4>說明會</h4>
+                        <button class="btn btn-green">參加說明會</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="partners-section">
+            <div class="partners-header"><h2>合作單位</h2></div>
+            <div class="marquee-container">
+                <div class="marquee-content">
+                    <span class="partner-logo">台積電</span><span class="partner-logo">中華電信</span>
+                    <span class="partner-logo">台灣大學</span><span class="partner-logo">政治大學</span>
+                    <span class="partner-logo">資策會</span><span class="partner-logo">微軟</span>
+                    <span class="partner-logo">台積電</span><span class="partner-logo">中華電信</span>
+                    <span class="partner-logo">台灣大學</span><span class="partner-logo">政治大學</span>
+                    <span class="partner-logo">資策會</span><span class="partner-logo">微軟</span>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="exam-list-view" class="view-section">
+        <div class="exam-list-container">
+            <div class="exam-list-header">
+                <h2>企業級 AI 行銷職能認證項目</h2>
+                <p>完整涵蓋行銷企劃、廣告投放至策略分析的全方位 AI 職能檢定</p>
+            </div>
+
+            <div class="exam-grid">
+                <div class="exam-card-item">
+                    <div class="card-img-placeholder"><span class="card-icon">🖼️</span><div class="card-badge">🏆</div></div>
+                    <div class="card-body">
+                        <h3 class="card-title">AI 基礎規劃師</h3>
+                        <span class="card-tag">人工智慧</span>
+                        <a href="AI初級基礎認證.html" class="card-btn">詳細資訊</a>
+                    </div>
+                </div>
+                <div class="exam-card-item">
+                    <div class="card-img-placeholder"><span class="card-icon">🖼️</span><div class="card-badge">🏆</div></div>
+                    <div class="card-body"><h3 class="card-title">AI 企劃執行師</h3><span class="card-tag">數位行銷</span><a href="#" class="card-btn">詳細資訊</a></div>
+                </div>
+                <div class="exam-card-item">
+                    <div class="card-img-placeholder"><span class="card-icon">🖼️</span><div class="card-badge">🏆</div></div>
+                    <div class="card-body"><h3 class="card-title">AI 廣告投放師</h3><span class="card-tag">廣告科技</span><a href="#" class="card-btn">詳細資訊</a></div>
+                </div>
+                <div class="exam-card-item">
+                    <div class="card-img-placeholder"><span class="card-icon">🖼️</span><div class="card-badge">🏆</div></div>
+                    <div class="card-body"><h3 class="card-title">AI 內容行銷師</h3><span class="card-tag">內容創作</span><a href="#" class="card-btn">詳細資訊</a></div>
+                </div>
+                <div class="exam-card-item">
+                    <div class="card-img-placeholder"><span class="card-icon">🖼️</span><div class="card-badge">🏆</div></div>
+                    <div class="card-body"><h3 class="card-title">AI 策略分析師</h3><span class="card-tag">數據分析</span><a href="#" class="card-btn">詳細資訊</a></div>
+                </div>
+                <div class="exam-card-item">
+                    <div class="card-img-placeholder"><span class="card-icon">🖼️</span><div class="card-badge">🏆</div></div>
+                    <div class="card-body"><h3 class="card-title">AI 專案管理師</h3><span class="card-tag">專案管理</span><a href="#" class="card-btn">詳細資訊</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-placeholder"></div>
+
+    <script>
+        // 載入元件的函式
+        function loadComponent(url, elementId) {
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById(elementId).innerHTML = data;
+                })
+                .catch(error => console.error('Error loading component:', error));
+        }
+
+        // 頁面載入時執行
+        window.addEventListener('load', function() {
+            loadComponent('頁首.html', 'header-placeholder');
+            loadComponent('頁尾.html', 'footer-placeholder');
+
+            // 處理 View 參數
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            
+            if (view === 'exam-list') {
+                switchView('exam-list');
+            }
+        });
+
+        function switchView(viewName) {
+            const homeView = document.getElementById('home-view');
+            const examView = document.getElementById('exam-list-view');
+            
+            homeView.classList.remove('active');
+            examView.classList.remove('active');
+
+            if (viewName === 'home') {
+                homeView.classList.add('active');
+                window.scrollTo(0, 0);
+            } else if (viewName === 'exam-list') {
+                examView.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+    </script>
+
+</body>
+</html>
