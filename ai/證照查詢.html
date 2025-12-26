@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>證照查詢 | 企業級 AI 行銷職能認證</title>
+    <style>
+        /* --- 基礎設定 --- */
+        :root {
+            --primary-color: #0056b3;
+            --hover-color: #004494;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --border-color: #ddd;
+            --footer-bg: #2c3e50;
+            --footer-text: #ecf0f1;
+            --btn-color: #f0ad4e;
+            --btn-hover: #ec971f;
+            
+            /* 狀態顏色 */
+            --success-color: #28a745; /* 有效 */
+            --error-color: #dc3545;   /* 無效/查無 */
+            --warning-color: #ffc107; /* 過期 */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            padding-top: 80px;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- Header & Nav --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000; height: 80px; display: flex; align-items: center;
+        }
+
+        .top-nav {
+            width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo { font-size: 28px; font-weight: bold; color: #000; flex-shrink: 0; margin-right: 40px; cursor: pointer; }
+        .nav-menu { display: flex; align-items: center; gap: 5px; }
+
+        .nav-item {
+            position: relative; font-size: 18px; font-weight: bold; color: blue;
+            padding: 15px 10px; cursor: pointer; white-space: nowrap; transition: color 0.2s;
+        }
+        .nav-item.has-divider::before { content: "|"; color: blue; margin-right: 15px; margin-left: 5px; font-weight: normal; }
+        .nav-item:hover > a { color: var(--hover-color); }
+
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            background-color: #fff; border: 1px solid #ddd; border-top: 3px solid var(--primary-color);
+            min-width: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 10px 0; text-align: center; z-index: 1001;
+        }
+        .nav-item:hover .dropdown-menu { display: block; }
+        .dropdown-menu li a { display: block; padding: 10px 20px; color: #333; font-size: 16px; font-weight: normal; }
+        .dropdown-menu li a:hover { background-color: #f0f0f0; color: var(--primary-color); }
+
+        /* --- 證照查詢頁樣式 --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        .breadcrumb { margin-bottom: 30px; color: #666; font-size: 14px; }
+        .breadcrumb a:hover { color: var(--primary-color); text-decoration: underline; }
+
+        .page-title-section { text-align: center; margin-bottom: 40px; }
+        .page-title-section h1 { font-size: 36px; color: var(--primary-color); margin-bottom: 10px; }
+        .page-title-section p { color: #666; font-size: 18px; }
+
+        .box-container {
+            max-width: 700px;
+            margin: 0 auto 60px auto;
+            background-color: #f4faff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            padding: 50px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .form-header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e1e8ed; padding-bottom: 20px; }
+        .form-header h2 { font-size: 24px; color: #333; margin-bottom: 10px; }
+        .form-header p { color: #666; font-size: 14px; }
+
+        .verify-form { display: flex; flex-direction: column; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; text-align: left; }
+        .form-group label { font-weight: bold; color: #444; margin-bottom: 8px; font-size: 16px; }
+        .form-group label span { color: red; margin-left: 3px; }
+        
+        .form-control {
+            padding: 12px 15px; font-size: 16px; border: 1px solid #ccc;
+            border-radius: 6px; transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1); }
+
+        .submit-btn {
+            margin-top: 20px; padding: 15px; background-color: var(--primary-color);
+            color: #fff; font-size: 18px; font-weight: bold; border: none; border-radius: 6px;
+            cursor: pointer; transition: background 0.3s;
+        }
+        .submit-btn:hover { background-color: var(--hover-color); }
+
+        .note-section {
+            margin-top: 30px; padding: 20px; background-color: #fff8e1;
+            border-radius: 6px; font-size: 14px; color: #856404; line-height: 1.6;
+        }
+
+        /* --- 結果樣式 --- */
+        #result-box { display: none; }
+
+        .result-header { text-align: center; margin-bottom: 30px; }
+        .result-icon { font-size: 60px; margin-bottom: 15px; display: inline-block; }
+        .result-title { font-size: 26px; font-weight: bold; margin-bottom: 10px; }
+        
+        .result-details {
+            background: #fff; padding: 20px; border-radius: 8px; border: 1px solid #ddd;
+            margin-bottom: 30px;
+        }
+        .detail-row {
+            display: flex; justify-content: space-between; padding: 12px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #666; font-weight: bold; }
+        .detail-value { color: #333; font-weight: 500; }
+
+        .action-buttons { display: flex; gap: 15px; }
+        .btn-outline {
+            flex: 1; padding: 12px; border: 2px solid var(--primary-color); background: #fff;
+            color: var(--primary-color); border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center;
+        }
+        .btn-outline:hover { background: #f0f8ff; }
+        .btn-download { flex: 1; padding: 12px; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
+
+        /* 動態狀態顏色 Class */
+        .status-success .result-icon, .status-success .result-title { color: var(--success-color); }
+        .status-success .btn-download { background-color: var(--success-color); }
+
+        .status-error .result-icon, .status-error .result-title { color: var(--error-color); }
+        .status-error .btn-download { background-color: #ccc; cursor: not-allowed; pointer-events: none; }
+
+        .status-warning .result-icon, .status-warning .result-title { color: var(--warning-color); }
+        .status-warning .btn-download { background-color: #ccc; cursor: not-allowed; pointer-events: none; }
+
+        @media (max-width: 768px) { .box-container { padding: 30px 20px; } }
+
+        /* Footer */
+        footer { background-color: var(--footer-bg); color: var(--footer-text); padding: 40px 0 20px; font-size: 14px; margin-top: 60px; }
+        .footer-content { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .footer-links a { margin-right: 15px; color: #ccc; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="top-nav">
+            <a href="首頁.html" class="logo">Logo</a>
+            
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="首頁.html">首頁</a></li>
+                <li class="nav-item">
+                    <a href="首頁.html?view=exam-list">證照考試</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="AI初級基礎認證.html">基礎規劃師</a></li>
+                        <li><a href="首頁.html?view=exam-list">企劃執行師</a></li>
+                        <li><a href="首頁.html?view=exam-list">廣告投放師</a></li>
+                        <li><a href="首頁.html?view=exam-list">內容行銷師</a></li>
+                        <li><a href="首頁.html?view=exam-list">策略分析師</a></li>
+                        <li><a href="首頁.html?view=exam-list">專案管理師</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item has-divider"><a href="#">最新公告</a></li>
+                <li class="nav-item has-divider">
+                    <a href="證照內容.html">證照內容</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="證照樣張.html">證照樣張</a></li>
+                        <li><a href="證照查詢.html" style="color: var(--primary-color);">證照查詢</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item has-divider"><a href="#">合作夥伴</a></li>
+                <li class="nav-item has-divider"><a href="#">學習資源</a></li>
+                <li class="nav-item has-divider"><a href="#">考生專區(後台)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="首頁.html">首頁</a> &gt; <a href="證照內容.html">證照內容</a> &gt; <span>證照查詢</span>
+        </div>
+
+        <div class="page-title-section">
+            <h1>證書查驗系統</h1>
+            <p>請輸入證書相關資訊以確認證書有效性</p>
+        </div>
+
+        <div id="query-box" class="box-container">
+            <div class="form-header">
+                <h2>輸入驗證資訊</h2>
+                <p>請確保輸入的資料與證書上完全一致</p>
+            </div>
+            
+            <form class="verify-form" id="verifyForm">
+                <div class="form-group">
+                    <label for="issue-date">發證日期<span>*</span></label>
+                    <input type="text" id="issue-date" class="form-control" placeholder="YYYY-MM-DD" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="id-number">身分證字號<span>*</span></label>
+                    <input type="text" id="id-number" class="form-control" placeholder="請輸入身分證字號" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cert-number">證書號碼<span>*</span></label>
+                    <input type="text" id="cert-number" class="form-control" placeholder="請輸入證書左下角之編號" required>
+                </div>
+
+                <button type="submit" class="submit-btn">立即驗證</button>
+            </form>
+
+            <div class="note-section">
+                <strong>💡 查詢說明：</strong>
+                <ul style="margin-top: 5px; margin-left: 20px; list-style-type: disc;">
+                    <li>本系統提供近 3 年內核發之證書查驗服務。</li>
+                    <li>若您的證書為 3 年前核發，或線上查無資料，請直接聯繫本基金會進行人工查核。</li>
+                    <li>輸入資料中若包含 <code>?</code> 號將觸發測試狀態。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="result-box" class="box-container">
+            <div class="result-header">
+                <div class="result-icon" id="res-icon">✔</div>
+                <div class="result-title" id="res-title">查驗結果：有效證書</div>
+                <p id="res-subtitle" style="color: #666;">Verification Successful</p>
+            </div>
+
+            <div class="result-details" id="res-details-box">
+                <div class="detail-row">
+                    <span class="detail-label">姓名 (Name)</span>
+                    <span class="detail-value">Wang Xiao-Ming</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">身分證字號 (ID)</span>
+                    <span class="detail-value" id="res-id"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">證照名稱 (Certificate)</span>
+                    <span class="detail-value" style="color: var(--primary-color); font-weight: bold;">AI 初級基礎認證 - 基礎規劃師</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">證書編號 (Cert No.)</span>
+                    <span class="detail-value" id="res-cert-no"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">發證日期 (Date)</span>
+                    <span class="detail-value" id="res-date"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">發證單位 (Issuer)</span>
+                    <span class="detail-value">財團法人勞動基金會</span>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn-outline" onclick="resetForm()">重新查詢</button>
+                <button class="btn-download" id="btn-download">下載電子證書 (PDF)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>企業級 AI 行銷職能認證</h3>
+                <p>財團法人勞動基金會</p>
+            </div>
+            <div>
+                <div class="footer-links">
+                    <a href="首頁.html">首頁</a> 
+                    <a href="#">關於我們</a> 
+                    <a href="首頁.html?view=exam-list">考試資訊</a> 
+                    <a href="#">聯絡我們</a>
+                </div>
+                <p style="margin-top:10px; color:#bdc3c7;">&copy; 2025 All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('verifyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // 1. 取得輸入值
+            const issueDate = document.getElementById('issue-date').value.trim();
+            const idNumber = document.getElementById('id-number').value.trim();
+            const certNumber = document.getElementById('cert-number').value.trim();
+
+            if(!issueDate || !idNumber || !certNumber) {
+                alert("請填寫所有欄位");
+                return;
+            }
+
+            // 2. 判斷邏輯
+            const resultBox = document.getElementById('result-box');
+            const resIcon = document.getElementById('res-icon');
+            const resTitle = document.getElementById('res-title');
+            const resSubtitle = document.getElementById('res-subtitle');
+            
+            // 重置 class
+            resultBox.classList.remove('status-success', 'status-error', 'status-warning');
+
+            // 優先順序：ID含? (無此證書) > 日期含? (過期) > 正常
+            if (idNumber.includes('?')) {
+                // 情境：查無此證書
+                resultBox.classList.add('status-error');
+                resIcon.innerHTML = '✘';
+                resTitle.innerText = '查驗結果：無效 / 查無此證書';
+                resSubtitle.innerText = 'Certificate Not Found / Invalid';
+                document.getElementById('btn-download').innerText = '無法下載';
+            } 
+            else if (issueDate.includes('?')) {
+                // 情境：認證已過期
+                resultBox.classList.add('status-warning');
+                resIcon.innerHTML = '⚠';
+                resTitle.innerText = '查驗結果：認證已過期';
+                resSubtitle.innerText = 'Certificate Expired';
+                document.getElementById('btn-download').innerText = '已失效';
+            } 
+            else {
+                // 情境：驗證成功
+                resultBox.classList.add('status-success');
+                resIcon.innerHTML = '✔';
+                resTitle.innerText = '查驗結果：有效證書';
+                resSubtitle.innerText = 'Verification Successful';
+                document.getElementById('btn-download').innerText = '下載電子證書 (PDF)';
+            }
+
+            // 填寫資訊 (即使無效也顯示輸入的資訊供確認)
+            document.getElementById('res-date').innerText = issueDate;
+            document.getElementById('res-cert-no').innerText = certNumber;
+            
+            // 處理身分證隱碼 (若包含?則直接顯示，不處理隱碼以免混淆)
+            if (!idNumber.includes('?') && idNumber.length > 3) {
+                const hiddenID = idNumber.substring(0, 2) + "*****" + idNumber.substring(idNumber.length - 1);
+                document.getElementById('res-id').innerText = hiddenID;
+            } else {
+                document.getElementById('res-id').innerText = idNumber;
+            }
+
+            // 3. 切換顯示
+            document.getElementById('query-box').style.display = 'none';
+            resultBox.style.display = 'block';
+            window.scrollTo(0, 0);
+        });
+
+        function resetForm() {
+            document.getElementById('verifyForm').reset();
+            document.getElementById('result-box').style.display = 'none';
+            document.getElementById('query-box').style.display = 'block';
+            window.scrollTo(0, 0);
+        }
+    </script>
+
+</body>
+</html>

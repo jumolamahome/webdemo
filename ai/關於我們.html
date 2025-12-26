@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>關於我們 | 企業級 AI 行銷職能認證</title>
+    <style>
+        /* --- 基礎設定 (全站共用) --- */
+        :root {
+            --primary-color: #0056b3;
+            --hover-color: #004494;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --border-color: #ddd;
+            --footer-bg: #2c3e50;
+            --footer-text: #ecf0f1;
+            --btn-color: #f0ad4e;
+            --btn-hover: #ec971f;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: #fff;
+            padding-top: 80px;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        ul { list-style: none; }
+
+        /* --- Header & Nav --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%;
+            background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000; height: 80px; display: flex; align-items: center;
+        }
+
+        .top-nav {
+            width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        .logo { font-size: 28px; font-weight: bold; color: #000; flex-shrink: 0; margin-right: 40px; cursor: pointer; }
+        .nav-menu { display: flex; align-items: center; gap: 5px; }
+
+        .nav-item {
+            position: relative; font-size: 18px; font-weight: bold; color: blue;
+            padding: 15px 10px; cursor: pointer; white-space: nowrap; transition: color 0.2s;
+        }
+        .nav-item.has-divider::before { content: "|"; color: blue; margin-right: 15px; margin-left: 5px; font-weight: normal; }
+        .nav-item:hover > a { color: var(--hover-color); }
+
+        .dropdown-menu {
+            display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+            background-color: #fff; border: 1px solid #ddd; border-top: 3px solid var(--primary-color);
+            min-width: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 10px 0; text-align: center; z-index: 1001;
+        }
+        .nav-item:hover .dropdown-menu { display: block; }
+        .dropdown-menu li a { display: block; padding: 10px 20px; color: #333; font-size: 16px; font-weight: normal; }
+        .dropdown-menu li a:hover { background-color: #f0f0f0; color: var(--primary-color); }
+
+        /* --- 關於我們頁面樣式 --- */
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        /* 1. Banner 區塊 */
+        .about-banner {
+            background: linear-gradient(rgba(0, 86, 179, 0.8), rgba(0, 86, 179, 0.8)), url('https://via.placeholder.com/1920x600') no-repeat center center/cover;
+            color: #fff;
+            text-align: center;
+            padding: 100px 20px;
+            margin-bottom: 60px;
+        }
+        .about-banner h1 { font-size: 42px; margin-bottom: 20px; letter-spacing: 2px; }
+        .about-banner p { font-size: 20px; font-weight: 300; }
+
+        /* 2. 組織介紹區塊 */
+        .intro-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+            margin-bottom: 80px;
+        }
+        .intro-image img { width: 100%; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .intro-text h2 { font-size: 32px; color: var(--primary-color); margin-bottom: 20px; border-left: 5px solid var(--primary-color); padding-left: 15px; }
+        .intro-text p { font-size: 16px; color: #555; line-height: 1.8; margin-bottom: 15px; text-align: justify; }
+
+        /* 3. 團隊/顧問區塊 */
+        .team-section { background-color: #f9f9f9; padding: 80px 0; margin-bottom: 80px; }
+        .section-title { text-align: center; font-size: 32px; color: #333; margin-bottom: 50px; font-weight: bold; }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            max-width: 1200px; margin: 0 auto; padding: 0 20px;
+        }
+        .team-card {
+            background: #fff; border-radius: 10px; overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center;
+            transition: transform 0.3s;
+        }
+        .team-card:hover { transform: translateY(-10px); }
+        .member-photo { height: 200px; background-color: #ddd; display: flex; align-items: center; justify-content: center; color: #999; }
+        .member-info { padding: 20px; }
+        .member-name { font-size: 18px; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .member-title { font-size: 14px; color: var(--primary-color); }
+
+        /* 4. 聯絡方式區塊 */
+        .contact-section { margin-bottom: 80px; }
+        .contact-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        .contact-info {
+            background-color: var(--primary-color);
+            color: #fff;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .contact-info h3 { font-size: 24px; margin-bottom: 30px; border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 15px; }
+        .info-item { margin-bottom: 20px; font-size: 16px; display: flex; align-items: center; gap: 15px; }
+        .info-icon { font-size: 20px; }
+
+        .contact-form-wrapper { padding: 50px; }
+        .contact-form h3 { font-size: 24px; color: #333; margin-bottom: 20px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; color: #666; font-weight: bold; }
+        .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; }
+        .submit-btn {
+            background-color: var(--btn-color); color: #fff; border: none; padding: 12px 30px;
+            border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold;
+            transition: background 0.3s; width: 100%;
+        }
+        .submit-btn:hover { background-color: var(--btn-hover); }
+
+        /* 5. 法律區塊 */
+        .legal-section {
+            background-color: #333;
+            color: #ccc;
+            padding: 40px 0;
+            text-align: center;
+        }
+        .legal-links { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
+        .legal-links a { color: #fff; text-decoration: underline; font-size: 16px; }
+        .legal-links a:hover { color: var(--btn-color); }
+        .legal-desc { font-size: 14px; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+
+        /* RWD */
+        @media (max-width: 768px) {
+            .intro-section, .contact-container, .team-grid { grid-template-columns: 1fr; }
+            .about-banner h1 { font-size: 32px; }
+            .intro-image { order: -1; margin-bottom: 20px; } /* 圖片在手機版置頂 */
+        }
+
+        /* Footer */
+        footer { background-color: var(--footer-bg); color: var(--footer-text); padding: 40px 0 20px; font-size: 14px; }
+        .footer-content { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .footer-links a { margin-right: 15px; color: #ccc; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="top-nav">
+            <a href="首頁.html" class="logo">Logo</a>
+            
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="首頁.html">首頁</a></li>
+                <li class="nav-item">
+                    <a href="首頁.html?view=exam-list">證照考試</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="AI初級基礎認證.html">基礎規劃師</a></li>
+                        <li><a href="首頁.html?view=exam-list">企劃執行師</a></li>
+                        <li><a href="首頁.html?view=exam-list">廣告投放師</a></li>
+                        <li><a href="首頁.html?view=exam-list">內容行銷師</a></li>
+                        <li><a href="首頁.html?view=exam-list">策略分析師</a></li>
+                        <li><a href="首頁.html?view=exam-list">專案管理師</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item has-divider"><a href="#">最新公告</a></li>
+                <li class="nav-item has-divider">
+                    <a href="證照內容.html">證照內容</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="證照樣張.html">證照樣張</a></li>
+                        <li><a href="證照查詢.html">證照查詢</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item has-divider"><a href="關於我們.html" style="color: var(--hover-color);">合作夥伴</a></li>
+                <li class="nav-item has-divider"><a href="#">學習資源</a></li>
+                <li class="nav-item has-divider"><a href="#">考生專區(後台)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="about-banner">
+        <div class="container">
+            <h1>關於勞動基金會 × 中華網路行銷講師協會</h1>
+            <p>攜手推動 AI 行銷職能標準化，培育新世代數位人才</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="intro-section">
+            <div class="intro-text">
+                <h2>組織介紹</h2>
+                <p><strong>財團法人勞動基金會</strong> 長期致力於提升勞工職能與產業競爭力，透過標準化的認證體系，為企業篩選具備實戰能力的專業人才。</p>
+                <p><strong>中華網路行銷講師協會</strong> 匯集了台灣頂尖的數位行銷專家與講師，擁有豐富的實務經驗與教學資源。本次雙方強強聯手，共同開發「企業級 AI 行銷職能認證」，旨在縮短產學落差，確保認證內容緊貼市場需求。</p>
+            </div>
+            <div class="intro-image">
+                <img src="https://via.placeholder.com/600x400?text=Organization+Photo" alt="組織合照">
+            </div>
+        </section>
+    </div>
+
+    <section class="team-section">
+        <div class="container">
+            <h2 class="section-title">顧問委員團隊</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="member-photo">Photo</div>
+                    <div class="member-info">
+                        <div class="member-name">張教授</div>
+                        <div class="member-title">台大資訊工程系 / 召集人</div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="member-photo">Photo</div>
+                    <div class="member-info">
+                        <div class="member-name">李執行長</div>
+                        <div class="member-title">知名 AI 科技公司 / 顧問</div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="member-photo">Photo</div>
+                    <div class="member-info">
+                        <div class="member-name">王理事長</div>
+                        <div class="member-title">網路行銷講師協會</div>
+                    </div>
+                </div>
+                <div class="team-card">
+                    <div class="member-photo">Photo</div>
+                    <div class="member-info">
+                        <div class="member-name">陳總監</div>
+                        <div class="member-title">數位廣告代理商協會</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="contact-section">
+            <h2 class="section-title" style="margin-bottom: 30px;">聯絡我們</h2>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>聯絡資訊</h3>
+                    <div class="info-item">
+                        <span class="info-icon">📞</span>
+                        <span>02-1234-5678 (週一至週五 09:00-18:00)</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">✉️</span>
+                        <span>service@aiexam.org.tw</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-icon">🏢</span>
+                        <span>台北市中正區數位路 88 號 8 樓</span>
+                    </div>
+                </div>
+                
+                <div class="contact-form-wrapper">
+                    <form class="contact-form">
+                        <h3>預約回覆表單</h3>
+                        <div class="form-group">
+                            <label>您的姓名</label>
+                            <input type="text" class="form-control" placeholder="請輸入姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" placeholder="請輸入 Email">
+                        </div>
+                        <div class="form-group">
+                            <label>留言內容</label>
+                            <textarea class="form-control" rows="4" placeholder="請輸入您的問題或需求..."></textarea>
+                        </div>
+                        <button type="button" class="submit-btn" onclick="alert('感謝您的留言，我們將盡快回覆！')">送出留言</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="legal-section">
+        <div class="container">
+            <div class="legal-links">
+                <a href="#">使用條款</a>
+                <a href="#">隱私權政策</a>
+                <a href="#">免責聲明</a>
+            </div>
+            <p class="legal-desc">
+                本網站內容著作權屬於財團法人勞動基金會所有，未經授權不得轉載。使用者在使用本網站服務時，即視為同意本網站之使用條款與隱私權政策。
+            </p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h3>企業級 AI 行銷職能認證</h3>
+                <p>財團法人勞動基金會</p>
+            </div>
+            <div>
+                <div class="footer-links">
+                    <a href="首頁.html">首頁</a> 
+                    <a href="關於我們.html">關於我們</a> 
+                    <a href="首頁.html?view=exam-list">考試資訊</a> 
+                    <a href="#">聯絡我們</a>
+                </div>
+                <p style="margin-top:10px; color:#bdc3c7;">&copy; 2025 All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
