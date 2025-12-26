@@ -5,361 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>證照樣張 | 企業級 AI 行銷職能認證</title>
     <style>
-        /* --- 基礎設定 --- */
-        :root {
-            --primary-color: #0056b3;
-            --hover-color: #004494;
-            --text-color: #333;
-            --gold-color: #c5a059; /* 金色邊框 */
-            --footer-bg: #2c3e50;
-            --footer-text: #ecf0f1;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: #fff;
-            padding-top: 80px;
-        }
-
-        a { text-decoration: none; color: inherit; }
-        ul { list-style: none; }
-
-        /* --- Header & Nav --- */
-        header {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background-color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            z-index: 1000; height: 80px; display: flex; align-items: center;
-        }
-
-        .top-nav {
-            width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .logo { font-size: 28px; font-weight: bold; color: #000; flex-shrink: 0; margin-right: 40px; cursor: pointer; }
-        .nav-menu { display: flex; align-items: center; gap: 5px; }
-
-        .nav-item {
-            position: relative; font-size: 18px; font-weight: bold; color: blue;
-            padding: 15px 10px; cursor: pointer; white-space: nowrap;
-        }
-        .nav-item.has-divider::before { content: "|"; color: blue; margin-right: 15px; margin-left: 5px; font-weight: normal; }
-        .nav-item:hover > a { color: var(--hover-color); }
-
-        .dropdown-menu {
-            display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            background-color: #fff; border: 1px solid #ddd; border-top: 3px solid var(--primary-color);
-            min-width: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 10px 0; text-align: center; z-index: 1001;
-        }
-        .nav-item:hover .dropdown-menu { display: block; }
-        .dropdown-menu li a { display: block; padding: 10px 20px; color: #333; font-size: 16px; font-weight: normal; }
-        .dropdown-menu li a:hover { background-color: #f0f0f0; color: var(--primary-color); }
-
-        /* --- 證照樣張內容區 --- */
+        :root { --primary-color: #0056b3; --gold-color: #c5a059; --text-color: #333; }
+        body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; color: var(--text-color); background-color: #fff; padding-top: 80px; margin: 0; }
         .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
         .breadcrumb { margin-bottom: 30px; color: #666; font-size: 14px; }
         .breadcrumb a:hover { color: var(--primary-color); text-decoration: underline; }
-
         .page-title-section { text-align: center; margin-bottom: 40px; }
-        .page-title-section h1 { font-size: 32px; color: var(--primary-color); margin-bottom: 10px; }
-
-        .sample-display-section {
-            background-color: #f4f4f4; /* 淺灰背景 */
-            padding: 60px 20px;
-            border-radius: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* --- CSS 模擬證書樣式 (修正版) --- */
-        .certificate-mockup {
-            width: 100%;
-            max-width: 900px;
-            /* 修正：設定最小高度，避免內容擠壓到底部邊框 */
-            min-height: 700px; 
-            background-color: #fff;
-            border: 10px solid #fff; /* 白邊 */
-            outline: 5px double var(--gold-color); /* 內層金框 */
-            outline-offset: -15px; /* 金框向內縮 */
-            box-shadow: 0 0 0 10px var(--gold-color) inset, 0 15px 40px rgba(0,0,0,0.15); /* 外層金框 */
-            
-            /* 修正：增加底部 Padding，確保簽名不會碰到邊框 */
-            padding: 50px 60px 70px 60px; 
-            
-            text-align: center;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between; /* 內容垂直分散對齊 */
-            color: #333;
-        }
-
-        .cert-header h2 {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 42px;
-            color: #333;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-        .cert-header h3 {
-            font-family: "Times New Roman", Times, serif;
-            font-size: 32px;
-            color: #444;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+        .page-title-section h1 { font-size: 32px; color: var(--primary-color); }
+        
+        .sample-display-section { background-color: #f4f4f4; padding: 60px 20px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+        .certificate-mockup { width: 100%; max-width: 900px; min-height: 700px; background-color: #fff; border: 10px solid #fff; outline: 5px double var(--gold-color); outline-offset: -15px; box-shadow: 0 0 0 10px var(--gold-color) inset, 0 15px 40px rgba(0,0,0,0.15); padding: 50px 60px 70px 60px; text-align: center; position: relative; display: flex; flex-direction: column; justify-content: space-between; color: #333; }
+        
+        .cert-header h2 { font-family: serif; font-size: 42px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 3px; }
+        .cert-header h3 { font-family: serif; font-size: 32px; color: #444; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
         .cert-subtext { font-size: 16px; color: #666; margin-bottom: 20px; }
         .cert-small-text { font-size: 14px; color: #666; font-style: italic; margin-top: 10px; }
-
-        /* 姓名區塊 */
-        .cert-recipient {
-            font-family: "Brush Script MT", "Lucida Handwriting", cursive;
-            font-size: 56px;
-            color: #000;
-            margin: 10px 0 20px 0;
-            line-height: 1.2;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #ddd;
-            display: inline-block;
-            min-width: 400px;
-        }
-
-        /* 證照名稱區塊 */
-        .cert-details { margin: 15px 0; }
-        .cert-name-en {
-            font-size: 24px;
-            color: var(--primary-color);
-            font-weight: bold;
-            display: block;
-        }
-        .cert-name-zh {
-            font-size: 20px;
-            color: var(--primary-color);
-            font-weight: bold;
-            display: block;
-            margin-top: 5px;
-        }
-
-        .cert-date { font-size: 14px; color: #333; margin-top: 25px; font-weight: bold; }
-
-        /* 簽名區塊 (修正：確保與底部有距離) */
-        .cert-footer-sig {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 0 20px;
-            margin-top: auto; /* 將簽名推到底部 */
-            padding-top: 30px;
-        }
+        .cert-recipient { font-family: cursive; font-size: 56px; margin: 10px 0 20px 0; border-bottom: 1px solid #ddd; display: inline-block; min-width: 400px; }
+        .cert-name-en { font-size: 24px; color: var(--primary-color); font-weight: bold; display: block; }
+        .cert-name-zh { font-size: 20px; color: var(--primary-color); font-weight: bold; display: block; margin-top: 5px; }
+        .cert-date { font-size: 14px; margin-top: 25px; font-weight: bold; }
+        .cert-footer-sig { display: flex; justify-content: space-between; align-items: flex-end; padding: 0 20px; margin-top: auto; padding-top: 30px; }
         .signature-box { text-align: center; width: 250px; }
-        .signature-img {
-            font-family: "Brush Script MT", cursive;
-            font-size: 28px;
-            color: #000;
-            margin-bottom: 5px;
-            transform: rotate(-5deg);
-        }
+        .signature-img { font-family: cursive; font-size: 28px; margin-bottom: 5px; transform: rotate(-5deg); }
         .sig-line { height: 1px; background-color: #333; margin-bottom: 8px; }
         .sig-title { font-size: 13px; text-transform: uppercase; color: #666; font-weight: bold; }
-
-        /* 紅色鋼印 */
-        .seal-stamp {
-            width: 120px; height: 120px;
-            border: 3px solid #c0392b;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 22%; /* 稍微上移 */
-            right: 25%;
-            color: #c0392b;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            transform: rotate(-15deg);
-            opacity: 0.7;
-            z-index: 10;
-            background-image: radial-gradient(circle, transparent 60%, rgba(192, 57, 43, 0.1) 100%);
-            pointer-events: none;
-        }
-        .seal-inner {
-            border: 1px solid #c0392b;
-            border-radius: 50%;
-            width: 100px; height: 100px;
-            display: flex; align-items: center; justify-content: center;
-            flex-direction: column;
-        }
-
-        /* 證書特色說明區 */
-        .desc-section {
-            max-width: 900px;
-            width: 100%;
-            margin-top: 40px;
-            text-align: left;
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        .desc-title {
-            font-size: 20px;
-            color: #333;
-            margin-bottom: 15px;
-            border-left: 5px solid var(--primary-color);
-            padding-left: 15px;
-            font-weight: bold;
-        }
+        .seal-stamp { width: 120px; height: 120px; border: 3px solid #c0392b; border-radius: 50%; position: absolute; bottom: 22%; right: 25%; color: #c0392b; display: flex; align-items: center; justify-content: center; transform: rotate(-15deg); opacity: 0.7; pointer-events: none; }
+        .seal-inner { border: 1px solid #c0392b; border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-weight: bold; }
+        
+        .desc-section { max-width: 900px; width: 100%; margin-top: 40px; text-align: left; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .desc-title { font-size: 20px; color: #333; margin-bottom: 15px; border-left: 5px solid var(--primary-color); padding-left: 15px; font-weight: bold; }
         .desc-list { padding-left: 20px; color: #555; font-size: 15px; }
-        .desc-list li { margin-bottom: 8px; list-style-type: disc; }
-
-        /* RWD */
-        @media (max-width: 900px) {
-            .certificate-mockup { padding: 40px 20px; min-height: auto; }
-            .cert-header h2 { font-size: 28px; }
-            .cert-header h3 { font-size: 22px; }
-            .cert-recipient { font-size: 36px; min-width: auto; width: 100%; }
-            .cert-footer-sig { flex-direction: column; align-items: center; gap: 30px; }
-            .seal-stamp { display: none; }
-            .cert-name-en { font-size: 18px; }
-            .cert-name-zh { font-size: 16px; }
-        }
-
-        /* Footer */
-        footer { background-color: var(--footer-bg); color: var(--footer-text); padding: 40px 0 20px; font-size: 14px; margin-top: 60px; }
-        .footer-content { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .footer-links a { margin-right: 15px; color: #ccc; }
+        @media (max-width: 900px) { .certificate-mockup { padding: 40px 20px; min-height: auto; } .cert-recipient { font-size: 36px; min-width: auto; width: 100%; } .cert-footer-sig { flex-direction: column; align-items: center; gap: 30px; } .seal-stamp { display: none; } }
     </style>
 </head>
 <body>
-
-    <header>
-        <nav class="top-nav">
-            <a href="首頁.html" class="logo">Logo</a>
-            
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="首頁.html">首頁</a></li>
-                
-                <li class="nav-item">
-                    <a href="首頁.html?view=exam-list">證照考試</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="AI初級基礎認證.html">基礎規劃師</a></li>
-                        <li><a href="首頁.html?view=exam-list">企劃執行師</a></li>
-                        <li><a href="首頁.html?view=exam-list">廣告投放師</a></li>
-                        <li><a href="首頁.html?view=exam-list">內容行銷師</a></li>
-                        <li><a href="首頁.html?view=exam-list">策略分析師</a></li>
-                        <li><a href="首頁.html?view=exam-list">專案管理師</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item has-divider"><a href="#">最新公告</a></li>
-                
-                <li class="nav-item has-divider">
-                    <a href="證照內容.html">證照內容</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="證照樣張.html" style="color: var(--primary-color);">證照樣張</a></li>
-                        <li><a href="#">證照查詢</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item has-divider"><a href="#">合作夥伴</a></li>
-                <li class="nav-item has-divider"><a href="#">學習資源</a></li>
-                <li class="nav-item has-divider"><a href="#">考生專區(後台)</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="header-placeholder"></div>
 
     <div class="container">
-        <div class="breadcrumb">
-            <a href="首頁.html">首頁</a> &gt; <a href="證照內容.html">證照內容</a> &gt; <span>證照樣張</span>
-        </div>
-
-        <div class="page-title-section">
-            <h1>企業級 AI 行銷職能認證 - 證照樣張</h1>
-            <p>專業認證 · 能力證明 · 職場加分</p>
-        </div>
-
+        <div class="breadcrumb"><a href="首頁.html">首頁</a> &gt; <a href="證照內容.html">證照內容</a> &gt; <span>證照樣張</span></div>
+        <div class="page-title-section"><h1>企業級 AI 行銷職能認證 - 證照樣張</h1><p>專業認證 · 能力證明 · 職場加分</p></div>
         <div class="sample-display-section">
             <div class="certificate-mockup">
-                <div class="cert-header">
-                    <h2>CERTIFICATE OF</h2>
-                    <h3>ACHIEVEMENT</h3>
-                    <div class="cert-subtext">企業級 AI 行銷職能認證</div>
-                </div>
-
+                <div class="cert-header"><h2>CERTIFICATE OF</h2><h3>ACHIEVEMENT</h3><div class="cert-subtext">企業級 AI 行銷職能認證</div></div>
                 <div class="cert-body">
                     <div class="cert-small-text">This is to certify that</div>
-                    
                     <div class="cert-recipient">Wang Xiao-Ming</div>
-                    
                     <div class="cert-small-text">Has successfully completed the requirements for</div>
-                    
-                    <div class="cert-details">
-                        <span class="cert-name-en">AI Marketing Planner (Fundamentals)</span>
-                        <span class="cert-name-zh">AI 初級基礎認證 - 基礎規劃師</span>
-                    </div>
-
+                    <div class="cert-details"><span class="cert-name-en">AI Marketing Planner (Fundamentals)</span><span class="cert-name-zh">AI 初級基礎認證 - 基礎規劃師</span></div>
                     <div class="cert-date">Date of Issue: October 20, 2025</div>
                 </div>
-
-                <div class="seal-stamp">
-                    <div class="seal-inner">
-                        OFFICIAL<br>SEAL
-                    </div>
-                </div>
-
+                <div class="seal-stamp"><div class="seal-inner">OFFICIAL<br>SEAL</div></div>
                 <div class="cert-footer-sig">
-                    <div class="signature-box">
-                        <div class="signature-img">Chairman Signature</div>
-                        <div class="sig-line"></div>
-                        <div class="sig-title">財團法人勞動基金會 董事長</div>
-                    </div>
-                    <div class="signature-box">
-                        <div class="signature-img">Director Signature</div>
-                        <div class="sig-line"></div>
-                        <div class="sig-title">認證委員會 執行長</div>
-                    </div>
+                    <div class="signature-box"><div class="signature-img">Chairman Signature</div><div class="sig-line"></div><div class="sig-title">財團法人勞動基金會 董事長</div></div>
+                    <div class="signature-box"><div class="signature-img">Director Signature</div><div class="sig-line"></div><div class="sig-title">認證委員會 執行長</div></div>
                 </div>
             </div>
-
-            <div class="desc-section">
-                <div class="desc-title">證書特色說明</div>
-                <ul class="desc-list">
-                    <li><strong>中英對照：</strong>證書採中英文雙語設計，提升國際通用性與職場認可度。</li>
-                    <li><strong>防偽設計：</strong>每張證書均印有獨一無二的證書編號與防偽雷射標籤。</li>
-                    <li><strong>數位驗證：</strong>企業可透過官方網站「證照查詢」系統，輸入證書編號即時查驗真偽。</li>
-                    <li><strong>電子證書：</strong>通過考試後，系統將同步發送 PDF 電子證書，方便求職者隨時展示與上傳。</li>
-                </ul>
-            </div>
+            <div class="desc-section"><div class="desc-title">證書特色說明</div><ul class="desc-list"><li><strong>中英對照：</strong>提升國際通用性。</li><li><strong>防偽設計：</strong>獨一無二的證書編號。</li></ul></div>
         </div>
     </div>
 
-    <footer>
-        <div class="footer-content">
-            <div>
-                <h3>企業級 AI 行銷職能認證</h3>
-                <p>財團法人勞動基金會</p>
-            </div>
-            <div>
-                <div class="footer-links">
-                    <a href="首頁.html">首頁</a> 
-                    <a href="#">關於我們</a> 
-                    <a href="首頁.html?view=exam-list">考試資訊</a> 
-                    <a href="#">聯絡我們</a>
-                </div>
-                <p style="margin-top:10px; color:#bdc3c7;">&copy; 2025 All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
-
+    <div id="footer-placeholder"></div>
+    <script>
+        function loadComponent(url, elementId) { fetch(url).then(r => r.text()).then(d => document.getElementById(elementId).innerHTML = d); }
+        window.addEventListener('load', function() { loadComponent('頁首.html', 'header-placeholder'); loadComponent('頁尾.html', 'footer-placeholder'); });
+    </script>
 </body>
 </html>

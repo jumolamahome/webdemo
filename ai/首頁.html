@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>首頁 | 企業級 AI 行銷職能認證</title>
     <style>
-        /* --- 基礎設定 --- */
+        /* 頁面專屬 CSS */
         :root {
             --primary-color: #0056b3;
             --btn-blue: #1a5da6;
@@ -14,80 +14,19 @@
             --btn-yellow-hover: #d4a540;
             --text-color: #333;
             --bg-light: #f4f7f6;
-            --footer-bg: #2c3e50;
-            --footer-text: #ecf0f1;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: "Microsoft JhengHei", "Heiti TC", sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: #fff;
-            padding-top: 80px;
-        }
-
+        body { font-family: "Microsoft JhengHei", "Heiti TC", sans-serif; line-height: 1.6; color: var(--text-color); background-color: #fff; padding-top: 80px; }
         a { text-decoration: none; color: inherit; }
         ul { list-style: none; }
         
         /* 頁面切換控制 */
-        .view-section {
-            display: none; /* 預設隱藏 */
-            animation: fadeIn 0.5s;
-        }
-        .view-section.active {
-            display: block; /* 加上 active class 才顯示 */
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
+        .view-section { display: none; animation: fadeIn 0.5s; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- Header & Nav --- */
-        header {
-            position: fixed; top: 0; left: 0; width: 100%;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            z-index: 1000; height: 80px; display: flex; align-items: center;
-        }
-
-        .top-nav {
-            width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 20px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .logo {
-            font-size: 28px; font-weight: bold; color: #000;
-            flex-shrink: 0; margin-right: 40px; cursor: pointer;
-        }
-
-        .nav-menu { display: flex; align-items: center; gap: 5px; }
-
-        .nav-item {
-            position: relative; font-size: 18px; font-weight: bold; color: blue;
-            padding: 15px 10px; cursor: pointer; white-space: nowrap;
-        }
-        
-        .nav-item.has-divider::before {
-            content: "|"; color: blue; margin-right: 15px; margin-left: 5px; font-weight: normal;
-        }
-
-        .nav-item:hover > a { color: var(--primary-color); }
-
-        /* 下拉選單 */
-        .dropdown-menu {
-            display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-            background-color: #fff; border: 1px solid #ddd; border-top: 3px solid var(--primary-color);
-            min-width: 160px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 10px 0; text-align: center; z-index: 1001;
-        }
-
-        .nav-item:hover .dropdown-menu { display: block; }
-        .dropdown-menu li a { display: block; padding: 10px 20px; color: #333; font-size: 16px; font-weight: normal; }
-        .dropdown-menu li a:hover { background-color: #f0f0f0; color: var(--primary-color); }
-
-        /* --- [HOME VIEW] 樣式 --- */
+        /* [HOME VIEW] 樣式 */
         .values-section { background-color: #f8fbff; padding: 60px 0; text-align: center; }
         .section-header-center { font-size: 28px; font-weight: bold; color: #333; margin-bottom: 40px; }
         .values-grid { display: flex; justify-content: center; gap: 30px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
@@ -116,100 +55,37 @@
         .partner-logo { display: inline-block; height: 60px; width: 150px; background-color: #ddd; margin: 0 30px; vertical-align: middle; color: #666; line-height: 60px; text-align: center; border-radius: 4px; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* --- [EXAM LIST VIEW] 樣式 --- */
+        /* [EXAM LIST VIEW] 樣式 */
         .exam-list-container { max-width: 1200px; margin: 0 auto; padding: 60px 20px; }
         .exam-list-header { text-align: center; margin-bottom: 50px; }
         .exam-list-header h2 { font-size: 32px; font-weight: bold; margin-bottom: 10px; color: #333; }
         .exam-list-header p { color: #666; font-size: 16px; }
 
-        .exam-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; } /* 4欄 */
+        .exam-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; }
         
-        .exam-card-item {
-            background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden;
-            display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s;
-        }
+        .exam-card-item { background: #fff; border: 1px solid #eee; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; }
         .exam-card-item:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
 
-        .card-img-placeholder {
-            height: 150px; background-color: #e9ecef; /* 灰色底 */
-            display: flex; align-items: center; justify-content: center; position: relative;
-        }
+        .card-img-placeholder { height: 150px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; position: relative; }
         .card-icon { font-size: 40px; }
-        .card-badge {
-            position: absolute; top: 10px; right: 10px; width: 32px; height: 32px;
-            background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 14px;
-        }
+        .card-badge { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 14px; }
 
         .card-body { padding: 25px 20px; text-align: center; display: flex; flex-direction: column; flex-grow: 1; }
         .card-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; color: #333; }
-        .card-tag { 
-            display: inline-block; background-color: #333; color: #fff; padding: 4px 15px; 
-            border-radius: 20px; font-size: 13px; margin: 0 auto 20px auto; 
-        }
+        .card-tag { display: inline-block; background-color: #333; color: #fff; padding: 4px 15px; border-radius: 20px; font-size: 13px; margin: 0 auto 20px auto; }
         
-        .card-btn {
-            margin-top: auto; display: block; width: 100%; padding: 12px 0;
-            background-color: var(--btn-yellow); color: #fff; font-size: 16px; font-weight: bold;
-            border-radius: 4px; transition: background 0.3s;
-        }
+        .card-btn { margin-top: auto; display: block; width: 100%; padding: 12px 0; background-color: var(--btn-yellow); color: #fff; font-size: 16px; font-weight: bold; border-radius: 4px; transition: background 0.3s; }
         .card-btn:hover { background-color: var(--btn-yellow-hover); }
-
-        /* Footer */
-        footer { background-color: var(--footer-bg); color: var(--footer-text); padding: 40px 0 20px; font-size: 14px; margin-top: 60px;}
-        .footer-content { display: grid; grid-template-columns: 1fr 2fr; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-        .footer-links a { margin-right: 15px; color: #ccc; }
 
         /* RWD */
         @media (max-width: 1024px) { .exam-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 768px) { 
-            .values-grid { flex-direction: column; align-items: center; }
-            .info-split-section { grid-template-columns: 1fr; }
-            .exam-grid { grid-template-columns: repeat(2, 1fr); }
-            .top-nav { flex-wrap: wrap; }
-            .nav-menu { display: none; width: 100%; text-align: center; padding-top: 10px;}
-        }
+        @media (max-width: 768px) { .values-grid { flex-direction: column; align-items: center; } .info-split-section { grid-template-columns: 1fr; } .exam-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 480px) { .exam-grid { grid-template-columns: 1fr; } }
-
     </style>
 </head>
 <body>
 
-    <header>
-        <nav class="top-nav">
-            <div class="logo" onclick="switchView('home')">Logo</div>
-            
-            <ul class="nav-menu">
-                <li class="nav-item"><a href="#" onclick="switchView('home'); return false;">首頁</a></li>
-                
-                <li class="nav-item">
-                    <a href="#" onclick="switchView('exam-list'); return false;">證照考試</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="AI初級基礎認證.html">基礎規劃師</a></li>
-                        <li><a href="#" onclick="switchView('exam-list'); return false;">企劃執行師</a></li>
-                        <li><a href="#" onclick="switchView('exam-list'); return false;">廣告投放師</a></li>
-                        <li><a href="#" onclick="switchView('exam-list'); return false;">內容行銷師</a></li>
-                        <li><a href="#" onclick="switchView('exam-list'); return false;">策略分析師</a></li>
-                        <li><a href="#" onclick="switchView('exam-list'); return false;">專案管理師</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item has-divider"><a href="#">最新公告</a></li>
-                
-                <li class="nav-item has-divider">
-                    <a href="證照內容.html">證照內容</a>
-                    <ul class="dropdown-menu">
-                        <li><a href="證照樣張.html">證照樣張</a></li>
-                        <li><a href="證照查詢.html">證照查詢</a></li>
-                    </ul>
-                </li>
-                
-                <li class="nav-item has-divider"><a href="#">合作夥伴</a></li>
-                <li class="nav-item has-divider"><a href="#">學習資源</a></li>
-                <li class="nav-item has-divider"><a href="#">考生專區(後台)</a></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="header-placeholder"></div>
 
     <div id="home-view" class="view-section active">
         <section class="values-section">
@@ -299,25 +175,33 @@
         </div>
     </div>
 
-    <footer>
-        <div class="footer-content">
-            <div>
-                <h3>企業級 AI 行銷職能認證</h3>
-                <p>財團法人勞動基金會</p>
-            </div>
-            <div>
-                <div class="footer-links">
-                    <a href="#" onclick="switchView('home'); return false;">首頁</a> 
-                    <a href="關於我們.html">關於我們</a> 
-                    <a href="#" onclick="switchView('exam-list'); return false;">考試資訊</a> 
-                    <a href="#">聯絡我們</a>
-                </div>
-                <p style="margin-top:10px; color:#bdc3c7;">&copy; 2025 All Rights Reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <div id="footer-placeholder"></div>
 
     <script>
+        // 載入元件的函式
+        function loadComponent(url, elementId) {
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById(elementId).innerHTML = data;
+                })
+                .catch(error => console.error('Error loading component:', error));
+        }
+
+        // 頁面載入時執行
+        window.addEventListener('load', function() {
+            loadComponent('頁首.html', 'header-placeholder');
+            loadComponent('頁尾.html', 'footer-placeholder');
+
+            // 處理 View 參數
+            const urlParams = new URLSearchParams(window.location.search);
+            const view = urlParams.get('view');
+            
+            if (view === 'exam-list') {
+                switchView('exam-list');
+            }
+        });
+
         function switchView(viewName) {
             const homeView = document.getElementById('home-view');
             const examView = document.getElementById('exam-list-view');
@@ -333,15 +217,6 @@
                 window.scrollTo(0, 0);
             }
         }
-
-        window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const view = urlParams.get('view');
-            
-            if (view === 'exam-list') {
-                switchView('exam-list');
-            }
-        });
     </script>
 
 </body>
