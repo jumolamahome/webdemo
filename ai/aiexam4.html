@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>企業級 AI 行銷職能認證</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdfbf7; color: #1e293b; margin: 0; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .chart-container { position: relative; width: 100%; max-width: 450px; margin: auto; height: 320px; }
+        #certificate-template { position: absolute; left: -9999px; top: -9999px; width: 800px; height: 600px; background: white; padding: 40px; border: 20px solid #1e293b; text-align: center; }
+        .cert-inner { border: 2px solid #e2e8f0; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div id="certificate-template">
+        <div class="cert-inner">
+            <h3 style="font-size: 24px; color: #64748b; letter-spacing: 4px; margin-bottom: 10px;">CERTIFICATE OF COMPLETION</h3>
+            <h1 id="cert-display-name" style="font-size: 40px; font-weight: 900; margin-bottom: 20px;">載入中...</h1>
+            <p style="font-size: 20px; color: #64748b; margin-bottom: 20px;">謹此證明</p>
+            <h2 id="cert-user-name" style="font-size: 42px; margin-bottom: 20px;">使用者姓名</h2>
+            <p style="font-size: 16px; line-height: 1.6; max-width: 550px; margin-bottom: 40px;">成功通過認證考試，展現了其在 AI 行銷領域全方位的專業職能。</p>
+            <div style="display: flex; justify-content: space-between; width: 100%; text-align: left;">
+                <div>
+                    <p style="font-size: 14px; color: #94a3b8;">認證日期：<span id="cert-date"></span></p>
+                    <p style="font-size: 14px; color: #94a3b8;">證書編號：<span id="cert-id"></span></p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 18px; font-weight: bold;">總分：<span id="cert-score"></span> 分</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="flex-grow flex flex-col"></div>
+
+    <script>
+        // API 設定
+        const LOGIN_API = "https://script.google.com/macros/s/AKfycbzGVq00SdC3_nH1yAZP9BbRl2IOvmpEYIV9Ono6oX_FlM0X68BzD0Kn7-xIycFXAlTS-w/exec";
+        const QUESTION_API = "https://script.google.com/macros/s/AKfycbzkVvcN1YxHqD5WJ0yn5VhvNLeqfUVNwKBydRHkuFCf0rqBING5KPWOx_YNsRwzQtN4MQ/exec?count=10";
+        const SAVE_CERT_API = "https://script.google.com/macros/s/AKfycbzobAbtDHZsD8NFzyXoc4TaOvYp8QIBXjDv77lgc_0cHbqHvDlhQt4IGymjsDgmJ0wosg/exec";
+        
+        const IS_TEST_MODE = true; 
+
+        let state = {
+            view: 'login',
+            userData: {}, 
+            questions: [],
+            currentIndex: 0,
+            answers: {},
+            flags: {}, 
+            timeLeft: 1800,
+            timerInterval: null,
+            apiResult: null,
+            stats: {} // 存放各維度得分
+        };
+
+        const app = document.getElementById('app');
+        const levelNames = { 'L1': 'L1 基礎', 'L2': 'L2 核心', 'L3': 'L3 架構', 'L4': 'L4 應用', 'L5': 'L5 策略' };
+
+        // 登入與題目載入邏輯與前版一致...
+        async function handleLogin(e) {
+            e.preventDefault();
+            const id = document.getElementById('login-id').value;
+            const pw = document.getElementById('login-pw').value;
+            const btn = e.target.querySelector('button');
+            btn.innerText = "驗證中...";
+            btn.disabled = true;
+            try {
+                const res = await fetch(`${LOGIN_API}?id=${encodeURIComponent(id)}&pw=${encodeURIComponent(pw)}`);
+                const result = await res.json();
+                if (result.status === "success") {
+                    state.userData = result.data;
+                    state.view = 'home';
+                    render();
+                } else { alert("登入失敗：" + result.message); }
+            } catch (err) { alert("連線伺服器失敗"); }
+            finally { btn.innerText = "確認登入"; btn.disabled = false; }
+        }
+
+        async function fetchQuestionsAndStart() {
+            const btn = document.querySelector('button');
+            btn.innerText = "下載題目中...";
+            btn.disabled = true;
+            try {
+                const res = await fetch(QUESTION_API);
+                const data = await res.json();
+                if (data && data.length > 0) {
+                    state.questions = data;
+                    state.view = 'quiz';
+                    render();
+                    startTimer(); 
+                }
+            } catch (err) { alert("無法取得題目"); }
+            finally { btn.innerText = "進入認證考試"; btn.disabled = false; }
+        }
+
+        function startTimer() {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                state.timeLeft--;
+                const el = document.getElementById('timer-text');
+                if (el) {
+                    const m = Math.floor(state.timeLeft / 60);
+                    const s = state.timeLeft % 60;
+                    el.innerText = `${m}:${s.toString().padStart(2, '0')}`;
+                }
+                if (state.timeLeft <= 0) submitExam(true);
+            }, 1000);
+        }
+
+        // 核心整合：計算統計數據並提交 API
+        async function submitExam(auto = false) {
+            if (!auto && !confirm("確定提交考卷？")) return;
+            clearInterval(state.timerInterval);
+
+            app.innerHTML = `<div class="flex-grow flex items-center justify-center"><div class="text-center"><div class="animate-spin text-4xl mb-4">⌛</div><p class="text-xl font-bold">正在計算職能數據並產生證書...</p></div></div>`;
+
+            // 1. 初始化維度統計
+            const stats = { 'L1': 0, 'L2': 0, 'L3': 0, 'L4': 0, 'L5': 0 };
+            const levelTotals = { 'L1': 0, 'L2': 0, 'L3': 0, 'L4': 0, 'L5': 0 };
+            let correct = 0;
+
+            state.questions.forEach((q, i) => {
+                if (levelTotals.hasOwnProperty(q.Level)) levelTotals[q.Level]++;
+                if (state.answers[i] === q.答案) {
+                    correct++;
+                    if (stats.hasOwnProperty(q.Level)) stats[q.Level]++;
+                }
+            });
+
+            state.stats = { correct, stats, levelTotals };
+            const score = Math.round((correct / state.questions.length) * 100);
+
+            // 2. 呼叫計數與存檔 API
+            const params = new URLSearchParams({
+                certId: state.questions[0].認證編號 || "AI-BASIC-001",
+                exeId: "EXE-" + Date.now(),
+                memberId: state.userData.memberId,
+                nameCh: state.userData.nameCh,
+                firstNameEn: state.userData.firstNameEn,
+                lastNameEn: state.userData.lastNameEn,
+                score: score
+            });
+
+            try {
+                const res = await fetch(`${SAVE_CERT_API}?${params.toString()}`);
+                const result = await res.json();
+                if (result.result === "success") {
+                    state.apiResult = result;
+                    state.view = 'result';
+                    render();
+                } else { alert("API 存檔失敗：" + result.message); }
+            } catch (err) { alert("連線伺服器異常，無法存檔"); }
+        }
+
+        function downloadPDF() {
+            const btn = document.getElementById('download-btn');
+            btn.innerText = '生成中...';
+            const res = state.apiResult;
+            document.getElementById('cert-display-name').innerText = res.certName;
+            document.getElementById('cert-user-name').innerText = state.userData.nameCh;
+            document.getElementById('cert-score').innerText = res.score;
+            document.getElementById('cert-date').innerText = res.date;
+            document.getElementById('cert-id').innerText = res.certNo;
+
+            const cert = document.getElementById('certificate-template');
+            html2canvas(cert, { scale: 2 }).then(canvas => {
+                const img = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('landscape', 'px', [800, 600]);
+                pdf.addImage(img, 'PNG', 0, 0, 800, 600);
+                pdf.save(`AI_Cert_${res.certNo}.pdf`);
+                btn.innerText = '📄 下載電子認證證書 (PDF)';
+            });
+        }
+
+        function render() {
+            app.innerHTML = '';
+            if (state.view === 'login') {
+                app.innerHTML = `<div class="flex-grow flex items-center justify-center p-6 fade-in"><div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border text-center"><div class="text-6xl mb-4">🛡️</div><h1 class="text-2xl font-black mb-6">企業級 AI 行銷認證</h1><form onsubmit="handleLogin(event)" class="space-y-4 text-left"><div><label class="block text-sm font-bold mb-1">會員代號</label><input id="login-id" type="text" required class="w-full border p-3 rounded-xl outline-none"></div><div><label class="block text-sm font-bold mb-1">登入密碼</label><input id="login-pw" type="password" required class="w-full border p-3 rounded-xl outline-none"></div><button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg">確認登入</button></form></div></div>`;
+            } else if (state.view === 'home') {
+                app.innerHTML = `<div class="flex-grow flex flex-col items-center justify-center p-6 fade-in"><div class="max-w-xl w-full bg-white rounded-3xl shadow-2xl p-10 text-center border"><h1 class="text-3xl font-black mb-4">你好，${state.userData.nameCh}</h1><div class="text-left bg-slate-50 p-6 rounded-2xl mb-8 border"><strong class="text-blue-600 block mb-2 underline">測驗規則：</strong>• 下載成功後計時器啟動。<br>• 系統將分析五大維度職能分佈。${IS_TEST_MODE ? '<br><span class="text-orange-600 font-bold">⚠️ 測試模式已開啟</span>' : ''}</div><button onclick="fetchQuestionsAndStart()" class="w-full bg-slate-900 text-white font-black py-5 rounded-2xl text-xl shadow-xl">進入認證考試</button></div></div>`;
+            } else if (state.view === 'quiz') {
+                const q = state.questions[state.currentIndex];
+                app.innerHTML = `
+                <header class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-20 shadow-sm">
+                    <span class="bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">${levelNames[q.Level] || q.Level || 'Q'}</span>
+                    <div id="timer-text" class="px-4 py-1 rounded-full font-mono text-xl font-black bg-slate-50">30:00</div>
+                    <button onclick="state.flags[state.currentIndex] = !state.flags[state.currentIndex]; render();" class="p-2 rounded-lg ${state.flags[state.currentIndex] ? 'bg-orange-100 text-orange-600' : 'text-slate-200'}">🚩 Review</button>
+                </header>
+                <main class="max-w-3xl mx-auto p-6 mt-4 pb-32">
+                    <div class="bg-white rounded-3xl border p-8 shadow-sm fade-in mb-8">
+                        <h2 class="text-xl md:text-2xl font-bold mb-10 leading-snug">${q.題目}</h2>
+                        <div class="grid gap-4">
+                            ${['A', 'B', 'C', 'D'].map(opt => {
+                                const isSelected = state.answers[state.currentIndex] === opt;
+                                const isCorrectHint = IS_TEST_MODE && opt === q.答案;
+                                let btnStyle = isSelected ? "border-blue-500 bg-blue-50 text-blue-700 font-bold" : "border-slate-50 bg-slate-50 text-slate-600";
+                                if (isCorrectHint) btnStyle = "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-100";
+                                return `<button onclick="state.answers[state.currentIndex] = '${opt}'; render();" class="flex items-center gap-4 w-full text-left p-5 rounded-2xl border-2 transition-all ${btnStyle}">
+                                    <span class="w-8 h-8 rounded flex items-center justify-center font-black ${isSelected ? 'bg-blue-600 text-white' : (isCorrectHint ? 'bg-emerald-600 text-white' : 'bg-white text-slate-300 border')}">${opt}</span>
+                                    ${q[opt]}
+                                </button>`;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-5 md:grid-cols-10 gap-2">
+                        ${state.questions.map((_, i) => `<button onclick="state.currentIndex = ${i}; render();" class="h-10 rounded-xl text-xs font-bold border-2 relative ${state.currentIndex === i ? 'border-blue-500 ring-2 ring-blue-100' : 'border-transparent'} ${state.answers[i] ? 'bg-emerald-500 text-white' : 'bg-white text-slate-300 border-slate-100'}">${i + 1}${state.flags[i] ? '<div class="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border-2 border-white"></div>' : ''}</button>`).join('')}
+                    </div>
+                </main>
+                <footer class="fixed bottom-0 w-full bg-white border-t p-6 shadow-lg z-20 flex justify-center">
+                    <div class="max-w-3xl w-full flex gap-4">
+                        <button onclick="if(state.currentIndex > 0){state.currentIndex--; render();}" class="flex-1 bg-indigo-600 text-white py-4 rounded-xl font-black" ${state.currentIndex === 0 ? 'disabled style="opacity:0.3"' : ''}>⬅ 上一題</button>
+                        ${state.currentIndex === state.questions.length - 1 ? `<button onclick="submitExam()" class="flex-1 bg-emerald-600 text-white py-4 rounded-xl font-black shadow-lg">✅ 提交考卷</button>` : `<button onclick="if(state.currentIndex < state.questions.length - 1){state.currentIndex++; render();}" class="flex-1 bg-indigo-600 text-white py-4 rounded-xl font-black">下一題 ➡</button>`}
+                    </div>
+                </footer>`;
+            } else if (state.view === 'result') {
+                renderResult();
+            }
+        }
+
+        function renderResult() {
+            const res = state.apiResult;
+            const isPass = res.isPass === "Y";
+            const { stats, levelTotals } = state.stats;
+
+            app.innerHTML = `
+            <div class="min-h-screen bg-slate-50 p-6 md:p-10 fade-in"><div class="max-w-4xl mx-auto space-y-8">
+                <div class="rounded-[2.5rem] p-10 text-white shadow-2xl bg-${isPass ? 'emerald' : 'rose'}-600">
+                    <h1 class="text-4xl font-black mb-4">考生：${state.userData.nameCh}</h1>
+                    <h2 class="text-5xl font-black mb-2">${isPass ? '認證通過' : '認證未通過'}</h2>
+                    <p class="text-lg opacity-80">${res.certName} | 分數：${res.score}分</p>
+                    ${isPass ? `<p class="mt-4 font-mono text-sm">證書編號：${res.certNo}</p>` : ''}
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border">
+                        <h3 class="text-xl font-bold mb-6 text-center text-slate-800">📊 職能雷達圖</h3>
+                        <div class="chart-container"><canvas id="radarCanvas"></canvas></div>
+                    </div>
+                    <div class="bg-white rounded-3xl p-8 shadow-sm border flex flex-col justify-center">
+                        <h3 class="text-xl font-bold mb-4 text-center text-slate-800">維度統計</h3>
+                        ${['L1', 'L2', 'L3', 'L4', 'L5'].map(lv => {
+                            const correct = stats[lv] || 0;
+                            const total = levelTotals[lv] || 0;
+                            const percent = total > 0 ? (correct / total) * 100 : 0;
+                            return `
+                            <div class="mb-4">
+                                <div class="flex justify-between text-xs font-bold text-slate-400 mb-1">
+                                    <span>${levelNames[lv]}</span>
+                                    <span>${correct}/${total} 正確</span>
+                                </div>
+                                <div class="h-2 bg-slate-100 rounded-full"><div class="h-full bg-indigo-500 rounded-full" style="width: ${percent}%"></div></div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </div>
+
+                ${isPass ? `<button id="download-btn" onclick="downloadPDF()" class="w-full bg-white text-emerald-600 border-2 border-emerald-600 font-black py-4 rounded-2xl shadow-lg mb-4">📄 下載電子認證證書 (PDF)</button>` : ''}
+                <button onclick="location.reload()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black shadow-xl">返回首頁</button>
+            </div></div>`;
+
+            // 繪製雷達圖
+            const ctx = document.getElementById('radarCanvas').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['L1 基礎', 'L2 核心', 'L3 架構', 'L4 應用', 'L5 策略'],
+                    datasets: [{
+                        data: ['L1', 'L2', 'L3', 'L4', 'L5'].map(lv => (levelTotals[lv] > 0 ? (stats[lv] / levelTotals[lv]) * 100 : 0)),
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)'
+                    }]
+                },
+                options: {
+                    scales: { r: { min: 0, max: 100, ticks: { display: false } } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        render();
+    </script>
+</body>
+</html>
