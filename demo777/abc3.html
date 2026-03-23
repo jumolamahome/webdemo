@@ -67,26 +67,31 @@
         .panel.tw-panel { border-color: var(--tw-green); }
         .panel.jp-panel { border-color: var(--jp-blue); }
 
+        /* --- 修改佈局：讓子元素分佈在兩頭 --- */
         .panel-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-between; /* 讓中文與日文/圓點分開 */
             align-items: center;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 16px; /* 中文標題大小 */
             margin-bottom: 20px;
         }
 
-        /* 標題與日文標註 */
-        .location-title {
+        /* 組合日文名與圓點 */
+        .header-right {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 10px; /* 調整日文與圓點的距離 */
         }
+
+        /* --- 修改日文標註樣式：大小同中文，顏色如示意圖 --- */
         .sub-name {
-            font-size: 14px;
-            font-weight: normal;
+            font-size: 16px; /* 與中文標題 font-size 相同 */
+            font-weight: normal; /* 保持細體 */
         }
-        .tw-panel .sub-name { color: var(--tw-green); }
+        /* 台灣日文名顏色 (示意圖看起來偏深灰色) */
+        .tw-panel .sub-name { color: #555555; }
+        /* 日本日文名顏色 (示意圖看起來同標題深藍色) */
         .jp-panel .sub-name { color: var(--jp-blue); }
 
         .status-dot {
@@ -143,11 +148,11 @@
         <div class="panels-container">
             <div class="panel tw-panel">
                 <div class="panel-header">
-                    <div class="location-title">
-                        <span>TW 台南・烏山頭</span>
+                    <span>TW 台南・烏山頭</span>
+                    <div class="header-right">
                         <span class="sub-name">烏山頭ダム</span>
+                        <div class="status-dot"></div>
                     </div>
-                    <div class="status-dot"></div>
                 </div>
                 <div class="data-row">
                     <span class="data-label">🌡️ 氣溫</span>
@@ -165,11 +170,11 @@
 
             <div class="panel jp-panel">
                 <div class="panel-header">
-                    <div class="location-title">
-                        <span>JP 金澤・故鄉</span>
+                    <span>JP 金澤・故鄉</span>
+                    <div class="header-right">
                         <span class="sub-name">金沢・ふるさと</span>
+                        <div class="status-dot"></div>
                     </div>
-                    <div class="status-dot"></div>
                 </div>
                 <div class="data-row">
                     <span class="data-label">🌡️ 氣溫</span>
