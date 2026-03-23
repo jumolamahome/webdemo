@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台日同步數位牆</title>
+    <style>
+        :root {
+            --bg-color: #ffffff; /* 網頁整體底色改為白色 */
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-light: #777777;
+            --tw-green: #2e8b57;
+            --jp-blue: #1c3b82;
+            --panel-bg: #f7f7f7; /* 保留內部區塊的微灰底色以增加層次感 */
+        }
+
+        body {
+            font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 40px 20px;
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Main Card */
+        .sync-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); /* 保留淡淡的陰影讓卡片浮現 */
+            text-align: center;
+        }
+        .sync-card h2 {
+            font-family: "PMingLiU", serif;
+            font-size: 24px;
+            margin-top: 0;
+            color: #3e3a39;
+        }
+        .sync-card > p {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        /* Panels Container */
+        .panels-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Individual Panel */
+        .panel {
+            flex: 1;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: var(--panel-bg);
+            border: 2px solid transparent;
+            text-align: left;
+        }
+        .panel.tw-panel {
+            border-color: var(--tw-green);
+        }
+        .panel.jp-panel {
+            border-color: var(--jp-blue);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .tw-panel .status-dot { background-color: var(--tw-green); }
+        .jp-panel .status-dot { background-color: var(--jp-blue); }
+
+        /* Data Rows */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+        .data-row:last-child {
+            margin-bottom: 0;
+        }
+        .data-label {
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .data-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--tw-green); /* Default TW */
+            font-family: monospace;
+        }
+        .jp-panel .data-value {
+            color: var(--jp-blue);
+        }
+        
+        /* Time specific styling */
+        .tw-panel .time-value { color: var(--tw-green); }
+        .jp-panel .time-value { color: var(--jp-blue); }
+
+        /* Footer Note */
+        .footer-note {
+            color: #aaaaaa;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .panels-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sync-card">
+        <h2>台日同步數位牆</h2>
+        <p>連結台南烏山頭與日本金澤，即時同步紀念活動。此概念展示兩地的環境數據對話。</p>
+
+        <div class="panels-container">
+            <div class="panel tw-panel">
+                <div class="panel-header">
+                    <span>TW 台南・烏山頭</span>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🌡️ 氣溫</span>
+                    <span class="data-value" id="tw-temp">載入中...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">💧 濕度</span>
+                    <span class="data-value" id="tw-hum">載入中...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🕒 當地時間</span>
+                    <span class="data-value time-value" id="tw-time">--:--:--</span>
+                </div>
+            </div>
+
+            <div class="panel jp-panel">
+                <div class="panel-header">
+                    <span>JP 金澤・故鄉</span>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🌡️ 氣溫</span>
+                    <span class="data-value" id="jp-temp">載入中...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">💧 濕度</span>
+                    <span class="data-value" id="jp-hum">載入中...</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🕒 當地時間</span>
+                    <span class="data-value time-value" id="jp-time">--:--:--</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ↔ 數據每秒同步更新，象徵跨越時空的紀念連結
+        </div>
+    </div>
+
+    <script>
+        // --- 1. 時間同步功能 ---
+        function updateTime() {
+            const now = new Date();
+            
+            // 台灣時間 (包含上午/下午)
+            const twOptions = { timeZone: 'Asia/Taipei', hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            let twTimeStr = new Intl.DateTimeFormat('zh-TW', twOptions).format(now);
+            // 替換 AM/PM 為更符合中文習慣的寫法
+            twTimeStr = twTimeStr.replace('AM', '上午').replace('PM', '下午');
+            document.getElementById('tw-time').innerText = twTimeStr;
+
+            // 日本時間 (24小時制)
+            const jpOptions = { timeZone: 'Asia/Tokyo', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const jpTimeStr = new Intl.DateTimeFormat('en-US', jpOptions).format(now);
+            document.getElementById('jp-time').innerText = jpTimeStr;
+        }
+
+        // 每秒更新一次時間
+        setInterval(updateTime, 1000);
+        updateTime(); // 網頁載入時立刻執行一次
+
+
+        // --- 2. 天氣 API 數據抓取功能 ---
+        async function fetchWeather() {
+            try {
+                // 台南烏山頭大約經緯度 (Lat: 23.2, Lon: 120.37)
+                const twRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=23.2&longitude=120.37&current=temperature_2m,relative_humidity_2m');
+                const twData = await twRes.json();
+                document.getElementById('tw-temp').innerText = twData.current.temperature_2m.toFixed(1) + '°C';
+                document.getElementById('tw-hum').innerText = twData.current.relative_humidity_2m + '%';
+
+                // 日本金澤大約經緯度 (Lat: 36.56, Lon: 136.65)
+                const jpRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.56&longitude=136.65&current=temperature_2m,relative_humidity_2m');
+                const jpData = await jpRes.json();
+                document.getElementById('jp-temp').innerText = jpData.current.temperature_2m.toFixed(1) + '°C';
+                document.getElementById('jp-hum').innerText = jpData.current.relative_humidity_2m + '%';
+
+            } catch (error) {
+                console.error("無法取得天氣數據:", error);
+                document.getElementById('tw-temp').innerText = "無法載入";
+                document.getElementById('jp-temp').innerText = "無法載入";
+            }
+        }
+
+        // 載入時抓取天氣
+        fetchWeather();
+        // 設定每 10 分鐘自動更新一次天氣資訊
+        setInterval(fetchWeather, 10 * 60 * 1000);
+
+    </script>
+</body>
+</html>
