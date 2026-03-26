@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台日同步數位牆 - 大螢幕看板版</title>
+    <title>臺日同步數位牆 - 大螢幕看板版</title>
     <style>
         :root {
             --bg-color: #ffffff;
@@ -15,49 +15,49 @@
             --panel-bg: #f7f7f7;
         }
 
-        /* 針對 16:9 螢幕滿版與垂直居中優化 */
         html, body {
             height: 100%;
-            overflow: hidden; /* 防止在大螢幕出現捲軸 */
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
         }
 
         body {
             font-family: "Noto Sans TC", "Microsoft JhengHei", sans-serif;
             background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
             color: var(--text-main);
             display: flex;
             justify-content: center;
-            align-items: center; /* 垂直居中 */
+            align-items: center;
         }
 
         .sync-card {
             background-color: var(--card-bg);
             border-radius: 12px;
             padding: 40px 60px;
-            width: 90vw; /* 佔據螢幕 90% 寬度 */
-            max-width: 1300px; /* 針對 42 吋螢幕增加寬度上限 */
+            width: 90vw;
+            max-width: 1400px;
             text-align: center;
         }
 
         .sync-card h2 {
             font-family: "PMingLiU", serif;
-            font-size: 42px; /* 標題放大 */
+            font-size: 52px; /* 標題再放大增加氣勢 */
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
             color: #3e3a39;
         }
 
-        .sync-card > p {
+        .sync-card .sub-header-jp {
             color: var(--text-light);
-            font-size: 20px; /* 副標題放大 */
-            margin-bottom: 40px;
+            font-size: 22px;
+            margin-bottom: 45px;
+            letter-spacing: 1px;
         }
 
         .panels-container {
             display: flex;
-            gap: 40px; /* 增加兩板間距 */
+            gap: 40px;
             margin-bottom: 30px;
         }
 
@@ -66,7 +66,7 @@
             border-radius: 15px;
             padding: 30px;
             background-color: var(--panel-bg);
-            border: 3px solid transparent; /* 加粗邊框 */
+            border: 3px solid transparent;
             text-align: left;
         }
 
@@ -78,7 +78,7 @@
             justify-content: space-between;
             align-items: center;
             font-weight: bold;
-            font-size: 24px; /* 標題區域放大 */
+            font-size: 28px;
             margin-bottom: 25px;
         }
 
@@ -89,16 +89,15 @@
         }
 
         .sub-name {
-            font-size: 24px; /* 日文名同中文大小 */
+            font-size: 28px;
             font-weight: normal;
         }
-
         .tw-panel .sub-name { color: var(--tw-green); }
         .jp-panel .sub-name { color: var(--jp-blue); }
 
         .status-dot {
-            width: 15px;
-            height: 15px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
         }
         .tw-panel .status-dot { background-color: var(--tw-green); }
@@ -109,10 +108,10 @@
             justify-content: space-between;
             align-items: center;
             background-color: #ffffff;
-            padding: 25px 30px; /* 增加行內空間 */
+            padding: 25px 35px;
             border-radius: 12px;
             margin-bottom: 20px;
-            font-size: 22px; /* 標籤文字放大 */
+            font-size: 24px;
         }
 
         .data-label {
@@ -122,8 +121,14 @@
             gap: 12px;
         }
 
+        .data-label .jp-label {
+            font-size: 18px;
+            margin-left: 5px;
+            opacity: 0.8;
+        }
+
         .data-value {
-            font-size: 32px; /* 關鍵數據放大，更有視覺衝擊力 */
+            font-size: 38px;
             font-weight: bold;
             font-family: monospace;
         }
@@ -132,36 +137,37 @@
 
         .footer-note {
             color: #aaaaaa;
-            font-size: 18px; /* 底部註解放大 */
-            margin-top: 30px;
+            font-size: 18px;
+            margin-top: 20px;
+            line-height: 1.6;
         }
     </style>
 </head>
 <body>
 
     <div class="sync-card">
-        <h2>台日同步數位牆</h2>
-        <p>連結台南烏山頭與日本金澤，即時同步紀念活動。此概念展示兩地的環境數據對話。</p>
+        <h2>臺日同步數位牆</h2>
+        <div class="sub-header-jp">台湾と日本が同期したデジタルウォール</div>
 
         <div class="panels-container">
             <div class="panel tw-panel">
                 <div class="panel-header">
-                    <span>TW 台南・烏山頭</span>
+                    <span>TW 臺南・烏山頭</span>
                     <div class="header-right">
                         <span class="sub-name">烏山頭ダム</span>
                         <div class="status-dot"></div>
                     </div>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">🌡️ 氣溫</span>
+                    <span class="data-label">🌡️ 氣溫 <span class="jp-label">気温</span></span>
                     <span class="data-value" id="tw-temp">--°C</span>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">💧 濕度</span>
+                    <span class="data-label">💧 濕度 <span class="jp-label">湿度</span></span>
                     <span class="data-value" id="tw-hum">--%</span>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">🕒 當地時間</span>
+                    <span class="data-label">🕒 當地時間 <span class="jp-label">現地時間</span></span>
                     <span class="data-value" id="tw-time">00:00:00</span>
                 </div>
             </div>
@@ -175,27 +181,27 @@
                     </div>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">🌡️ 氣溫</span>
+                    <span class="data-label">🌡️ 氣溫 <span class="jp-label">気温</span></span>
                     <span class="data-value" id="jp-temp">--°C</span>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">💧 濕度</span>
+                    <span class="data-label">💧 濕度 <span class="jp-label">湿度</span></span>
                     <span class="data-value" id="jp-hum">--%</span>
                 </div>
                 <div class="data-row">
-                    <span class="data-label">🕒 當地時間</span>
+                    <span class="data-label">🕒 當地時間 <span class="jp-label">現地時間</span></span>
                     <span class="data-value" id="jp-time">00:00:00</span>
                 </div>
             </div>
         </div>
 
         <div class="footer-note">
-            ↔ 數據即時同步更新，象徵跨越時空的紀念連結
+            ↔ 數據即時同步更新，象徵跨越時空的紀念連結<br>
+            データはリアルタイムで同期更新され、時空を超えた記念のつながりを象徴する。
         </div>
     </div>
 
     <script>
-        // JS 邏輯完全保持不變
         function updateTime() {
             const now = new Date();
             const timeOptions = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -207,11 +213,13 @@
 
         async function fetchWeather() {
             try {
+                // 臺南烏山頭
                 const twRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=23.2&longitude=120.37&current=temperature_2m,relative_humidity_2m');
                 const twData = await twRes.json();
                 document.getElementById('tw-temp').innerText = twData.current.temperature_2m.toFixed(1) + '°C';
                 document.getElementById('tw-hum').innerText = twData.current.relative_humidity_2m + '%';
 
+                // 日本金澤
                 const jpRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.56&longitude=136.65&current=temperature_2m,relative_humidity_2m');
                 const jpData = await jpRes.json();
                 document.getElementById('jp-temp').innerText = jpData.current.temperature_2m.toFixed(1) + '°C';
