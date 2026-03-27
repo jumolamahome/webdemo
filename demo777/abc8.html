@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>臺日同步數位牆 - 大螢幕看板版</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --card-bg: #ffffff;
+            --text-main: #333333;
+            --text-light: #777777;
+            --tw-green: #2e8b57;
+            --jp-blue: #1c3b82;
+            --panel-bg: #f7f7f7;
+        }
+
+        /* 針對 16:9 螢幕滿版與垂直居中優化 */
+        html, body {
+            height: 100%;
+            overflow: hidden; /* 防止在大螢幕出現捲軸 */
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            /* 統一設定為思源黑體 (Source Han Sans / Noto Sans) */
+            font-family: "Noto Sans TC", "Noto Sans JP", "Source Han Sans TW", "Source Han Sans JP", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center; /* 垂直居中 */
+        }
+
+        .sync-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 40px 60px;
+            width: 90vw; /* 佔據螢幕 90% 寬度 */
+            max-width: 1400px; /* 針對 42 吋螢幕增加寬度上限 */
+            text-align: center;
+        }
+
+        .sync-card h2 {
+            /* 移除原本的標楷體設定，統一為思源黑體加粗 */
+            font-weight: 700;
+            font-size: 52px; 
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #3e3a39;
+        }
+
+        .sync-card .sub-header-jp {
+            color: var(--text-light);
+            font-size: 22px;
+            margin-bottom: 45px;
+            letter-spacing: 1px;
+        }
+
+        .panels-container {
+            display: flex;
+            gap: 40px; /* 增加兩板間距 */
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            flex: 1;
+            border-radius: 15px;
+            padding: 30px;
+            background-color: var(--panel-bg);
+            border: 3px solid transparent; /* 加粗邊框 */
+            text-align: left;
+        }
+
+        .panel.tw-panel { border-color: var(--tw-green); }
+        .panel.jp-panel { border-color: var(--jp-blue); }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 28px; /* 標題區域放大 */
+            margin-bottom: 25px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sub-name {
+            font-size: 28px; /* 日文名同中文大小 */
+            font-weight: normal;
+        }
+        .tw-panel .sub-name { color: var(--tw-green); }
+        .jp-panel .sub-name { color: var(--jp-blue); }
+
+        .status-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+        }
+        .tw-panel .status-dot { background-color: var(--tw-green); }
+        .jp-panel .status-dot { background-color: var(--jp-blue); }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 25px 35px; /* 增加行內空間 */
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 24px; /* 標籤文字放大 */
+        }
+
+        .data-label {
+            color: var(--text-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .data-value {
+            font-size: 38px; /* 關鍵數據放大 */
+            font-weight: bold;
+            font-family: "Noto Sans TC", sans-serif; /* 統一數字字體 */
+        }
+        .tw-panel .data-value { color: var(--tw-green); }
+        .jp-panel .data-value { color: var(--jp-blue); }
+
+        .footer-note {
+            color: #aaaaaa;
+            font-size: 18px; /* 底部註解放大 */
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sync-card">
+        <h2>臺日同步數位牆</h2>
+        <div class="sub-header-jp">台湾と日本が同期したデジタルウォール</div>
+
+        <div class="panels-container">
+            <div class="panel tw-panel">
+                <div class="panel-header">
+                    <span>TW 臺南・烏山頭</span>
+                    <div class="header-right">
+                        <span class="sub-name">烏山頭ダム</span>
+                        <div class="status-dot"></div>
+                    </div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🌡️ 氣溫</span>
+                    <span class="data-value" id="tw-temp">--°C</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">💧 濕度</span>
+                    <span class="data-value" id="tw-hum">--%</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🕒 當地時間</span>
+                    <span class="data-value" id="tw-time">00:00:00</span>
+                </div>
+            </div>
+
+            <div class="panel jp-panel">
+                <div class="panel-header">
+                    <span>JP 金澤・故鄉</span>
+                    <div class="header-right">
+                        <span class="sub-name">金沢・ふるさと</span>
+                        <div class="status-dot"></div>
+                    </div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🌡️ 気温</span>
+                    <span class="data-value" id="jp-temp">--°C</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">💧 湿度</span>
+                    <span class="data-value" id="jp-hum">--%</span>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">🕒 現地時間</span>
+                    <span class="data-value" id="jp-time">00:00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            ↔ 數據即時同步更新，象徵跨越時空的紀念連結<br>
+            データはリアルタイムで同期更新され、時空を超えた記念のつながりを象徴する。
+        </div>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const timeOptions = { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('tw-time').innerText = new Intl.DateTimeFormat('en-US', { ...timeOptions, timeZone: 'Asia/Taipei' }).format(now);
+            document.getElementById('jp-time').innerText = new Intl.DateTimeFormat('en-US', { ...timeOptions, timeZone: 'Asia/Tokyo' }).format(now);
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        async function fetchWeather() {
+            try {
+                const twRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=23.2&longitude=120.37&current=temperature_2m,relative_humidity_2m');
+                const twData = await twRes.json();
+                document.getElementById('tw-temp').innerText = twData.current.temperature_2m.toFixed(1) + '°C';
+                document.getElementById('tw-hum').innerText = twData.current.relative_humidity_2m + '%';
+
+                const jpRes = await fetch('https://api.open-meteo.com/v1/forecast?latitude=36.56&longitude=136.65&current=temperature_2m,relative_humidity_2m');
+                const jpData = await jpRes.json();
+                document.getElementById('jp-temp').innerText = jpData.current.temperature_2m.toFixed(1) + '°C';
+                document.getElementById('jp-hum').innerText = jpData.current.relative_humidity_2m + '%';
+            } catch (e) { console.error(e); }
+        }
+        fetchWeather();
+        setInterval(fetchWeather, 60000);
+    </script>
+</body>
+</html>
