@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學校科目考題系統 - 認證考試</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdfbf7; color: #1e293b; margin: 0; }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .chart-container { position: relative; width: 100%; max-width: 450px; margin: auto; height: 320px; }
+        
+        .question-nav { 
+            position: fixed;
+            bottom: 76px; 
+            left: 0; 
+            right: 0;
+            margin-left: auto; 
+            margin-right: auto;
+            width: 95%; 
+            max-width: 768px; 
+            background: white; 
+            padding: 15px 20px; 
+            border-radius: 20px; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08); 
+            border: 1px solid #e2e8f0; 
+            z-index: 40;
+            max-height: 160px; 
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div id="app" class="flex-grow flex flex-col"></div>
+
+    <script>
+        // ★ 記得確認此處是否為您最新的 GAS API 網址
+        const API_URL = "https://script.google.com/macros/s/AKfycby3CxT20BicoXVEZ1CXn0zpUhrhjqKCeZtccsEStNF5ZQeRIWtCm_egpEzXm7wDUokT/exec";
+        const EXAM_NAME = "運動生理學";
+
+        let state = {
+            view: 'login', 
+            userData: {}, 
+            history: [], 
+            config: {},
+            questions: [],
+            isTest: "N",
+            currentIndex: 0,
+            answers: {},
+            flags: {}, 
+            timeLeft: 0,
+            timerInterval: null,
+            fontSize: 18, 
+            apiResult: null,
+            stats: {}
+        };
+
+        const app = document.getElementById('app');
+        const levelNames = { 'L1': 'L1 基礎', 'L2': 'L2 核心', 'L3': 'L3 架構', 'L4': 'L4 應用', 'L5': 'L5 策略' };
+
+        // ★ 時間格式化工具：強制轉換為 YYYY-MM-DD HH:mm:ss
+        function formatDateTime(str) {
+            if (!str) return "";
+            // 如果是舊資料的 ISO 格式 (帶有 T 和 Z)
+            if (str.includes("T") && str.includes("Z")) {
+                const d = new Date(str);
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const h = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                const s = String(d.getSeconds()).padStart(2, '0');
+                return `${y}-${m}-${day} ${h}:${min}:${s}`;
+            }
+            // 新資料會直接以字串進入，確保將 / 替換為 - 即可
+            return str.replace(/\//g, '-');
+        }
+
+        async function fetchWithRetry(payload, retries = 3, backoff = 2000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json(); 
+                    if (result.status === "error") throw new Error(result.message);
+                    return result; 
+                } catch (err) {
+                    if (i === retries - 1) throw err; 
+                    console.warn(`伺服器忙碌中，${backoff/1000} 秒後自動重試...`, err);
+                    await new Promise(r => setTimeout(r, backoff));
+                    backoff *= 2; 
+                }
+            }
+        }
+
+        function adjustFontSize(delta) {
+            state.fontSize = Math.min(Math.max(state.fontSize + delta, 14), 32); 
+            const content = document.getElementById('quiz-content');
+            if (content) {
+                content.style.fontSize = state.fontSize + 'px';
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const account = document.getElementById('login-id').value.trim();
+            const pw = document.getElementById('login-pw').value.trim();
+            if (!account || !pw) return alert("請填寫所有欄位");
+            
+            const btn = e.target.querySelector('button');
+            btn.innerText = "驗證中...";
+            btn.disabled = true;
+            try {
+                const payload = { action: "login", account: account, password: pw };
+                const result = await fetchWithRetry(payload, 2, 1500);
+                
+                state.userData = result.user;
+                
+                try {
+                    const histResult = await fetchWithRetry({ action: "getUserResults", account: state.userData["登入帳號"] }, 2, 1500);
+                    state.history = histResult.history || [];
+                } catch (err) {
+                    console.warn("歷史紀錄載入失敗", err);
+                }
+
+                state.view = 'home';
+                render();
+            } catch (err) { 
+                alert("登入失敗：" + err.message); 
+            } finally { 
+                btn.innerText = "確認登入"; 
+                btn.disabled = false; 
+            }
+        }
+
+        async function fetchQuestionsAndStart() {
+            const btn = document.getElementById('start-exam-btn');
+            if(btn){ btn.innerText = "下載題目中..."; btn.disabled = true; }
+            try {
+                const payload = { action: "getExam", examName: EXAM_NAME };
+                const data = await fetchWithRetry(payload, 3, 2000);
+                
+                state.config = data.config;
+                state.questions = data.questions;
+                state.isTest = String(state.config["測試模式"] || "N").trim().toUpperCase();
+                state.timeLeft = Number(state.config["考試時間"] || 60) * 60; 
+                
+                state.currentIndex = 0;
+                state.answers = {};
+                state.flags = {};
+                state.view = 'quiz';
+                render();
+                startTimer(); 
+            } catch (err) { 
+                alert("無法取得題目：" + err.message); 
+            } finally { 
+                if(btn){ btn.innerText = "進入認證考試"; btn.disabled = false; } 
+            }
+        }
+
+        async function startReview(recordStr) {
+            app.innerHTML = `<div class="flex-grow flex items-center justify-center"><div class="text-center"><div class="animate-spin text-4xl mb-4">⌛</div><p class="text-xl font-bold text-slate-700">正在載入複查資料...</p></div></div>`;
+            try {
+                const payload = { action: "review", examName: EXAM_NAME, recordStr: recordStr };
+                const data = await fetchWithRetry(payload, 3, 2000);
+                
+                state.questions = data.questions;
+                state.currentIndex = 0;
+                state.view = 'review';
+                render();
+            } catch (err) {
+                alert("載入複查資料失敗：" + err.message);
+                state.view = 'home';
+                render();
+            }
+        }
+
+        function startTimer() {
+            if (state.timerInterval) clearInterval(state.timerInterval);
+            state.timerInterval = setInterval(() => {
+                state.timeLeft--;
+                const el = document.getElementById('timer-text');
+                if (el) {
+                    const m = Math.floor(state.timeLeft / 60);
+                    const s = state.timeLeft % 60;
+                    el.innerText = `${m}:${s.toString().padStart(2, '0')}`;
+                }
+                if (state.timeLeft <= 0) submitExam(true);
+            }, 1000);
+        }
+
+        async function submitExam(auto = false) {
+            if (!auto && !confirm("確定提交考卷？")) return;
+            clearInterval(state.timerInterval);
+            app.innerHTML = `<div class="flex-grow flex items-center justify-center"><div class="text-center"><div class="animate-spin text-4xl mb-4">⌛</div><p class="text-xl font-bold text-slate-700">正在批改並上傳成績紀錄...</p></div></div>`;
+            
+            const stats = { 'L1': 0, 'L2': 0, 'L3': 0, 'L4': 0, 'L5': 0 };
+            const levelTotals = { 'L1': 0, 'L2': 0, 'L3': 0, 'L4': 0, 'L5': 0 };
+            let correct = 0;
+            let recordArray = []; 
+
+            state.questions.forEach((q, i) => {
+                const lv = q["Level"] || "L1";
+                if (levelTotals.hasOwnProperty(lv)) levelTotals[lv]++;
+                
+                let userNewOpt = state.answers[i]; 
+                let userOrigOpt = "X";             
+
+                if (userNewOpt) {
+                    userOrigOpt = q["選項對映"] ? q["選項對映"][userNewOpt] : userNewOpt; 
+                    if (userNewOpt === q["答案"]) {
+                        correct++;
+                        if (stats.hasOwnProperty(lv)) stats[lv]++;
+                    }
+                }
+                
+                let qId = q["原始題號"] || (i + 1);
+                let qAns = q["原始答案"] || q["答案"];
+                recordArray.push(`${qId}-${userOrigOpt}-${qAns}`);
+            });
+
+            state.stats = { correct, stats, levelTotals };
+            
+            const score = Math.round((correct / state.questions.length) * 100);
+            const recordString = recordArray.join(','); 
+            
+            try {
+                const payload = {
+                    action: "submitExam",
+                    account: state.userData["登入帳號"],
+                    examName: EXAM_NAME,
+                    score: score,
+                    recordStr: recordString
+                };
+
+                const result = await fetchWithRetry(payload, 3, 2000);
+                
+                state.apiResult = {
+                    score: result.score,
+                    isPass: result.isPass,
+                    certName: EXAM_NAME,
+                    certNumber: result.certNumber || "---"
+                };
+                state.view = 'result';
+                render();
+            } catch (err) { 
+                alert("伺服器持續滿載或存檔失敗：" + err.message); 
+                state.view = 'home'; 
+                render(); 
+            }
+        }
+
+        function render() {
+            app.innerHTML = '';
+            
+            if (state.view === 'login') {
+                app.innerHTML = `
+                <div class="flex-grow flex items-center justify-center p-6 fade-in">
+                    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-8 border text-center">
+                        <div class="text-6xl mb-4">🛡️</div>
+                        <h1 class="text-2xl font-black mb-6 text-slate-800">學校科目考題系統</h1>
+                        <form onsubmit="handleLogin(event)" class="space-y-4 text-left">
+                            <div>
+                                <label class="block text-sm font-bold mb-1 text-slate-800">登入帳號</label>
+                                <input id="login-id" type="text" placeholder="請輸入帳號 (如: jumolama)" required class="w-full border-2 border-slate-200 p-3 rounded-xl outline-none focus:border-blue-500 transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-1 text-slate-800">登入密碼</label>
+                                <input id="login-pw" type="password" placeholder="請輸入密碼" required class="w-full border-2 border-slate-200 p-3 rounded-xl outline-none focus:border-blue-500 transition-colors">
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-blue-700 transition-all">確認登入</button>
+                        </form>
+                    </div>
+                </div>`;
+            } 
+            else if (state.view === 'home') {
+                app.innerHTML = `
+                <div class="flex-grow flex flex-col items-center p-6 fade-in max-w-4xl mx-auto w-full">
+                    <div class="w-full bg-white rounded-3xl shadow-2xl p-10 text-center border mb-8">
+                        <h1 class="text-3xl font-black mb-4 text-slate-800">你好，${state.userData["中文姓名"]}</h1>
+                        <div class="text-left bg-slate-50 p-6 rounded-2xl mb-8 border border-slate-100 max-h-60 overflow-y-auto">
+                            <strong class="text-blue-600 block mb-3 text-lg underline">考試規則：</strong>
+                            <ul class="text-slate-700 mb-5 list-disc pl-5 space-y-1 text-sm">
+                                <li>本考試為單人電腦作答。</li>
+                                <li>不得使用手機、耳機、電子辭典或其他通訊裝置。</li>
+                                <li>禁止作弊、抄襲或分享答案，違規者將取消考試資格。</li>
+                            </ul>
+                            <strong class="text-slate-800 block mb-2 text-md">作答注意</strong>
+                            <ul class="text-slate-700 mb-5 list-disc pl-5 space-y-1 text-sm">
+                                <li>建議先完成簡單題目，再回頭作答困難題目。</li>
+                                <li>請注意時間分配，時間到系統會自動交卷。</li>
+                            </ul>
+                            <p class="text-sm font-bold text-rose-500">※ 剩餘可考試數量：${state.userData["可考試數量"]} 次</p>
+                        </div>
+                        <button id="start-exam-btn" onclick="fetchQuestionsAndStart()" class="w-full max-w-md mx-auto block bg-slate-900 text-white font-black py-5 rounded-2xl text-xl shadow-xl hover:bg-black transition-all">進入認證考試</button>
+                    </div>
+
+                    <div class="w-full bg-white rounded-3xl shadow-xl p-8 border">
+                        <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            歷史考試紀錄
+                        </h2>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b-2 border-slate-200 text-slate-500 text-sm">
+                                        <th class="py-3 px-2">考試日期</th>
+                                        <th class="py-3 px-2">分數</th>
+                                        <th class="py-3 px-2">狀態</th>
+                                        <th class="py-3 px-2">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${state.history.length === 0 ? '<tr><td colspan="4" class="text-center py-6 text-slate-400 font-bold">尚無任何考試紀錄</td></tr>' : 
+                                    state.history.map(h => `
+                                        <tr class="border-b hover:bg-slate-50 transition-colors">
+                                            <td class="py-4 px-2 text-sm text-slate-600">${formatDateTime(h["認證日期"])}</td>
+                                            <td class="py-4 px-2 font-black text-lg text-slate-800">${h["認證分數"]}</td>
+                                            <td class="py-4 px-2"><span class="px-3 py-1 rounded-full text-xs font-bold shadow-sm ${h["是否通過"]==='Y'?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${h["是否通過"]==='Y'?'通過':'未通過'}</span></td>
+                                            <td class="py-4 px-2"><button onclick="startReview('${h["答題紀錄"]}')" class="text-blue-600 text-sm font-bold hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors">複查考卷</button></td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>`;
+            } 
+            else if (state.view === 'quiz' || state.view === 'review') {
+                const isReview = state.view === 'review';
+                let currentQ = state.questions[state.currentIndex];
+                
+                app.innerHTML = `
+                <header class="bg-white/90 backdrop-blur-sm border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-slate-800 text-white text-[10px] font-bold px-2 py-1 rounded uppercase">
+                            ${isReview ? '複查模式' : (levelNames[currentQ["Level"]] || currentQ["Level"])}
+                        </span>
+                        <div class="flex border border-slate-200 rounded-lg overflow-hidden">
+                            <button onclick="adjustFontSize(-2)" class="px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold border-r border-slate-200 transition-colors">A-</button>
+                            <button onclick="adjustFontSize(2)" class="px-3 py-1 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold transition-colors">A+</button>
+                        </div>
+                    </div>
+                    <div id="timer-text" class="px-4 py-1 rounded-full font-mono text-xl font-black bg-slate-50 text-slate-800">${isReview ? '免計時' : '--:--'}</div>
+                    ${isReview ? 
+                        `<button onclick="state.view='home'; render();" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-bold text-sm transition-colors shadow-sm">返回首頁</button>` : 
+                        `<button onclick="state.flags[state.currentIndex] = !state.flags[state.currentIndex]; render();" class="flex items-center gap-1 px-3 py-1 rounded-lg ${state.flags[state.currentIndex] ? 'bg-orange-500 text-white shadow-md' : 'bg-slate-100 text-slate-400 hover:bg-slate-200'} transition-all">
+                            <span>🚩</span><span class="text-xs font-bold">標記</span>
+                        </button>`
+                    }
+                </header>
+                
+                <main id="quiz-content" class="max-w-3xl mx-auto p-6 mt-4 mb-48 w-full" style="font-size: ${state.fontSize}px; line-height: 1.6;">
+                    <div class="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm fade-in mb-8">
+                        <div class="mb-8">
+                            ${isReview ? `<span class="inline-block bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded mb-3">題號 ${currentQ["原始題號"] || (state.currentIndex+1)}</span>` : ''}
+                            <h2 class="font-bold text-slate-800">${currentQ["題目"]}</h2>
+                        </div>
+                        <div class="grid gap-4">
+                            ${['A', 'B', 'C', 'D'].map(opt => {
+                                let btnStyle = "border-slate-50 bg-slate-50 text-slate-600 hover:bg-slate-100";
+                                let iconStyle = "bg-white text-slate-400 border border-slate-200";
+                                let badge = "";
+                                
+                                if (isReview) {
+                                    if (opt === currentQ["原始正確答案"]) {
+                                        btnStyle = "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-100";
+                                        iconStyle = "bg-emerald-600 text-white border-transparent";
+                                        badge = `<span class="ml-auto text-xs font-black text-emerald-600 bg-white px-2 py-1 rounded border shadow-sm">正確解答</span>`;
+                                    } else if (opt === currentQ["使用者答案"]) {
+                                        btnStyle = "border-rose-500 bg-rose-50 text-rose-700 font-bold";
+                                        iconStyle = "bg-rose-600 text-white border-transparent";
+                                        badge = `<span class="ml-auto text-xs font-black text-rose-600 bg-white px-2 py-1 rounded border shadow-sm">您的作答</span>`;
+                                    } else {
+                                        btnStyle = "border-slate-50 bg-slate-50 text-slate-400 opacity-60";
+                                    }
+                                } else {
+                                    const isSelected = state.answers[state.currentIndex] === opt;
+                                    const isCorrectHint = (state.isTest === 'Y' && opt === currentQ["答案"]);
+                                    
+                                    if (isSelected) {
+                                        btnStyle = "border-blue-500 bg-blue-50 text-blue-700 font-bold";
+                                        iconStyle = "bg-blue-600 text-white border-transparent";
+                                    }
+                                    if (isCorrectHint) {
+                                        btnStyle = "border-emerald-500 bg-emerald-50 text-emerald-700 font-bold ring-2 ring-emerald-100";
+                                        iconStyle = "bg-emerald-600 text-white";
+                                        badge = `<span class="ml-auto text-xs font-black text-emerald-600 bg-white px-2 py-1 rounded border shadow-sm">ANSWER</span>`;
+                                    }
+                                }
+                                
+                                return `<button ${isReview ? 'disabled' : `onclick="state.answers[state.currentIndex] = '${opt}'; render();"`} class="flex items-center gap-4 w-full text-left p-5 rounded-2xl border-2 transition-all ${btnStyle}">
+                                    <span class="w-8 h-8 rounded-lg flex items-center justify-center font-black flex-shrink-0 ${iconStyle}">${opt}</span>
+                                    <span>${currentQ[opt]}</span>
+                                    ${badge}
+                                </button>`;
+                            }).join('')}
+                        </div>
+
+                        ${isReview ? `
+                            <div class="mt-10 p-6 bg-blue-50/50 rounded-2xl border-l-4 border-blue-400">
+                                <p class="text-sm font-black text-blue-800 mb-2 flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path></svg>
+                                    試題解析
+                                </p>
+                                <p class="text-slate-700 leading-relaxed">${currentQ["解析"] || '此題無提供解析'}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                </main>
+                
+                <div class="question-nav fade-in">
+                    <div class="flex flex-wrap gap-2 md:gap-3">
+                        ${state.questions.map((_, i) => {
+                            let btnClass = "w-12 h-10 flex items-center justify-center rounded-xl text-sm font-bold border-2 relative transition-all ";
+                            
+                            if (isReview) {
+                                let isAnsCorrect = state.questions[i]["使用者答案"] === state.questions[i]["原始正確答案"];
+                                if (state.currentIndex === i) {
+                                    btnClass += isAnsCorrect ? "border-emerald-500 bg-emerald-500 text-white scale-110 shadow-md" : "border-rose-500 bg-rose-500 text-white scale-110 shadow-md";
+                                } else {
+                                    btnClass += isAnsCorrect ? "border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "border-rose-200 bg-rose-50 text-rose-600 hover:bg-rose-100";
+                                }
+                            } else {
+                                if (state.currentIndex === i) {
+                                    btnClass += "border-blue-500 text-blue-600 bg-white shadow-sm scale-110";
+                                } else if (state.answers[i]) {
+                                    btnClass += "border-emerald-500 bg-emerald-500 text-white shadow-sm";
+                                } else {
+                                    btnClass += "border-transparent text-slate-400 bg-white hover:bg-slate-50";
+                                }
+                            }
+                            
+                            return `
+                            <button onclick="state.currentIndex = ${i}; render();" class="${btnClass}">
+                                ${i + 1}
+                                ${(!isReview && state.flags[i]) ? '<div class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-orange-500 rounded-full border-2 border-white shadow-sm"></div>' : ''}
+                            </button>`;
+                        }).join('')}
+                    </div>
+                </div>
+
+                <footer class="fixed bottom-0 w-full bg-white border-t border-slate-100 p-4 shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.05)] z-50 flex justify-center fade-in">
+                    <div class="max-w-3xl w-full flex gap-4">
+                        <button onclick="if(state.currentIndex > 0){state.currentIndex--; render();}" class="flex-1 bg-slate-100 text-slate-500 py-3 rounded-xl font-black hover:bg-slate-200 transition-colors" ${state.currentIndex === 0 ? 'disabled style="opacity:0.3"' : ''}>⬅ 上一題</button>
+                        ${(!isReview && state.currentIndex === state.questions.length - 1) 
+                            ? `<button onclick="submitExam()" class="flex-1 bg-emerald-600 text-white py-3 rounded-xl font-black shadow-lg hover:bg-emerald-700 transition-colors">✅ 提交考卷</button>` 
+                            : `<button onclick="if(state.currentIndex < state.questions.length - 1){state.currentIndex++; render();}" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-black shadow-md hover:bg-indigo-700 transition-colors">下一題 ➡</button>`}
+                    </div>
+                </footer>`;
+            } 
+            else if (state.view === 'result') {
+                renderResult();
+            }
+            else if (state.view === 'thanks') {
+                app.innerHTML = `
+                <div class="flex-grow flex items-center justify-center p-6 fade-in">
+                    <div class="max-w-md w-full bg-white rounded-3xl shadow-2xl p-10 border border-slate-100 text-center">
+                        <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <h1 class="text-3xl font-black text-slate-800 mb-4">謝謝您參與考試</h1>
+                        <p class="text-slate-500 mb-8 leading-relaxed">考試結果已上傳。<br>現在您可以安全地關閉此視窗。</p>
+                        <div class="pt-6 border-t border-slate-100">
+                            <button onclick="location.reload()" class="w-full bg-slate-100 text-slate-600 font-bold py-4 rounded-xl hover:bg-slate-200 hover:text-slate-800 transition-all">返回首頁</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        }
+
+        function renderResult() {
+            const res = state.apiResult;
+            const isPass = res.isPass === "Y";
+            const { stats, levelTotals } = state.stats;
+            
+            app.innerHTML = `
+            <div class="min-h-screen bg-slate-50 p-6 md:p-10 fade-in pb-24 w-full">
+                <div class="max-w-4xl mx-auto space-y-8">
+                    <div class="rounded-[2.5rem] p-10 text-white shadow-2xl bg-${isPass ? 'emerald' : 'rose'}-600">
+                        <h1 class="text-4xl font-black mb-4">考生：${state.userData["中文姓名"]}</h1>
+                        <h2 class="text-5xl font-black mb-2">${isPass ? '認證通過' : '認證未通過'}</h2>
+                        <p class="text-lg opacity-80">${res.certName} | 分數：${res.score}分</p>
+                        ${isPass ? `<p class="mt-4 font-bold text-emerald-100">證書編號：${res.certNumber}</p>` : ''}
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                            <h3 class="text-xl font-bold mb-6 text-center text-slate-800">📊 職能雷達圖</h3>
+                            <div class="chart-container"><canvas id="radarCanvas"></canvas></div>
+                        </div>
+                        <div class="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-center">
+                            <h3 class="text-xl font-bold mb-6 text-center text-slate-800">維度統計</h3>
+                            ${['L1', 'L2', 'L3', 'L4', 'L5'].map(lv => `
+                                <div class="mb-5">
+                                    <div class="flex justify-between text-xs font-bold text-slate-500 mb-2">
+                                        <span>${levelNames[lv]}</span>
+                                        <span class="text-slate-700">${stats[lv] || 0}/${levelTotals[lv] || 0} 正確</span>
+                                    </div>
+                                    <div class="h-3 bg-slate-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-indigo-500 rounded-full transition-all duration-1000" style="width: ${levelTotals[lv] ? (stats[lv]/levelTotals[lv])*100 : 0}%"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <button onclick="state.view='thanks'; render();" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xl shadow-xl hover:bg-black transition-all">結束測驗</button>
+                </div>
+            </div>`;
+            
+            const ctx = document.getElementById('radarCanvas').getContext('2d');
+            new Chart(ctx, { 
+                type: 'radar', 
+                data: { 
+                    labels: ['L1 基礎', 'L2 核心', 'L3 架構', 'L4 應用', 'L5 策略'], 
+                    datasets: [{ 
+                        data: ['L1', 'L2', 'L3', 'L4', 'L5'].map(lv => (levelTotals[lv] > 0 ? (stats[lv] / levelTotals[lv]) * 100 : 0)), 
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)', 
+                        borderColor: 'rgba(79, 70, 229, 1)', 
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(79, 70, 229, 1)'
+                    }] 
+                }, 
+                options: { 
+                    scales: { r: { min: 0, max: 100, ticks: { display: false } } }, 
+                    plugins: { legend: { display: false } } 
+                } 
+            });
+        }
+
+        render();
+    </script>
+</body>
+</html>
