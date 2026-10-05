@@ -1,45 +1,389 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-Hant">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>目錄</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            color: #333;
-        }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            margin: 5px 0;
-        }
-        a {
-            text-decoration: none;
-            color: #0066cc;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Pages 檔案總管</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    :root {
+      --bg: #f5f7fb;
+      --panel: #ffffff;
+      --line: #e5e7eb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --folder: #f59e0b;
+      --shadow: 0 10px 30px rgba(0,0,0,.06);
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 18px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .app {
+      width: min(1200px, 94%);
+      margin: 24px auto;
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 20px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 520px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fafafa;
+      flex-wrap: wrap;
+    }
+
+    .toolbar button {
+      border: 1px solid var(--line);
+      background: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .toolbar button:hover {
+      background: var(--accent-soft);
+      border-color: #bfdbfe;
+    }
+
+    .breadcrumb {
+      flex: 1;
+      min-width: 200px;
+      font-size: 14px;
+      color: var(--muted);
+      overflow-wrap: anywhere;
+    }
+
+    .file-list {
+      padding: 8px;
+    }
+
+    .file-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 110px;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .file-row:hover {
+      background: var(--accent-soft);
+    }
+
+    .icon {
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .name {
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .folder .icon { color: var(--folder); }
+
+    .viewer-head {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fafafa;
+    }
+
+    .viewer-head h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .viewer-head .path {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .viewer {
+      padding: 16px;
+      height: 455px;
+      overflow: auto;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: Consolas, Menlo, monospace;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: white;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .notice {
+      width: min(1200px, 94%);
+      margin: 0 auto 28px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 850px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>目錄</h1>
-    <ul>
-        <li><a href="README.md">README.md</a></li>
-        <li><a href="index.html">index.html</a></li>
-        <li><a href="docs/">docs</a></li>
-        <li><a href="images/">images</a></li>
-        <!-- 根据项目结构继续添加其他链接 -->
-    </ul>
+<header>
+  <h1>📁 GitHub Pages 檔案總管</h1>
+  <p>可瀏覽目錄、預覽文字檔，HTML 會直接以網頁方式開啟。</p>
+</header>
 
+<main class="app">
+  <section class="panel">
+    <div class="toolbar">
+      <button id="backBtn">← 上一層</button>
+      <button id="homeBtn">⌂ 根目錄</button>
+      <div id="breadcrumb" class="breadcrumb">/</div>
+    </div>
+    <div id="fileList" class="file-list"></div>
+  </section>
+
+  <section class="panel">
+    <div class="viewer-head">
+      <h2 id="viewerTitle">檔案內容預覽</h2>
+      <div id="viewerPath" class="path">點左邊的檔案查看內容</div>
+    </div>
+    <div id="viewer" class="viewer">
+      <div class="empty">尚未選擇檔案</div>
+    </div>
+  </section>
+</main>
+
+<div class="notice">
+  GitHub Pages 無法由瀏覽器直接列出伺服器目錄，因此本頁會讀取 <code>files.json</code>。
+  專案內附的 GitHub Actions 會在 push 時自動重新產生檔案清單。
+</div>
+
+<script>
+  let fileIndex = [];
+  let currentPath = "";
+
+  const fileList = document.getElementById("fileList");
+  const breadcrumb = document.getElementById("breadcrumb");
+  const viewer = document.getElementById("viewer");
+  const viewerTitle = document.getElementById("viewerTitle");
+  const viewerPath = document.getElementById("viewerPath");
+
+  const textExtensions = new Set([
+    "txt","md","css","js","json","xml","csv","yml","yaml",
+    "py","java","c","cpp","h","php","sql","svg","log"
+  ]);
+
+  function extOf(name) {
+    const i = name.lastIndexOf(".");
+    return i >= 0 ? name.slice(i + 1).toLowerCase() : "";
+  }
+
+  function iconFor(item) {
+    if (item.type === "directory") return "📁";
+
+    const ext = extOf(item.name);
+    if (ext === "html" || ext === "htm") return "🌐";
+    if (["png","jpg","jpeg","gif","webp","svg"].includes(ext)) return "🖼️";
+    if (ext === "pdf") return "📕";
+    if (["zip","rar","7z","tar","gz"].includes(ext)) return "🗜️";
+    if (["js","css","json","py","java","php","c","cpp"].includes(ext)) return "💻";
+    return "📄";
+  }
+
+  function parentPath(path) {
+    if (!path) return "";
+    const parts = path.split("/").filter(Boolean);
+    parts.pop();
+    return parts.join("/");
+  }
+
+  function renderDirectory(path = "") {
+    currentPath = path;
+
+    breadcrumb.textContent = "/" + (path ? path + "/" : "");
+
+    const items = fileIndex
+      .filter(item => item.parent === path)
+      .sort((a, b) => {
+        if (a.type !== b.type) return a.type === "directory" ? -1 : 1;
+        return a.name.localeCompare(b.name, "zh-Hant");
+      });
+
+    fileList.innerHTML = "";
+
+    if (!items.length) {
+      fileList.innerHTML = '<div class="empty">這個目錄沒有檔案</div>';
+      return;
+    }
+
+    for (const item of items) {
+      const row = document.createElement("div");
+      row.className = "file-row " + (item.type === "directory" ? "folder" : "file");
+
+      row.innerHTML = `
+        <div class="icon">${iconFor(item)}</div>
+        <div class="name">${escapeHtml(item.name)}</div>
+        <div class="meta">${item.type === "directory" ? "資料夾" : formatSize(item.size)}</div>
+      `;
+
+      row.addEventListener("click", () => openItem(item));
+      fileList.appendChild(row);
+    }
+  }
+
+  async function openItem(item) {
+    if (item.type === "directory") {
+      renderDirectory(item.path);
+      return;
+    }
+
+    const ext = extOf(item.name);
+
+    // HTML：如同直接輸入網址，直接開啟真正的 HTML 頁面
+    if (ext === "html" || ext === "htm") {
+      window.location.href = encodeURI(item.path);
+      return;
+    }
+
+    viewerTitle.textContent = item.name;
+    viewerPath.textContent = item.path;
+
+    // 圖片直接顯示
+    if (["png","jpg","jpeg","gif","webp","svg"].includes(ext)) {
+      viewer.innerHTML = `<img src="${encodeURI(item.path)}" alt="" style="max-width:100%;height:auto;">`;
+      return;
+    }
+
+    // PDF 用 iframe
+    if (ext === "pdf") {
+      viewer.innerHTML = `<iframe src="${encodeURI(item.path)}"></iframe>`;
+      return;
+    }
+
+    // 文字類檔案直接抓內容預覽
+    if (textExtensions.has(ext) || !ext) {
+      viewer.innerHTML = '<div class="empty">讀取中...</div>';
+      try {
+        const response = await fetch(encodeURI(item.path));
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const text = await response.text();
+        viewer.innerHTML = "";
+        const pre = document.createElement("pre");
+        pre.textContent = text;
+        viewer.appendChild(pre);
+      } catch (error) {
+        viewer.innerHTML = `<div class="empty">無法讀取：${escapeHtml(error.message)}</div>`;
+      }
+      return;
+    }
+
+    // 其他類型直接下載 / 開啟
+    window.location.href = encodeURI(item.path);
+  }
+
+  function formatSize(bytes = 0) {
+    if (!bytes) return "";
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / 1024 / 1024).toFixed(1) + " MB";
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    renderDirectory(parentPath(currentPath));
+  });
+
+  document.getElementById("homeBtn").addEventListener("click", () => {
+    renderDirectory("");
+  });
+
+  async function init() {
+    try {
+      const response = await fetch("files.json?v=" + Date.now());
+      if (!response.ok) throw new Error("找不到 files.json");
+      fileIndex = await response.json();
+      renderDirectory("");
+    } catch (error) {
+      fileList.innerHTML = `
+        <div class="empty">
+          無法載入 files.json<br><br>
+          ${escapeHtml(error.message)}
+        </div>`;
+    }
+  }
+
+  init();
+</script>
 </body>
 </html>

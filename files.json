@@ -1,0 +1,23 @@
+[
+  {
+    "name": "index.html",
+    "path": "index.html",
+    "parent": "",
+    "type": "file",
+    "size": 0
+  },
+  {
+    "name": "tools",
+    "path": "tools",
+    "parent": "",
+    "type": "directory",
+    "size": 0
+  },
+  {
+    "name": "generate-files.js",
+    "path": "tools/generate-files.js",
+    "parent": "tools",
+    "type": "file",
+    "size": 0
+  }
+]
