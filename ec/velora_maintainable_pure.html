@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Velora Select｜質感生活選物</title>
+<style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", Arial, sans-serif;
+      background: #f8f5f1;
+      color: #2f2a27;
+    }
+    a { color: inherit; }
+    .wrap { width: min(1180px, 92%); margin: auto; }
+    .shadow { box-shadow: 0 12px 40px rgba(58,44,35,.09); }
+  </style>
+
+<style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", Arial, sans-serif;
+      background: #f8f5f1;
+      color: #2f2a27;
+    }
+    a { color: inherit; }
+    .wrap { width: min(1180px, 92%); margin: auto; }
+    .shadow { box-shadow: 0 12px 40px rgba(58,44,35,.09); }
+  
+
+  .desktop-nav { display:flex; gap:34px; }
+  .desktop-nav a { text-decoration:none; font-size:15px; transition:.2s; }
+  .desktop-nav a:hover { opacity:.55; }
+  .iconBtn,.cartBtn {
+    border:0; background:#f0ebe6; border-radius:999px; min-height:40px;
+    padding:0 14px; cursor:pointer; transition:.2s;
+  }
+  .iconBtn:hover,.cartBtn:hover { transform:translateY(-2px); background:#e7ded7; }
+  .cartBtn { background:#2f2a27; color:#fff; }
+
+
+  .hero { overflow:hidden;border-radius:30px;background:#e9ddd3;display:grid;grid-template-columns:1fr 1.18fr;min-height:510px; }
+  .heroText { padding:70px 55px;display:flex;flex-direction:column;justify-content:center; }
+  .heroText h1 { font-family:Georgia,"Noto Serif TC",serif;font-size:58px;line-height:1.15;margin:0 0 18px; }
+  .heroText p { line-height:1.9;color:#6c625b;font-size:16px;max-width:460px; }
+  .heroPhoto {
+    background:
+      linear-gradient(90deg,rgba(233,221,211,.12),rgba(0,0,0,.02)),
+      url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=85') center/cover;
+  }
+  .mainCta,.subCta { text-decoration:none;padding:14px 24px;border-radius:999px;font-size:14px; }
+  .mainCta { background:#2f2a27;color:white; }
+  .subCta { border:1px solid #7d6c61; }
+
+
+  .categoryGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+  .cat{height:290px;border-radius:22px;background-size:cover;background-position:center;position:relative;overflow:hidden;cursor:pointer}
+  .cat:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent,rgba(0,0,0,.55))}
+  .cat span{position:absolute;z-index:2;left:22px;bottom:20px;color:white;font-size:25px;font-weight:700}
+  .cat:hover{transform:translateY(-3px);transition:.25s}
+  .c1{background-image:url('https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=900&q=80')}
+  .c2{background-image:url('https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=80')}
+  .c3{background-image:url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=900&q=80')}
+
+
+.productGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.card{background:#faf8f5;border:1px solid #eee7e1;border-radius:20px;overflow:hidden;transition:.25s}
+.card:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(56,42,32,.12)}
+.pic{height:300px;background-size:cover;background-position:center;position:relative}
+.p1{background-image:url('https://images.unsplash.com/photo-1608181831718-c9ffd66e3072?auto=format&fit=crop&w=700&q=80')}
+.p2{background-image:url('https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?auto=format&fit=crop&w=700&q=80')}
+.p3{background-image:url('https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=700&q=80')}
+.p4{background-image:url('https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=700&q=80')}
+.tag{position:absolute;left:13px;top:13px;background:white;padding:7px 10px;border-radius:999px;font-size:12px;font-weight:bold}
+.info{padding:18px}
+.info h3{margin:7px 0 9px;font-size:18px}
+.stars{font-size:13px;color:#bb815c}.stars span{color:#999}
+.price{display:flex;gap:10px;align-items:center;margin:12px 0 15px}.price del{color:#aaa;font-size:13px}
+.info button{width:100%;border:0;background:#2f2a27;color:#fff;padding:12px;border-radius:11px;cursor:pointer;font-weight:bold}
+.info button:hover{background:#b47a58}
+
+
+.storyBox{display:grid;grid-template-columns:1.1fr 1fr;border-radius:26px;overflow:hidden}
+
+
+.serviceGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+.serviceGrid p{color:#81756d;font-size:14px}.serviceIcon{font-size:28px}
+
+
+.footerGrid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:30px}
+.footerGrid p{font-size:13px;color:#80766f;margin:10px 0}
+
+
+@media(max-width:900px){
+  .desktop-nav{display:none}
+  .hero{grid-template-columns:1fr;min-height:auto}
+  .heroPhoto{height:390px}
+  .heroText{padding:48px 30px}
+  .heroText h1{font-size:45px}
+  .productGrid{grid-template-columns:repeat(2,1fr)}
+  .categoryGrid{grid-template-columns:1fr 1fr}
+  .cat:last-child{grid-column:1/-1}
+  .storyBox{grid-template-columns:1fr}
+  .serviceGrid{grid-template-columns:1fr 1fr}
+  .footerGrid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .heroText h1{font-size:37px}
+  .heroPhoto{height:310px}
+  .productGrid{grid-template-columns:1fr}
+  .categoryGrid{grid-template-columns:1fr}
+  .cat:last-child{grid-column:auto}
+  .serviceGrid,.footerGrid{grid-template-columns:1fr}
+  .pic{height:360px}
+  .cartBtn{padding:0 10px}
+}
+
+
+/* Extracted inline styles */
+#styleEl1 { background:#2f2a27;color:white;text-align:center;padding:9px 12px;font-size:14px;cursor:pointer; }
+#styleEl2 { background:rgba(255,255,255,.94);position:sticky;top:0;z-index:50;border-bottom:1px solid #eee7e1; }
+#styleEl3 { display:flex;align-items:center;justify-content:space-between;height:78px; }
+#styleEl4 { font-family:Georgia,serif;font-size:29px;letter-spacing:2px;font-weight:bold; }
+#styleEl5 { display:flex;gap:9px;align-items:center; }
+#searchBox { display:none;background:white;border-bottom:1px solid #eee;padding:18px; }
+#styleEl9 { display:flex;gap:10px; }
+#searchInput { flex:1;border:1px solid #d8d0ca;border-radius:12px;padding:13px 15px;font-size:15px; }
+#styleEl10 { border:0;background:#b98562;color:white;border-radius:12px;padding:0 24px;cursor:pointer; }
+#styleEl11 { padding:42px 0 28px; }
+#styleEl12 { font-size:13px;letter-spacing:3px;color:#9b6d50;margin-bottom:14px; }
+#styleEl13 { display:flex;gap:10px;flex-wrap:wrap;margin-top:25px; }
+#new { padding:62px 0 35px; }
+#styleEl14 { display:flex;justify-content:space-between;align-items:end;margin-bottom:25px; }
+#styleEl15 { color:#a7785c;font-size:13px;letter-spacing:2px; }
+#styleEl16 { font-size:34px;margin:8px 0 0;font-family:Georgia,'Noto Serif TC',serif; }
+#styleEl17 { font-size:14px;color:#7a706a; }
+#products { padding:55px 0;background:#fff; }
+#styleEl18 { text-align:center;margin-bottom:34px; }
+#styleEl19 { font-size:13px;color:#aa795b;letter-spacing:2px; }
+#styleEl20 { font:700 36px Georgia,'Noto Serif TC',serif;margin:10px 0; }
+#styleEl21 { color:#807670; }
+#styleEl22 { font-size:13px;color:#9b918b; }
+#styleEl24 { font-size:13px;color:#9b918b; }
+#styleEl26 { font-size:13px;color:#9b918b; }
+#styleEl28 { font-size:13px;color:#9b918b; }
+#toast { display:none;position:fixed;right:24px;bottom:24px;z-index:100;background:#2f2a27;color:white;padding:14px 18px;border-radius:12px;box-shadow:0 12px 35px rgba(0,0,0,.22);font-size:14px; }
+#story { padding:80px 0; }
+#styleEl30 { min-height:430px;background:url('https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1100&q=80') center/cover; }
+#styleEl31 { padding:55px;background:#e9ddd3;display:flex;flex-direction:column;justify-content:center; }
+#styleEl32 { color:#9f6c4e;font-size:13px;letter-spacing:2px; }
+#styleEl33 { font:700 39px Georgia,'Noto Serif TC',serif;margin:13px 0; }
+#styleEl34 { line-height:2;color:#6e625b; }
+#styleEl35 { margin-top:20px;font-weight:bold;text-decoration:none; }
+#service { background:#efe9e4;padding:55px 0; }
+#styleEl36 { padding:70px 0; }
+#styleEl37 { background:#2f2a27;color:white;border-radius:28px;padding:48px;text-align:center; }
+#styleEl38 { letter-spacing:2px;color:#d7bca9;font-size:13px; }
+#styleEl39 { font:700 34px Georgia,'Noto Serif TC',serif;margin:12px 0; }
+#styleEl40 { color:#d6cdc7; }
+#styleEl41 { display:flex;max-width:520px;margin:25px auto 0;background:white;padding:6px;border-radius:999px; }
+#email { flex:1;border:0;outline:0;padding:12px 16px;border-radius:999px; }
+#styleEl42 { border:0;background:#b7805e;color:white;border-radius:999px;padding:0 22px;cursor:pointer; }
+#styleEl43 { background:#fff;border-top:1px solid #eee6df;padding:45px 0 25px; }
+#styleEl44 { font:700 25px Georgia,serif;letter-spacing:2px; }
+#styleEl45 { color:#8a8079;line-height:1.8;font-size:14px; }
+#styleEl46 { font-size:12px;color:#aaa;margin-top:30px;border-top:1px solid #eee;padding-top:20px; }
+#cartPanel { position:fixed;right:-380px;top:0;width:min(380px,92vw);height:100vh;background:white;z-index:200;box-shadow:-10px 0 35px rgba(0,0,0,.16);transition:.35s;padding:24px;overflow:auto; }
+#styleEl47 { display:flex;justify-content:space-between;align-items:center; }
+#styleEl48 { border:0;background:#eee;border-radius:50%;width:36px;height:36px;cursor:pointer; }
+#cartItems { margin-top:22px;color:#736861; }
+#styleEl49 { margin-top:28px;border-top:1px solid #eee;padding-top:20px; }
+#styleEl50 { display:flex;justify-content:space-between; }
+#styleEl51 { width:100%;margin-top:18px;padding:14px;border:0;background:#2f2a27;color:white;border-radius:12px;cursor:pointer; }
+#mask { display:none;position:fixed;inset:0;background:rgba(0,0,0,.34);z-index:150; }</style><script>
+
+    function topMessage(){
+      alert("🎉 本週會員滿 NT$1,500 免運！");
+    }
+  
+
+  function toggleSearch(){
+    var a=document.getElementById("searchBox");
+    a.style.display = a.style.display==="none" ? "block" : "none";
+  }
+  function fakeSearch(){
+    var key=document.getElementById("searchInput").value.trim();
+    alert(key ? "正在搜尋：「"+key+"」" : "請先輸入商品關鍵字");
+  }
+  function showMember(){ alert("會員功能示範：登入 / 收藏 / 訂單查詢"); }
+
+
+  var cart=[];
+  function addCart(name,price){
+    cart.push({name:name,price:price});
+    document.getElementById("cartCount").innerHTML=cart.length;
+    var toast=document.getElementById("toast");
+    toast.innerHTML="✓ 已加入購物袋："+name;
+    toast.style.display="block";
+    clearTimeout(window.toastTimer);
+    window.toastTimer=setTimeout(function(){toast.style.display="none"},1800);
+  }
+
+
+function subscribe(){
+  var e=document.getElementById("email").value;
+  if(e.indexOf("@")===-1){ alert("請輸入正確 Email"); return; }
+  alert("訂閱成功！歡迎加入 VELORA。");
+}
+
+
+function openCart(){
+  document.getElementById("cartPanel").style.right="0";
+  document.getElementById("mask").style.display="block";
+  renderCart();
+}
+function closeCart(){
+  document.getElementById("cartPanel").style.right="-380px";
+  document.getElementById("mask").style.display="none";
+}
+function renderCart(){
+  var box=document.getElementById("cartItems"), total=0;
+  if(cart.length===0){box.innerHTML="目前購物袋是空的。";}
+  else{
+    box.innerHTML="";
+    for(var i=0;i<cart.length;i++){
+      total+=cart[i].price;
+      box.innerHTML += '<div style="padding:13px 0;border-bottom:1px solid #eee;display:flex;justify-content:space-between;gap:12px;"><span>'+cart[i].name+'</span><b>NT$'+cart[i].price.toLocaleString()+'</b></div>';
+    }
+  }
+  document.getElementById("cartTotal").innerHTML="NT$"+total.toLocaleString();
+}
+function checkout(){
+  if(cart.length===0) alert("購物袋目前是空的");
+  else alert("這是示範網站，這裡可以再串接真正的結帳流程。");
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+document.getElementById("styleEl1").addEventListener("click", function(event) { topMessage() });
+document.getElementById("clickEl6").addEventListener("click", function(event) { toggleSearch() });
+document.getElementById("clickEl7").addEventListener("click", function(event) { showMember() });
+document.getElementById("clickEl8").addEventListener("click", function(event) { openCart() });
+document.getElementById("styleEl10").addEventListener("click", function(event) { fakeSearch() });
+document.getElementById("clickEl23").addEventListener("click", function(event) { addCart('晨霧木質香氛蠟燭',880) });
+document.getElementById("clickEl25").addEventListener("click", function(event) { addCart('雲朵柔皮肩背包',2380) });
+document.getElementById("clickEl27").addEventListener("click", function(event) { addCart('奶油白陶瓷花器',1280) });
+document.getElementById("clickEl29").addEventListener("click", function(event) { addCart('復古金屬細框腕錶',1680) });
+document.getElementById("styleEl35").addEventListener("click", function(event) { alert('品牌故事頁示範') });
+document.getElementById("styleEl42").addEventListener("click", function(event) { subscribe() });
+document.getElementById("styleEl48").addEventListener("click", function(event) { closeCart() });
+document.getElementById("styleEl51").addEventListener("click", function(event) { checkout() });
+document.getElementById("mask").addEventListener("click", function(event) { closeCart() });
+});
+</script></head>
+<body>
+<div id="styleEl1">
+  本週限定｜滿 NT$1,500 免運・新會員再享 95 折
+</div>
+<header id="styleEl2">
+<div class="wrap" id="styleEl3">
+<div id="styleEl4">VELORA</div>
+<nav class="desktop-nav">
+<a href="#new">新品</a>
+<a href="#products">熱賣商品</a>
+<a href="#story">品牌故事</a>
+<a href="#service">購物服務</a>
+</nav>
+<div id="styleEl5">
+<button class="iconBtn" id="clickEl6">⌕</button>
+<button class="iconBtn" id="clickEl7">♡</button>
+<button class="cartBtn" id="clickEl8">購物袋 <b id="cartCount">0</b></button>
+</div>
+</div>
+</header>
+
+<div id="searchBox">
+<div class="wrap" id="styleEl9">
+<input id="searchInput" placeholder="搜尋商品，例如：香氛、包款、居家用品"/>
+<button id="styleEl10">搜尋</button>
+</div>
+</div>
+
+<section id="styleEl11">
+<div class="wrap hero shadow">
+<div class="heroText">
+<div id="styleEl12">AUTUMN COLLECTION 2026</div>
+<h1>把日常，<br/>過得更有質感。</h1>
+<p>從香氣、穿搭到生活器物，精選值得長久陪伴的設計。</p>
+<div id="styleEl13">
+<a class="mainCta" href="#products">立即選購</a>
+<a class="subCta" href="#story">認識品牌</a>
+</div>
+</div>
+<div class="heroPhoto"></div>
+</div>
+</section>
+
+<section class="wrap" id="new">
+<div id="styleEl14">
+<div>
+<div id="styleEl15">CURATED CATEGORY</div>
+<h2 id="styleEl16">探索你的生活風格</h2>
+</div>
+<div id="styleEl17">精選 2026 秋季人氣分類</div>
+</div>
+<div class="categoryGrid">
+<div class="cat c1"><span>香氛生活</span></div>
+<div class="cat c2"><span>質感包款</span></div>
+<div class="cat c3"><span>居家選物</span></div>
+</div>
+</section>
+
+<section id="products">
+<div class="wrap">
+<div id="styleEl18">
+<div id="styleEl19">BEST SELLERS</div>
+<h2 id="styleEl20">本月熱賣選品</h2>
+<p id="styleEl21">那些被反覆選擇的，通常最值得留下。</p>
+</div>
+<div class="productGrid">
+<div class="card">
+<div class="pic p1"><div class="tag">人氣 No.1</div></div>
+<div class="info">
+<div id="styleEl22">AROMA</div>
+<h3>晨霧木質香氛蠟燭</h3>
+<div class="stars">★★★★★ <span>(128)</span></div>
+<div class="price"><b>NT$880</b><del>NT$980</del></div>
+<button id="clickEl23">加入購物袋</button>
+</div>
+</div>
+<div class="card">
+<div class="pic p2"><div class="tag">NEW</div></div>
+<div class="info">
+<div id="styleEl24">BAG</div>
+<h3>雲朵柔皮肩背包</h3>
+<div class="stars">★★★★★ <span>(86)</span></div>
+<div class="price"><b>NT$2,380</b></div>
+<button id="clickEl25">加入購物袋</button>
+</div>
+</div>
+<div class="card">
+<div class="pic p3"></div>
+<div class="info">
+<div id="styleEl26">HOME</div>
+<h3>奶油白陶瓷花器</h3>
+<div class="stars">★★★★☆ <span>(64)</span></div>
+<div class="price"><b>NT$1,280</b></div>
+<button id="clickEl27">加入購物袋</button>
+</div>
+</div>
+<div class="card">
+<div class="pic p4"><div class="tag">限量</div></div>
+<div class="info">
+<div id="styleEl28">ACCESSORY</div>
+<h3>復古金屬細框腕錶</h3>
+<div class="stars">★★★★★ <span>(71)</span></div>
+<div class="price"><b>NT$1,680</b><del>NT$1,880</del></div>
+<button id="clickEl29">加入購物袋</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+
+<div id="toast"></div>
+<section class="wrap" id="story">
+<div class="storyBox">
+<div id="styleEl30"></div>
+<div id="styleEl31">
+<div id="styleEl32">OUR STORY</div>
+<h2 id="styleEl33">設計不是炫耀，<br/>而是讓生活剛剛好。</h2>
+<p id="styleEl34">VELORA 從日常出發，挑選兼具外型、手感與實用性的商品。我們相信，真正好的物件不必喧嘩，卻能在每天使用時，讓人感受到細節。</p>
+<a href="#" id="styleEl35">閱讀品牌故事 →</a>
+</div>
+</div>
+</section>
+
+<section id="service">
+<div class="wrap serviceGrid">
+<div><div class="serviceIcon">🚚</div><h3>全台宅配</h3><p>滿 NT$1,500 享免運服務</p></div>
+<div><div class="serviceIcon">↩</div><h3>安心退換貨</h3><p>到貨 7 日內可申請退貨</p></div>
+<div><div class="serviceIcon">🎁</div><h3>精緻包裝</h3><p>送禮自用都很有質感</p></div>
+<div><div class="serviceIcon">💬</div><h3>專人客服</h3><p>週一至週五 09:00–18:00</p></div>
+</div>
+</section>
+
+<section id="styleEl36">
+<div class="wrap" id="styleEl37">
+<div id="styleEl38">JOIN OUR LETTER</div>
+<h2 id="styleEl39">訂閱 VELORA 生活提案</h2>
+<p id="styleEl40">第一時間收到新品、限定優惠與風格靈感。</p>
+<div id="styleEl41">
+<input id="email" placeholder="請輸入 Email" type="email"/>
+<button id="styleEl42">立即訂閱</button>
+</div>
+</div>
+</section>
+
+<footer id="styleEl43">
+<div class="wrap footerGrid">
+<div>
+<div id="styleEl44">VELORA</div>
+<p id="styleEl45">Select better things.<br/>Live a softer life.</p>
+</div>
+<div><b>購物指南</b><p>配送說明</p><p>退換貨政策</p><p>付款方式</p></div>
+<div><b>關於我們</b><p>品牌故事</p><p>媒體合作</p><p>門市資訊</p></div>
+<div><b>聯絡我們</b><p>service@velora.example</p><p>02-2345-6789</p><p>台北市信義區</p></div>
+</div>
+<div class="wrap" id="styleEl46">© 2026 VELORA Select. Demo shopping website.</div>
+</footer>
+
+<div id="cartPanel">
+<div id="styleEl47">
+<h2>你的購物袋</h2>
+<button id="styleEl48">✕</button>
+</div>
+<div id="cartItems">目前購物袋是空的。</div>
+<div id="styleEl49">
+<div id="styleEl50"><b>總計</b><b id="cartTotal">NT$0</b></div>
+<button id="styleEl51">前往結帳</button>
+</div>
+</div>
+<div id="mask"></div>
+
+
+</body>
+</html>
