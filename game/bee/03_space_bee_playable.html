@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>SPACE BEE｜可玩的經典小蜜蜂</title>
+<style>
+:root{--cyan:#4ceafc;--mint:#58ffcf;--yellow:#ffe275;--pink:#ff6389;--muted:#93afce;--bg:#040a19;--card:#101f3a}
+*{box-sizing:border-box}html{background:#040816}body{margin:0;min-height:100vh;font-family:ui-monospace,Consolas,'Noto Sans TC',monospace;color:#f4f9ff;background:radial-gradient(ellipse at top,#162c58,#040816 67%);overflow-x:hidden}
+body:before{position:fixed;pointer-events:none;content:'';inset:0;background-image:radial-gradient(#defaffbb 1px,transparent 1.6px);background-size:113px 127px;opacity:.24}
+button{font:inherit;cursor:pointer;touch-action:manipulation}button:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+.layout{max-width:1050px;margin:0 auto;padding:18px 14px 28px;position:relative}.app-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin:0 0 16px}.brand{font-weight:1000;font-size:24px;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 16px #48d6ff60}.brand small{display:block;color:var(--muted);font-size:12px;letter-spacing:2px;margin-top:4px}.head-actions{display:flex;gap:10px}.head-btn{border:1px solid #3c5b80;border-radius:8px;background:#0e1c33;color:#d2eaff;padding:9px 13px;font-size:13px}.head-btn:hover{border-color:var(--cyan)}.game-layout{display:grid;grid-template-columns:minmax(0,570px) minmax(235px,1fr);justify-content:center;gap:24px;align-items:start}.cabinet{padding:10px;border-radius:16px;background:#09162a;border:1px solid #33659b;box-shadow:0 20px 75px #0009,0 0 30px #207ad320;max-width:570px}.screen{position:relative;max-width:520px;margin:0 auto;overflow:hidden;background:#020815;border:1px solid #3564a1;border-radius:7px}.hud{height:69px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;align-items:center;padding:9px 13px;background:linear-gradient(#0d2546,#061830);border-bottom:2px solid #1caec1}.hud-stat{min-width:0}.hud-stat:nth-child(2){text-align:center}.hud-stat:last-child{text-align:right}.hud-stat span{font-size:11px;color:#78b9d8;letter-spacing:1px;display:block;margin-bottom:5px}.hud-stat b{color:#edffff;font-size:clamp(14px,3vw,19px)}.hud-stat:nth-child(2) b{color:var(--yellow)}.hud-stat:last-child b{color:var(--pink);letter-spacing:0}.game-area{position:relative;line-height:0}.game-area canvas{display:block;width:100%;height:auto;background:#020918;aspect-ratio:480/620}.game-area:after{content:'';inset:0;position:absolute;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,#000b 4px);opacity:.16;pointer-events:none}.bottom-bar{display:flex;justify-content:space-between;align-items:center;gap:9px;padding:9px 12px;background:#071a32;border-top:1px solid #254b7a;font-size:11px;color:#95c2e0;line-height:1.4}.footer-txt{flex:1}.status-led{display:inline-block;width:8px;height:8px;border-radius:50%;background:#6dffd2;box-shadow:0 0 9px #6dffd2;margin-right:7px}.overlay{position:absolute;inset:0;z-index:3;background:#020918bf;display:flex;justify-content:center;align-items:center;text-align:center;padding:18px;line-height:1.6;overflow:auto}.overlay[hidden]{display:none!important}.overlay-card{width:min(100%,355px);border:2px solid #3fa9d8;border-radius:8px;background:linear-gradient(145deg,#0f2848e9,#061126f7);box-shadow:0 0 35px #1aa7f13d;padding:22px 22px 19px;display:flex;flex-direction:column;align-items:center}.arcade-kicker{font-size:11px;letter-spacing:3px;color:#81ddff;margin:0 0 11px}.game-title{margin:0;font-size:clamp(31px,6vw,48px);line-height:1.2;letter-spacing:2px;color:var(--yellow);text-shadow:3px 3px 0 #b44b68,0 0 17px #ffe46a58}.game-subtitle{letter-spacing:4px;color:#81dbff;margin:5px 0 20px;font-size:15px}.hero-art{font-size:37px;letter-spacing:15px;white-space:nowrap;margin:0 0 19px;color:#85dfff;text-shadow:0 0 18px #5deaff}.big-btn{width:100%;padding:11px 12px;margin:5px 0;border-radius:6px;color:#e0fff7;border:2px solid #3af7d4;background:#06373b;box-shadow:0 0 15px #3af7d438;font-weight:900;letter-spacing:1px}.big-btn.alt{border-color:#368bdb;background:#101f3d;color:#d5eaff;box-shadow:none}.big-btn:hover{filter:brightness(1.15)}.overlay h2{font-size:clamp(29px,6vw,38px);margin:0 0 17px;color:var(--mint);letter-spacing:2px;text-shadow:0 0 20px #37fdab58}.overlay .game-over-title{color:var(--pink);text-shadow:0 0 20px #fe678766}.overlay p{line-height:1.85;margin:5px 0 18px;font-size:14px;color:#c4d9ea}.overlay strong{color:var(--yellow)}.touch-controls{display:none;grid-template-columns:1fr 1fr auto;gap:12px;align-items:center;margin-top:10px}.touch{height:63px;border:2px solid #4286c1;background:#102b4b;color:#f6fdff;border-radius:15px;font-size:24px;touch-action:none;user-select:none;-webkit-user-select:none}.touch:active,.touch.held{background:#225b7b;border-color:#8debff}.touch.fire{width:90px;border-color:#fc618c;background:#662347;color:#fff;font-size:14px;letter-spacing:1px;box-shadow:0 0 20px #ff639030}.notes{border:1px solid #2a466a;border-radius:14px;background:#0e1c32d9;padding:22px}.notes h2{font-size:21px;color:var(--cyan);margin:0 0 11px}.notes h3{font-size:14px;letter-spacing:1px;color:var(--yellow);margin:23px 0 9px}.notes p{font-size:14px;color:#b5c8dc;line-height:1.8}.info{display:flex;justify-content:space-between;gap:5px;border-bottom:1px solid #243b5c;padding:10px 0;font-size:13px;color:#bdd2eb}.kbd{padding:4px 8px;border:1px solid #44688b;border-radius:4px;background:#20324d;color:#efffff;white-space:nowrap}.notice{border-left:3px solid #57e8ec;background:#103046;padding:11px 13px;margin-top:22px;border-radius:0 7px 7px 0;font-size:13px;line-height:1.8;color:#c7ecf6}.credit{font-size:11px;color:#7f9ab3;margin-top:20px;text-align:center}
+@media(max-width:840px){.game-layout{grid-template-columns:minmax(0,570px);gap:15px}.cabinet{width:100%;margin:auto}.notes{max-width:570px;margin:auto;width:100%}.touch-controls{display:grid}.layout{padding:12px 10px 27px}.brand{font-size:21px}.bottom-bar{font-size:10px}}
+@media(hover:none){.touch-controls{display:grid}}
+@media(max-width:380px){.hud{padding:7px}.hud-stat b{font-size:13px}.overlay-card{padding:14px}.game-title{font-size:31px}.game-subtitle{font-size:13px}.touch{height:55px}}
+</style>
+</head>
+<body>
+<div class="layout"><header class="app-head"><div class="brand">◈ SPACE BEE <small>經典小蜜蜂・HTML5 街機遊戲</small></div><div class="head-actions"><button type="button" class="head-btn" id="soundButton" aria-pressed="true">♫ 音效：開</button><button type="button" class="head-btn" id="pauseButton">Ⅱ 暫停</button></div></header>
+<div class="game-layout"><section class="cabinet" aria-label="小蜜蜂遊戲"><div class="screen"><div class="hud"><div class="hud-stat"><span>SCORE</span><b id="score">000000</b></div><div class="hud-stat"><span>STAGE</span><b id="stage">01</b></div><div class="hud-stat"><span>LIVES</span><b id="lives">♥ ♥ ♥</b></div></div><div class="game-area"><canvas id="board" width="480" height="620" aria-label="小蜜蜂射擊遊戲畫布"></canvas>
+<div class="overlay" id="menuOverlay"><div class="overlay-card"><div class="arcade-kicker">RETRO ARCADE · 1 PLAYER</div><h1 class="game-title">SPACE BEE</h1><div class="game-subtitle">經典小蜜蜂</div><div class="hero-art">✹ ▲ ✹</div><button class="big-btn" id="startBtn">▶ 開始遊戲</button><button class="big-btn alt" id="menuHelpBtn">遊戲說明</button><p>擊落入侵編隊，躲避敵機俯衝！<br>每過一關，敵機速度會增加。</p><div style="font-size:12px;color:#83b0d5">HIGH SCORE　<span id="menuHigh">000000</span></div></div></div>
+<div class="overlay" id="pauseOverlay" hidden><div class="overlay-card"><h2>PAUSED</h2><p>遊戲已暫停</p><button class="big-btn" id="resumeBtn">▶ 繼續遊戲</button><button class="big-btn alt" id="restartPauseBtn">↻ 重新開始</button><button class="big-btn alt" id="menuPauseBtn">返回首頁</button></div></div>
+<div class="overlay" id="overOverlay" hidden><div class="overlay-card"><h2 class="game-over-title">GAME OVER</h2><p>YOUR SCORE：<strong id="overScore">000000</strong><br>HIGH SCORE：<strong id="overHigh">000000</strong><br>擊落敵機：<strong id="overKills">0</strong></p><button class="big-btn" id="retryBtn">↻ 再玩一次</button><button class="big-btn alt" id="menuOverBtn">返回首頁</button></div></div>
+<div class="overlay" id="clearOverlay" hidden><div class="overlay-card"><h2>STAGE CLEAR</h2><p>完成關卡：<strong id="clearStage">01</strong><br>命中率：<strong id="accuracy">0%</strong><br>過關獎勵：<strong id="clearBonus">+300</strong><br><span id="lifeBonus"></span></p><button class="big-btn" id="nextBtn">▶ 下一關</button><button class="big-btn alt" id="menuClearBtn">返回首頁</button></div></div>
+</div><footer class="bottom-bar"><span class="footer-txt"><span class="status-led"></span><span id="stateText">待命中</span></span><span>← → 移動 │ SPACE 射擊 │ P 暫停</span></footer></div><div class="touch-controls" aria-label="手機觸控操作"><button type="button" class="touch" id="leftBtn" aria-label="向左移動">◀</button><button type="button" class="touch" id="rightBtn" aria-label="向右移動">▶</button><button type="button" class="touch fire" id="fireBtn">FIRE</button></div></section>
+<aside class="notes"><h2>★ 遊戲玩法</h2><p>控制底部戰機，射擊外星小蜜蜂。敵機會左右編隊飛行，並不時俯衝與發射子彈。全部擊落就能進入下一關。</p><h3>鍵盤操作</h3><div class="info"><span>向左移動</span><span><span class="kbd">←</span> / <span class="kbd">A</span></span></div><div class="info"><span>向右移動</span><span><span class="kbd">→</span> / <span class="kbd">D</span></span></div><div class="info"><span>連續射擊</span><span class="kbd">空白鍵</span></div><div class="info"><span>暫停 / 繼續</span><span class="kbd">P</span></div><div class="info"><span>返回首頁</span><span class="kbd">ESC</span></div><h3>特色功能</h3><p>✓ 敵機編隊與俯衝攻擊<br>✓ 玩家生命值、碰撞及爆炸粒子<br>✓ 關卡逐步提高難度<br>✓ 過關加分、每三關額外獎勵生命<br>✓ Web Audio 射擊音效<br>✓ 本機最高分紀錄</p><div class="notice">直接雙擊此 HTML 檔案即可遊玩，不需要安裝套件或連接資料庫。手機或平板可使用下方觸控按鈕。</div><div class="credit">SPACE BEE · Built with HTML / CSS / Vanilla JavaScript</div></aside>
+</div></div>
+<script>
+'use strict';
+(()=>{
+const C=document.getElementById('board'),ctx=C.getContext('2d');
+const W=C.width,H=C.height,PY=558;
+const el=(id)=>document.getElementById(id);
+const overlays={menu:el('menuOverlay'),pause:el('pauseOverlay'),over:el('overOverlay'),clear:el('clearOverlay')};
+const SPRITES={
+ player:['00000100000','00001210000','00001210000','00011211000','00111211100','01111211110','11111211111','11311111311','13011111031','10001110001'],
+ enemyA:['00110001100','00011111000','00111111100','01110101110','11111111111','11011111011','11000000011','00110001100'],
+ enemyB:['00011111000','01111111110','11101110111','11111111111','11111111111','00110101100','01100000110','11000000011'],
+ enemyC:['00011111000','00111111100','01111111110','11011011011','11111111111','00101110100','01010001010','10000000001'],
+ enemyD:['00101110100','01111111110','11111111111','11011111011','11111111111','00110001100','01001110010','10000000001']
+};
+const palettes={player:{'1':'#32d5ff','2':'#e3fbff','3':'#ff6b7f'},enemyA:{'1':'#ff698c'},enemyB:{'1':'#ffe178'},enemyC:{'1':'#40e9db'},enemyD:{'1':'#b386ff'}};
+let audioEnabled=true,audioCtx=null,mode='menu',score=0,stage=1,lives=3,kills=0,shots=0,hits=0,high=0;
+let player={x:W/2,inv:0,cooldown:0},enemyShots=[],playerShots=[],enemies=[],particles=[],stars=[],formationT=0,attackT=0,enemyShootT=0,visualT=0;
+const key={left:false,right:false,fire:false};
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const safeHigh=()=>{try{return Number(localStorage.getItem('spaceBeeHigh')||0)||0}catch(_){return 0}};
+const saveHigh=(v)=>{try{localStorage.setItem('spaceBeeHigh',String(v))}catch(_){}};
+high=safeHigh();
+for(let i=0;i<85;i++)stars.push({x:rnd(0,W),y:rnd(0,H),speed:rnd(6,36),s:Math.random()>.85?2:1});
+function sound(freq,dur=.09,type='square',volume=.028,slide=0){if(!audioEnabled)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();const now=audioCtx.currentTime,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,now);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(50,freq+slide),now+dur);g.gain.setValueAtTime(volume,now);g.gain.exponentialRampToValueAtTime(.0001,now+dur);o.connect(g);g.connect(audioCtx.destination);o.start(now);o.stop(now+dur+.005)}catch(_){}}
+function showOverlay(active){Object.entries(overlays).forEach(([name,node])=>node.hidden=(name!==active));}
+function hud(){el('score').textContent=String(score).padStart(6,'0');el('stage').textContent=String(stage).padStart(2,'0');el('lives').textContent=lives?'♥ '.repeat(lives).trim():'—';}
+function setMode(next){mode=next;showOverlay(next==='playing'?null:next);el('stateText').textContent=({menu:'待命中',playing:'戰鬥進行中',pause:'已暫停',over:'遊戲結束',clear:'關卡完成'})[next];el('pauseButton').textContent=next==='pause'?'▶ 繼續':'Ⅱ 暫停';}
+function wave(){enemies=[];for(let row=0;row<4;row++)for(let col=0;col<8;col++){enemies.push({row,col,baseX:65+col*50,baseY:88+row*47,x:65+col*50,y:88+row*47,alive:true,diving:false,diveT:0,originX:0,originY:0})}enemyShots=[];playerShots=[];particles=[];formationT=0;attackT=2.2;enemyShootT=1.5;player.inv=1.2;player.cooldown=0;player.x=W/2;hud()}
+function startGame(){score=0;stage=1;lives=3;kills=0;shots=0;hits=0;key.left=key.right=key.fire=false;wave();setMode('playing');sound(540,.10,'triangle',.06,-160)}
+function goHome(){key.left=key.right=key.fire=false;stage=1;score=0;lives=3;wave();hud();el('menuHigh').textContent=String(high).padStart(6,'0');setMode('menu')}
+function pause(){if(mode==='playing'){key.left=key.right=key.fire=false;setMode('pause')}else if(mode==='pause'){setMode('playing')}}
+function emit(x,y,color,n=16){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,sp=rnd(35,145);particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,t:rnd(.25,.7),max:.7,color})}}
+function fire(){if(mode!=='playing'||player.cooldown>0)return;playerShots.push({x:player.x,y:PY-22,vy:-420});player.cooldown=.19;shots++;sound(780,.065,'square',.017,-450)}
+function coll(a,b,r){return Math.abs(a.x-b.x)<r&&Math.abs(a.y-b.y)<r}
+function addScore(pts){score+=pts;if(score>high){high=score;saveHigh(high)}}
+function hurt(){if(player.inv>0||mode!=='playing')return;lives--;player.inv=2.1;emit(player.x,PY,'#7feeff',27);sound(220,.45,'sawtooth',.055,-170);hud();if(lives<=0){el('overScore').textContent=String(score).padStart(6,'0');el('overHigh').textContent=String(high).padStart(6,'0');el('overKills').textContent=kills;setMode('over')}}
+function stageClear(){const bonus=stage*300;addScore(bonus);let bonusLife=false;if(stage%3===0){lives=Math.min(5,lives+1);bonusLife=true}el('clearStage').textContent=String(stage).padStart(2,'0');el('accuracy').textContent=(shots?Math.round(hits/shots*100):0)+'%';el('clearBonus').textContent='+'+bonus;el('lifeBonus').textContent=bonusLife?'額外獎勵：+1 生命':'下一關敵機將更加快速';hud();setMode('clear');sound(740,.2,'triangle',.05,240)}
+function nextStage(){stage++;wave();setMode('playing');sound(620,.12,'triangle',.04,200)}
+function update(dt){
+ visualT+=dt;
+ for(const st of stars){st.y+=st.speed*dt;if(st.y>H){st.y=0;st.x=rnd(0,W)}}
+ for(const p of particles){p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=65*dt;p.t-=dt}particles=particles.filter(p=>p.t>0);
+ if(mode!=='playing')return;
+ const sp=280;if(key.left)player.x-=sp*dt;if(key.right)player.x+=sp*dt;player.x=Math.max(23,Math.min(W-23,player.x));
+ player.inv=Math.max(0,player.inv-dt);player.cooldown=Math.max(0,player.cooldown-dt);if(key.fire)fire();
+ formationT+=dt;const shift=Math.sin(formationT*(.82+stage*.04))*Math.min(42,22+stage*2);
+ for(const e of enemies){if(!e.alive)continue;if(!e.diving){e.x=e.baseX+shift;e.y=e.baseY+Math.sin(formationT*1.4+e.col*.5)*3}else{
+   e.diveT+=dt*(1+stage*.038);e.x=e.originX+Math.sin(e.diveT*3.2)*(62+stage*1.5)+Math.min(e.diveT/2.5,1)*(player.x-e.originX)*.46;
+   e.y=e.originY+e.diveT*195;
+   if(e.y>H+42){e.diving=false;e.diveT=0}
+  }
+ }
+ attackT-=dt;if(attackT<=0){const possible=enemies.filter(e=>e.alive&&!e.diving);if(possible.length && enemies.filter(e=>e.diving&&e.alive).length<Math.min(4,1+Math.floor(stage/2))){const e=possible[Math.floor(Math.random()*possible.length)];e.diving=true;e.diveT=0;e.originX=e.x;e.originY=e.y;sound(380,.16,'sawtooth',.016,-100)}attackT=Math.max(.65,2.6-stage*.15)*rnd(.75,1.35)}
+ enemyShootT-=dt;if(enemyShootT<=0){const targets=enemies.filter(e=>e.alive&&e.y<H-100);if(targets.length){const e=targets[Math.floor(Math.random()*targets.length)];const aim=(player.x-e.x)/Math.max(170,PY-e.y);enemyShots.push({x:e.x,y:e.y+14,vx:Math.max(-80,Math.min(80,aim*170)),vy:175+stage*16})}enemyShootT=Math.max(.45,1.65-stage*.085)*rnd(.7,1.35)}
+ for(const b of playerShots)b.y+=b.vy*dt;for(const b of enemyShots){b.x+=b.vx*dt;b.y+=b.vy*dt}
+ for(let i=playerShots.length-1;i>=0;i--){const b=playerShots[i];if(b.y<-20){playerShots.splice(i,1);continue}let didHit=false;for(const e of enemies){if(!e.alive)continue;if(coll(b,e,18)){e.alive=false;didHit=true;kills++;hits++;addScore([150,100,70,50][e.row]*(e.diving?2:1));emit(e.x,e.y,['#ff638b','#ffe37d','#4ceada','#a981ff'][e.row]);sound(340+e.row*130,.09,'square',.025,-180);break}}if(didHit){playerShots.splice(i,1);hud()}}
+ for(let i=enemyShots.length-1;i>=0;i--){const b=enemyShots[i];if(b.y>H+10||b.x<-10||b.x>W+10){enemyShots.splice(i,1);continue}if(coll(b,{x:player.x,y:PY},17)){enemyShots.splice(i,1);hurt()}}
+ if(player.inv<=0){for(const e of enemies){if(e.alive&&e.diving&&coll(e,{x:player.x,y:PY},24)){e.alive=false;emit(e.x,e.y,'#ff8b6f');hurt();break}}}
+ if(enemies.every(e=>!e.alive)&&mode==='playing')stageClear();
+}
+function sprite(name,x,y,pixelSize=3){const sp=SPRITES[name],pal=palettes[name],width=sp[0].length*pixelSize,height=sp.length*pixelSize;ctx.save();ctx.translate(Math.round(x-width/2),Math.round(y-height/2));for(let row=0;row<sp.length;row++)for(let col=0;col<sp[row].length;col++){const color=pal[sp[row][col]];if(color){ctx.fillStyle=color;ctx.fillRect(col*pixelSize,row*pixelSize,pixelSize,pixelSize)}}ctx.restore()}
+function draw(){ctx.clearRect(0,0,W,H);
+ const grd=ctx.createLinearGradient(0,0,0,H);grd.addColorStop(0,'#071835');grd.addColorStop(.7,'#03091a');grd.addColorStop(1,'#0a1931');ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+ for(const st of stars){ctx.globalAlpha=Math.min(.9,.25+st.speed/60);ctx.fillStyle=st.speed>25?'#8acaff':'#ecfbff';ctx.fillRect(Math.round(st.x),Math.round(st.y),st.s,st.s)}ctx.globalAlpha=1;
+ ctx.fillStyle='#2d648866';ctx.fillRect(8,589,W-16,1);ctx.fillStyle='#1570ac2e';ctx.fillRect(0,590,W,30);
+ for(const e of enemies){if(e.alive){const names=['enemyA','enemyB','enemyC','enemyD'];sprite(names[e.row],e.x,e.y,3)}}
+ for(const b of playerShots){ctx.shadowColor='#57efff';ctx.shadowBlur=12;ctx.fillStyle='#edffff';ctx.fillRect(Math.round(b.x-2),Math.round(b.y-10),4,16);ctx.shadowBlur=0}
+ for(const b of enemyShots){ctx.shadowColor='#ff5f91';ctx.shadowBlur=9;ctx.fillStyle='#ff6494';ctx.fillRect(Math.round(b.x-3),Math.round(b.y-4),6,11);ctx.shadowBlur=0}
+ if(mode!=='menu'&&!(player.inv>0&&Math.floor(player.inv*9)%2)){sprite('player',player.x,PY,4);ctx.fillStyle='#ff9061';ctx.fillRect(player.x-7,PY+21,5,6+Math.round(Math.random()*4));ctx.fillRect(player.x+3,PY+21,5,6+Math.round(Math.random()*4))}
+ for(const p of particles){ctx.globalAlpha=Math.max(0,Math.min(1,p.t/p.max));ctx.fillStyle=p.color;ctx.fillRect(p.x,p.y,3,3)}ctx.globalAlpha=1;
+ if(mode==='menu'){ctx.fillStyle='#29bbff20';ctx.fillRect(0,0,W,H)}
+}
+let last=performance.now();function loop(now){const dt=Math.min(.04,(now-last)/1000||.016);last=now;update(dt);draw();requestAnimationFrame(loop)}
+const bind=(id,fn)=>el(id).addEventListener('click',fn);
+bind('startBtn',startGame);bind('resumeBtn',pause);bind('restartPauseBtn',startGame);bind('menuPauseBtn',goHome);bind('retryBtn',startGame);bind('menuOverBtn',goHome);bind('nextBtn',nextStage);bind('menuClearBtn',goHome);
+bind('pauseButton',()=>{if(mode==='playing'||mode==='pause')pause()});
+bind('menuHelpBtn',()=>{alert('玩法：← → 或 A / D 移動、空白鍵射擊、P 暫停、ESC 返回首頁。擊落所有敵機通關；每過三關可額外獲得一條生命（最多 5 條）。')});
+bind('soundButton',()=>{audioEnabled=!audioEnabled;el('soundButton').textContent=audioEnabled?'♫ 音效：開':'♫ 音效：關';el('soundButton').setAttribute('aria-pressed',String(audioEnabled));if(audioEnabled)sound(640,.09,'triangle')});
+const keyMap={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',Space:'fire'};
+window.addEventListener('keydown',(ev)=>{if(keyMap[ev.code]){ev.preventDefault();key[keyMap[ev.code]]=true;if(ev.code==='Space'&&mode==='playing')fire()}if(ev.repeat)return;if(ev.code==='KeyP'){ev.preventDefault();pause()}if(ev.code==='Escape'){ev.preventDefault();if(mode!=='menu')goHome()}if(ev.code==='Enter'&&mode==='menu'){ev.preventDefault();startGame()}});
+window.addEventListener('keyup',(ev)=>{if(keyMap[ev.code]){ev.preventDefault();key[keyMap[ev.code]]=false}});
+window.addEventListener('blur',()=>{key.left=key.right=key.fire=false;if(mode==='playing')pause()});
+function bindTouch(id,prop){const b=el(id);function release(){key[prop]=false;b.classList.remove('held')}b.addEventListener('pointerdown',(ev)=>{ev.preventDefault();b.setPointerCapture(ev.pointerId);key[prop]=true;b.classList.add('held');if(prop==='fire')fire()});for(const e of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(e,release)}
+bindTouch('leftBtn','left');bindTouch('rightBtn','right');bindTouch('fireBtn','fire');
+wave();goHome();requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
