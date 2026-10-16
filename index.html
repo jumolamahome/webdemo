@@ -182,12 +182,104 @@ iframe {
     grid-template-columns: 1fr;
   }
 }
+
+/* 密碼登入畫面（原有檔案總管 UI 不變） */
+body:not(.unlocked) header,
+body:not(.unlocked) .app,
+body:not(.unlocked) .status { display: none !important; }
+
+.login-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 28px 16px;
+  background: linear-gradient(145deg, #0f172a, #1e3a8a 65%, #2563eb);
+}
+body.unlocked .login-screen { display: none; }
+.login-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 36px;
+  width: min(100%, 410px);
+  box-shadow: 0 25px 70px rgba(0,0,0,.22);
+}
+.login-symbol {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: #eff6ff;
+  font-size: 27px;
+  margin-bottom: 18px;
+}
+.login-card h2 { margin: 0 0 8px; font-size: 23px; color: #111827; }
+.login-card p { margin: 0 0 25px; font-size: 14px; color: #64748b; line-height: 1.65; }
+.login-card label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; }
+.login-card input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 16px;
+  outline: none;
+}
+.login-card input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px #dbeafe; }
+.login-card button[type="submit"] {
+  width: 100%;
+  margin-top: 18px;
+  padding: 13px;
+  border: 0;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.login-card button[type="submit"]:hover { background: #1d4ed8; }
+.login-card button[type="submit"]:disabled { opacity: .65; cursor: wait; }
+.login-error { min-height: 21px; margin-top: 12px; color: #b91c1c; font-size: 13px; }
+#logoutBtn {
+  float: right;
+  padding: 8px 12px;
+  border: 1px solid #64748b;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+#logoutBtn:hover { background: #374151; }
+@media (max-width: 480px) { .login-card { padding: 26px 22px; } }
+
 </style>
 </head>
 
 <body>
 
+<!-- 密碼登入：通過驗證後才啟動檔案總管（僅前端存取門檻） -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-symbol" aria-hidden="true">🔒</div>
+    <h2>請輸入存取密碼</h2>
+    <p>GitHub Pages 檔案總管已設定密碼登入，驗證成功後可繼續瀏覽。</p>
+    <form id="loginForm" autocomplete="off">
+      <label for="accessPassword">存取密碼</label>
+      <input id="accessPassword" type="password" placeholder="請輸入密碼" autocomplete="off" required autofocus>
+      <button id="loginBtn" type="submit">解鎖並進入</button>
+      <div id="loginError" class="login-error" role="alert" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
+
+
 <header>
+  <button id="logoutBtn" type="button">🔒 登出</button>
   <h1>📂 GitHub Pages 檔案總管</h1>
   <p>直接讀取 GitHub Repository，可瀏覽資料夾、預覽檔案，HTML 直接開啟。</p>
 </header>
@@ -223,6 +315,99 @@ iframe {
 <div id="status" class="status"></div>
 
 <script>
+/* =========================================================
+   本頁面登入：以 PBKDF2-HMAC-SHA256（加鹽）驗證
+   注意：靜態 GitHub Pages 無法真正限制公開檔案的直接存取。
+   ========================================================= */
+const PASSWORD_SALT_B64 = "pibULIuy69bUT1WqoIseHA==";
+const PASSWORD_HASH_B64 = "4tfLZUzYBjyCzl5/ZWW71ESFKl3Hr2p3dQfm179fTrg=";
+const PASSWORD_ITERATIONS = 310000;
+const ACCESS_SESSION_KEY = "file-explorer-gate-v1";
+let accessGranted = false;
+
+function decodeBase64(base64) {
+  return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+}
+
+async function verifyAccessPassword(value) {
+  const importedKey = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(value), "PBKDF2", false, ["deriveBits"]
+  );
+  const raw = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt: decodeBase64(PASSWORD_SALT_B64), iterations: PASSWORD_ITERATIONS },
+    importedKey,
+    256
+  );
+  const computed = new Uint8Array(raw);
+  const expected = decodeBase64(PASSWORD_HASH_B64);
+  // 固定長度逐位元組比較，避免直接比較字串。
+  let diff = computed.length ^ expected.length;
+  for (let i = 0; i < expected.length; i++) {
+    diff |= (computed[i] ?? 0) ^ expected[i];
+  }
+  return diff === 0;
+}
+
+function unlockExplorer() {
+  accessGranted = true;
+  document.body.classList.add("unlocked");
+  document.getElementById("accessPassword").value = "";
+  document.getElementById("loginError").textContent = "";
+  loadDirectory("");
+}
+
+function initializeGate() {
+  const form = document.getElementById("loginForm");
+  const passwordInput = document.getElementById("accessPassword");
+  const loginError = document.getElementById("loginError");
+  const loginBtn = document.getElementById("loginBtn");
+  if (sessionStorage.getItem(ACCESS_SESSION_KEY) === "unlocked") {
+    unlockExplorer();
+  } else {
+    passwordInput.focus();
+  }
+
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (loginBtn.disabled) return;
+    loginError.textContent = "";
+    loginBtn.disabled = true;
+    loginBtn.textContent = "驗證中…";
+    try {
+      if (!crypto?.subtle) throw new Error("此環境不支援安全驗證，請使用 HTTPS 網址開啟。");
+      const valid = await verifyAccessPassword(passwordInput.value);
+      if (valid) {
+        sessionStorage.setItem(ACCESS_SESSION_KEY, "unlocked");
+        unlockExplorer();
+      } else {
+        loginError.textContent = "密碼錯誤，請再試一次。";
+        passwordInput.select();
+        passwordInput.focus();
+      }
+    } catch (error) {
+      loginError.textContent = error.message || "驗證失敗，請重新整理後再試。";
+    } finally {
+      loginBtn.disabled = false;
+      loginBtn.textContent = "解鎖並進入";
+    }
+  });
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+    sessionStorage.removeItem(ACCESS_SESSION_KEY);
+    accessGranted = false;
+    document.body.classList.remove("unlocked");
+    passwordInput.value = "";
+    passwordInput.focus();
+    // 清除之前瀏覽過的檔案列表與預覽
+    document.getElementById("fileList").replaceChildren();
+    document.getElementById("viewer").replaceChildren();
+    document.getElementById("viewerTitle").textContent = "檔案內容預覽";
+    document.getElementById("viewerPath").textContent = "點左邊的檔案查看內容";
+    document.getElementById("status").textContent = "";
+  });
+}
+
+
 /* =========================================================
    Repository 設定
    =========================================================
@@ -320,6 +505,7 @@ function iconFor(item) {
    從 GitHub API 讀取某個目錄
    ========================================================= */
 async function loadDirectory(path = "") {
+  if (!accessGranted) return;
 
   currentPath = path;
 
@@ -458,6 +644,7 @@ function renderDirectory(items) {
    點檔案後的動作
    ========================================================= */
 async function openFile(item) {
+  if (!accessGranted) return;
 
   const ext = extOf(item.name);
 
@@ -621,8 +808,8 @@ document
   });
 
 
-/* 第一次開啟首頁，讀取 Repository 根目錄 */
-loadDirectory("");
+/* 第一次開啟首頁，顯示登入畫面，通過驗證再載入目錄 */
+initializeGate();
 
 </script>
 
