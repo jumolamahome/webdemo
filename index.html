@@ -243,6 +243,7 @@ body.unlocked .login-screen { display: none; }
 .login-card button[type="submit"]:hover { background: #1d4ed8; }
 .login-card button[type="submit"]:disabled { opacity: .65; cursor: wait; }
 .login-error { min-height: 21px; margin-top: 12px; color: #b91c1c; font-size: 13px; }
+.gate-version { text-align: center; color: #94a3b8; font-size: 11px; margin-top: 12px; }
 #logoutBtn {
   float: right;
   padding: 8px 12px;
@@ -270,9 +271,10 @@ body.unlocked .login-screen { display: none; }
     <p>GitHub Pages 檔案總管已設定密碼登入，驗證成功後可繼續瀏覽。</p>
     <form id="loginForm" autocomplete="off">
       <label for="accessPassword">存取密碼</label>
-      <input id="accessPassword" type="password" placeholder="請輸入密碼" autocomplete="off" required autofocus>
+      <input id="accessPassword" type="password" inputmode="numeric" placeholder="請輸入密碼" autocomplete="off" required autofocus>
       <button id="loginBtn" type="submit">解鎖並進入</button>
       <div id="loginError" class="login-error" role="alert" aria-live="polite"></div>
+      <div class="gate-version">版本 2026.10.16-R2</div>
     </form>
   </div>
 </div>
@@ -319,11 +321,16 @@ body.unlocked .login-screen { display: none; }
    本頁面登入：以 PBKDF2-HMAC-SHA256（加鹽）驗證
    注意：靜態 GitHub Pages 無法真正限制公開檔案的直接存取。
    ========================================================= */
-const PASSWORD_SALT_B64 = "pibULIuy69bUT1WqoIseHA==";
-const PASSWORD_HASH_B64 = "4tfLZUzYBjyCzl5/ZWW71ESFKl3Hr2p3dQfm179fTrg=";
+const PASSWORD_SALT_B64 = "n6tqd5bFQiHp76JL089g5g==";
+const PASSWORD_HASH_B64 = "jul1cbkRWxe1tQa34Y0iqtki3HvIL3f+ZvBEAvC2RhM=";
 const PASSWORD_ITERATIONS = 310000;
-const ACCESS_SESSION_KEY = "file-explorer-gate-v1";
+const ACCESS_SESSION_KEY = "file-explorer-gate-v2";
 let accessGranted = false;
+
+// 避免從手機輸入法貼上時出現前後空白或全形數字。
+function normalizePasswordInput(value) {
+  return String(value).trim().normalize("NFKC");
+}
 
 function decodeBase64(base64) {
   return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
@@ -331,7 +338,7 @@ function decodeBase64(base64) {
 
 async function verifyAccessPassword(value) {
   const importedKey = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(value), "PBKDF2", false, ["deriveBits"]
+    "raw", new TextEncoder().encode(normalizePasswordInput(value)), "PBKDF2", false, ["deriveBits"]
   );
   const raw = await crypto.subtle.deriveBits(
     { name: "PBKDF2", hash: "SHA-256", salt: decodeBase64(PASSWORD_SALT_B64), iterations: PASSWORD_ITERATIONS },
@@ -380,7 +387,7 @@ function initializeGate() {
         sessionStorage.setItem(ACCESS_SESSION_KEY, "unlocked");
         unlockExplorer();
       } else {
-        loginError.textContent = "密碼錯誤，請再試一次。";
+        loginError.textContent = "密碼不正確，請確認輸入後重試。";
         passwordInput.select();
         passwordInput.focus();
       }
