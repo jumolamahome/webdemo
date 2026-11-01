@@ -36,4 +36,19 @@ function animateVehicles(now){requestAnimationFrame(animateVehicles);const speed
 requestAnimationFrame(animateVehicles);
 function animateSprite(now){requestAnimationFrame(animateSprite);if(playing&&!paused&&!waiting){const frame=Math.floor(now/125)%WALK_FRAMES.length;if(sprite.dataset.frame!==String(frame)){sprite.src=WALK_FRAMES[frame];sprite.dataset.frame=String(frame)}}else if(sprite.dataset.frame!=='0'){sprite.src=WALK_FRAMES[0];sprite.dataset.frame='0'}}
 requestAnimationFrame(animateSprite);
+// 自動啟動：先下載並解碼起點照片，再顯示照片停留五秒，接著自動步行。
+// 不需按「開始導覽」；使用者仍可隨時暫停或重設。
+let autoStartCancelled=false;
+const originalResetHandler=$('reset').onclick;
+$('reset').onclick=(event)=>{autoStartCancelled=true;originalResetHandler(event)};
+(async function autoStartAfterFirstPhoto(){
+  status('📷 正在預先載入起點照片，完成後自動導覽…');
+  const first=stops[0];
+  // 等候起點圖片下載及 decode；既有 preload 會共用快取並處理逾時。
+  await preload(first);
+  if(autoStartCancelled||playing)return;
+  playing=true;paused=false;index=0;dir=1;t=0;last=0;
+  // wait() 會顯示起點照片，並於圖片呈現後才開始五秒倒數。
+  wait(first,performance.now());
+})();
 </script></body></html>
