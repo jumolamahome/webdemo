@@ -1,0 +1,9 @@
+指南宮 Q 版電子地圖－JSON 預設路線更新版
+本次僅將最新上傳 zhinan-map(3).json 的資料同步至專案中：
+1. 小人行走路線：route.points
+2. 小人 SVG 曲線控制點：route.curveHandles
+3. 纜車線：cableway.points
+4. 纜車柱位置：cableway.towerIndices
+其他景點、照片、原有公車路線、設定及音效保持上一版原值。
+同時同步更新 index.html 內建 FALLBACK_CONFIG，以便直接雙擊 HTML 時使用相同預設座標。
+修改座標後請記得下載 JSON 並用新檔取代此資料夾中的 zhinan-map.json。
