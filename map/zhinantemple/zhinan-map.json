@@ -30,9 +30,9 @@
       "name": "前山老街",
       "order": 2,
       "routeIndex": 60,
-      "photoUrl": "",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
-      "description": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
+      "description": "",
       "waitSeconds": 5
     },
     {
@@ -80,9 +80,9 @@
       "name": "指南宮教育館",
       "order": 7,
       "routeIndex": 200,
-      "photoUrl": "",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
-      "description": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
+      "description": "",
       "waitSeconds": 5
     },
     {
@@ -90,9 +90,9 @@
       "name": "仙山廣場",
       "order": 8,
       "routeIndex": 220,
-      "photoUrl": "",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
-      "description": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
+      "description": "",
       "waitSeconds": 5
     },
     {
