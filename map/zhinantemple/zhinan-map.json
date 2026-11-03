@@ -20,8 +20,8 @@
       "name": "純陽寶殿",
       "order": 1,
       "routeIndex": 0,
-      "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/%E6%8C%87%E5%8D%97%E5%AE%AE%E7%B4%94%E9%99%BD%E5%AF%B6%E6%AE%BF-01.2023-12-08.jpg?width=800",
-      "photoSource": "https://commons.wikimedia.org/wiki/Category:Chunyang_Hall_of_Zhinan_Temple",
+      "photoUrl": "./pics/純陽寶殿.jpg",
+      "photoSource": "./pics/純陽寶殿.jpg",
       "description": "",
       "waitSeconds": 5
     },
