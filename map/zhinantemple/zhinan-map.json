@@ -20,8 +20,8 @@
       "name": "純陽寶殿",
       "order": 1,
       "routeIndex": 0,
-      "photoUrl": "./pics/純陽寶殿.jpg",
-      "photoSource": "./pics/純陽寶殿.jpg",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/純陽寶殿.jpg",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/純陽寶殿.jpg",
       "description": "",
       "waitSeconds": 5
     },
@@ -31,8 +31,8 @@
       "order": 2,
       "routeIndex": 60,
       "photoUrl": "",
-      "photoSource": "",
-      "description": "",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
+      "description": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
       "waitSeconds": 5
     },
     {
@@ -40,8 +40,8 @@
       "name": "慈母園",
       "order": 3,
       "routeIndex": 80,
-      "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/%E6%8C%87%E5%8D%97%E5%AE%AE%20%E6%85%88%E6%AF%8D%E5%83%8F%E8%88%87%E5%87%8C%E9%9C%84%E5%AF%B6%E6%AE%BF%2020080301%20-%20panoramio.jpg?width=800",
-      "photoSource": "https://commons.wikimedia.org/wiki/Category:Lingxiao_Hall_of_Zhinan_Temple",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/慈母園.jpg",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/慈母園.jpg",
       "description": "",
       "waitSeconds": 5
     },
@@ -50,8 +50,8 @@
       "name": "凌霄寶殿",
       "order": 4,
       "routeIndex": 100,
-      "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/%E6%8C%87%E5%8D%97%E5%AE%AE%E5%87%8C%E9%9C%84%E5%AF%B6%E6%AE%BF.jpg?width=800",
-      "photoSource": "https://commons.wikimedia.org/wiki/Category:Lingxiao_Hall_of_Zhinan_Temple",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/凌霄寶殿.jpg",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/凌霄寶殿.jpg",
       "description": "",
       "waitSeconds": 5
     },
@@ -60,8 +60,8 @@
       "name": "九皇星園",
       "order": 5,
       "routeIndex": 120,
-      "photoUrl": "",
-      "photoSource": "https://chih-nan-temple.org/?act=menuinfo&cmd=list&ml_id=20221018023",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/九皇星園.jpg",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/九皇星園.jpg",
       "description": "",
       "waitSeconds": 5
     },
@@ -70,8 +70,8 @@
       "name": "大雄寶殿",
       "order": 6,
       "routeIndex": 160,
-      "photoUrl": "https://commons.wikimedia.org/wiki/Special:FilePath/%E6%8C%87%E5%8D%97%E5%AE%AE%E5%A4%A7%E9%9B%84%E5%AF%B6%E6%AE%BF.2023-12-08.jpg?width=800",
-      "photoSource": "https://commons.wikimedia.org/wiki/Category:Mahavira_Hall_of_Zhinan_Temple",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/大雄寶殿.jpg",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/大雄寶殿.jpg",
       "description": "",
       "waitSeconds": 5
     },
@@ -81,8 +81,8 @@
       "order": 7,
       "routeIndex": 200,
       "photoUrl": "",
-      "photoSource": "",
-      "description": "",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
+      "description": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
       "waitSeconds": 5
     },
     {
@@ -91,8 +91,8 @@
       "order": 8,
       "routeIndex": 220,
       "photoUrl": "",
-      "photoSource": "",
-      "description": "",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
+      "description": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
       "waitSeconds": 5
     },
     {
@@ -100,8 +100,8 @@
       "name": "地藏王寶殿",
       "order": 9,
       "routeIndex": 240,
-      "photoUrl": "",
-      "photoSource": "https://www.chih-nan-temple.org/",
+      "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/地藏王寶殿.jpg",
+      "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/地藏王寶殿.jpg",
       "description": "",
       "waitSeconds": 5
     }
