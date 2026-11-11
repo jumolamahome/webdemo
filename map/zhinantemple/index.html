@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>指南宮 Q 版地圖｜景點名稱 JSON 化與編輯焦點版 2026-11-11</title><style>
-:root{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:#213d32;background:#e9f2eb}*{box-sizing:border-box}body{margin:0}header{background:#194e3c;color:white;padding:12px 19px}header h1{font-size:20px;margin:0 0 3px}header small{color:#c7e7d7}.layout{display:grid;grid-template-columns:350px minmax(0,1fr);height:calc(100dvh - 65px)}aside{overflow-y:auto;background:#fff;padding:15px;border-right:1px solid #c6d8c7}h2{font-size:16px;margin:15px 0 8px;border-bottom:1px solid #d4e2d6;padding-bottom:6px}button,.file-btn{cursor:pointer;border:0;border-radius:8px;background:#28785c;color:#fff;padding:8px 10px;font-weight:650;font-size:13px;font-family:inherit}button:hover,.file-btn:hover{filter:brightness(.94)}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e8efe9;color:#24523b}.danger{background:#ab514b}.row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.row>*{flex-shrink:0}label{font-size:13px;display:block;margin:7px 0;color:#405e4d}label input[type=checkbox]{vertical-align:middle}input[type=text],input[type=url],input[type=number],textarea{width:100%;padding:8px;margin:3px 0 5px;border:1px solid #b8ccc0;border-radius:7px;background:white;font-family:inherit;font-size:13px}input[type=range]{width:100%}textarea{resize:vertical;min-height:54px}.small{font-size:12px;color:#637d70;line-height:1.55}.status{font-size:12px;border-radius:9px;padding:10px;margin:10px 0;background:#e7f2eb;color:#285a45;min-height:39px;line-height:1.5}.viewport{position:relative;overflow:hidden;touch-action:none;background:#dcebdc;cursor:grab}.viewport.dragging{cursor:grabbing}.stage{position:absolute;left:0;top:0;width:1620px;height:971px;transform-origin:0 0}.base{position:absolute;width:100%;height:100%;user-select:none;pointer-events:none;filter:brightness(1.11) saturate(.76) contrast(.94)}.map-svg{position:absolute;top:0;left:0;width:1620px;height:971px;overflow:visible;pointer-events:none}.route-line{fill:none;stroke:#234c75;stroke-width:6;stroke-dasharray:13 10;stroke-linecap:round;stroke-linejoin:round;opacity:.9}.cable-wire{fill:none;stroke:#43515a;stroke-width:5;stroke-linejoin:round}.cable-wire.back{stroke:#f5f7f6;stroke-width:9}.tower{stroke:#354957;stroke-width:5;fill:#d6e2e5}.tower-head{fill:#e5eded;stroke:#354957;stroke-width:3}.editor-handle{fill:#fff;stroke:#dd694e;stroke-width:4;cursor:grab;pointer-events:all}.editor-handle.selected{fill:#ffcf4f;stroke:#b64a35}.curve-guide{fill:none;stroke:#2d94a8;stroke-width:2;stroke-dasharray:4 5;opacity:.85;pointer-events:none}.curve-handle{fill:#36b7c7;stroke:#fff;stroke-width:3;cursor:grab;pointer-events:all;filter:drop-shadow(0 1px 2px #173e4b88)}.curve-handle:active{cursor:grabbing}.stop-pin{position:absolute;transform:translate(-50%,-100%);border:3px solid white;background:#275e9c;color:white;min-width:29px;height:29px;border-radius:50%;z-index:6;box-shadow:0 2px 7px #0008;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}.stop-pin.edit{background:#c35249;cursor:grab;touch-action:none}.stop-pin.active{outline:4px solid #ffdd76}.walker{position:absolute;z-index:7;width:65px;height:88px;transform:translate(-50%,-88%);filter:drop-shadow(0 3px 3px #264d5366);pointer-events:none}.walker img{width:65px;height:88px;object-fit:contain;object-position:center bottom;opacity:1!important;mix-blend-mode:normal}.walker.left img{transform:scaleX(-1)}.vehicle{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:5;filter:drop-shadow(0 2px 2px #102c4155)}.vehicle.cable{width:55px;height:67px}.vehicle.bus{width:78px;height:49px}.vehicle svg{width:100%;height:100%;overflow:visible}.vehicle.flip svg{transform:scaleX(-1)}.photo{position:absolute;z-index:8;width:268px;border-radius:13px;padding:11px;background:#fffffff5;border:3px solid #2f785e;box-shadow:0 6px 18px #18362966;display:none;pointer-events:auto}.photo h3{margin:0 0 7px;font-size:17px}.photo img{display:block;width:100%;height:150px;object-fit:contain;background:#eef3ef;border-radius:7px}.photo p{margin:5px 0;font-size:12px;color:#617467}.photo a{font-size:12px}.placeholder{padding:25px 8px;color:#556d60;background:#edf2ec;text-align:center;border-radius:8px;font-size:13px}.floating{position:absolute;z-index:10;right:12px;top:12px;display:flex;gap:5px}.floating button{background:white;color:#2d5340;box-shadow:0 1px 6px #0004;font-size:18px}.legend{position:absolute;z-index:9;bottom:10px;left:10px;background:#ffffffe8;border-radius:9px;padding:9px;max-width:425px;font-size:12px;color:#46614e;pointer-events:none}.stop-item{border:1px solid #dae7df;border-radius:9px;padding:8px 9px;margin:6px 0;background:#f8fbf8}.stop-item.active{border-color:#5f9e7b;background:#eef7f0}.stop-title{font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:4px}.order-buttons{display:flex;gap:4px}.order-buttons button{padding:3px 7px}.edit-fields{display:none;margin-top:6px}.stop-item.active .edit-fields{display:block}.pill{font-size:11px;padding:2px 7px;background:#e0eee4;border-radius:99px}.editor-help{background:#fff6dd;border-radius:8px;padding:9px;font-size:12px;line-height:1.55;color:#68543b;margin:8px 0}.flex-grow{flex:1}#fileChooser{display:none}#editMode{accent-color:#33845f}@media(max-width:850px){.layout{display:flex;flex-direction:column-reverse;height:auto}.viewport{height:58vh;min-height:330px}aside{max-height:none}.legend{font-size:10px;max-width:75%}header{padding:9px 12px}}
+:root{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:#213d32;background:#e9f2eb}*{box-sizing:border-box}body{margin:0}header{background:#194e3c;color:white;padding:12px 19px}header h1{font-size:20px;margin:0 0 3px}header small{color:#c7e7d7}.layout{display:grid;grid-template-columns:350px minmax(0,1fr);height:calc(100dvh - 65px)}aside{overflow-y:auto;background:#fff;padding:15px;border-right:1px solid #c6d8c7}h2{font-size:16px;margin:15px 0 8px;border-bottom:1px solid #d4e2d6;padding-bottom:6px}button,.file-btn{cursor:pointer;border:0;border-radius:8px;background:#28785c;color:#fff;padding:8px 10px;font-weight:650;font-size:13px;font-family:inherit}button:hover,.file-btn:hover{filter:brightness(.94)}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e8efe9;color:#24523b}.danger{background:#ab514b}.row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.row>*{flex-shrink:0}label{font-size:13px;display:block;margin:7px 0;color:#405e4d}label input[type=checkbox]{vertical-align:middle}input[type=text],input[type=url],input[type=number],textarea{width:100%;padding:8px;margin:3px 0 5px;border:1px solid #b8ccc0;border-radius:7px;background:white;font-family:inherit;font-size:13px}input[type=range]{width:100%}textarea{resize:vertical;min-height:54px}.small{font-size:12px;color:#637d70;line-height:1.55}.status{font-size:12px;border-radius:9px;padding:10px;margin:10px 0;background:#e7f2eb;color:#285a45;min-height:39px;line-height:1.5}.viewport{position:relative;overflow:hidden;touch-action:none;background:#dcebdc;cursor:grab}.viewport.dragging{cursor:grabbing}.stage{position:absolute;left:0;top:0;width:1620px;height:971px;transform-origin:0 0}.base{position:absolute;width:100%;height:100%;user-select:none;pointer-events:none;filter:brightness(1.11) saturate(.76) contrast(.94)}.map-svg{position:absolute;top:0;left:0;width:1620px;height:971px;overflow:visible;pointer-events:none}.route-line{fill:none;stroke:#234c75;stroke-width:6;stroke-dasharray:13 10;stroke-linecap:round;stroke-linejoin:round;opacity:.9}.cable-wire{fill:none;stroke:#43515a;stroke-width:5;stroke-linejoin:round}.cable-wire.back{stroke:#f5f7f6;stroke-width:9}.tower{stroke:#354957;stroke-width:5;fill:#d6e2e5}.tower-head{fill:#e5eded;stroke:#354957;stroke-width:3}.editor-handle{fill:#fff;stroke:#dd694e;stroke-width:4;cursor:grab;pointer-events:all}.editor-handle.selected{fill:#ffcf4f;stroke:#b64a35;stroke-width:6;filter:drop-shadow(0 0 5px #ffcf4f)}.editor-handle.anchor{stroke-width:4}.route-node-tools button:disabled{opacity:.45;cursor:not-allowed}.curve-guide{fill:none;stroke:#2d94a8;stroke-width:2;stroke-dasharray:4 5;opacity:.85;pointer-events:none}.curve-handle{fill:#36b7c7;stroke:#fff;stroke-width:3;cursor:grab;pointer-events:all;filter:drop-shadow(0 1px 2px #173e4b88)}.curve-handle:active{cursor:grabbing}.stop-pin{position:absolute;transform:translate(-50%,-100%);border:3px solid white;background:#275e9c;color:white;min-width:29px;height:29px;border-radius:50%;z-index:6;box-shadow:0 2px 7px #0008;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}.stop-pin.edit{background:#c35249;cursor:grab;touch-action:none}.stop-pin.active{outline:4px solid #ffdd76}.walker{position:absolute;z-index:7;width:65px;height:88px;transform:translate(-50%,-88%);filter:drop-shadow(0 3px 3px #264d5366);pointer-events:none}.walker img{width:65px;height:88px;object-fit:contain;object-position:center bottom;opacity:1!important;mix-blend-mode:normal}.walker.left img{transform:scaleX(-1)}.vehicle{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:5;filter:drop-shadow(0 2px 2px #102c4155)}.vehicle.cable{width:55px;height:67px}.vehicle.bus{width:78px;height:49px}.vehicle svg{width:100%;height:100%;overflow:visible}.vehicle.flip svg{transform:scaleX(-1)}.photo{position:absolute;z-index:8;width:268px;border-radius:13px;padding:11px;background:#fffffff5;border:3px solid #2f785e;box-shadow:0 6px 18px #18362966;display:none;pointer-events:auto}.photo h3{margin:0 0 7px;font-size:17px}.photo img{display:block;width:100%;height:150px;object-fit:contain;background:#eef3ef;border-radius:7px}.photo p{margin:5px 0;font-size:12px;color:#617467}.photo a{font-size:12px}.placeholder{padding:25px 8px;color:#556d60;background:#edf2ec;text-align:center;border-radius:8px;font-size:13px}.floating{position:absolute;z-index:10;right:12px;top:12px;display:flex;gap:5px}.floating button{background:white;color:#2d5340;box-shadow:0 1px 6px #0004;font-size:18px}.legend{position:absolute;z-index:9;bottom:10px;left:10px;background:#ffffffe8;border-radius:9px;padding:9px;max-width:425px;font-size:12px;color:#46614e;pointer-events:none}.stop-item{border:1px solid #dae7df;border-radius:9px;padding:8px 9px;margin:6px 0;background:#f8fbf8}.stop-item.active{border-color:#5f9e7b;background:#eef7f0}.stop-title{font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:4px}.order-buttons{display:flex;gap:4px}.order-buttons button{padding:3px 7px}.edit-fields{display:none;margin-top:6px}.stop-item.active .edit-fields{display:block}.pill{font-size:11px;padding:2px 7px;background:#e0eee4;border-radius:99px}.editor-help{background:#fff6dd;border-radius:8px;padding:9px;font-size:12px;line-height:1.55;color:#68543b;margin:8px 0}.flex-grow{flex:1}#fileChooser{display:none}#editMode{accent-color:#33845f}@media(max-width:850px){.layout{display:flex;flex-direction:column-reverse;height:auto}.viewport{height:58vh;min-height:330px}aside{max-height:none}.legend{font-size:10px;max-width:75%}header{padding:9px 12px}}
 
 /* 溫柔山林古風音效控制與不帶數字的景點定位點 */
 .audio-panel{background:#f3f7f3;border:1px solid #d9e6dc;border-radius:11px;padding:10px 12px;margin:9px 0}
@@ -82,7 +82,20 @@
  <label>腳步聲音量 <input type="range" id="stepsVolume" min="0" max="100" value="44"></label>
  <p class="audio-note">音樂是本系統原創的悠揚山林配樂，包含柔和笛聲、撥弦與自然環境聲，可循環播放。為符合瀏覽器自動播放限制，請先按一次「啟用聲音」；到站、暫停及路線編輯時會停止腳步聲。</p>
 </div>
-<div class="route-node-info" id="routeNodeInfo" aria-live="polite">尚未選取節點</div><h2>✏️ 編輯模式</h2><label><input type="checkbox" id="editMode"> 開啟路線編輯（自動暫停導覽）</label><div class="editor-help">進入編輯模式後：<br>① <b>拖曳紅色圓點</b>，調整路線錨點位置；<br>② <b>拖曳青藍色圓點</b>，調整該段 SVG 曲線弧度；<br>③ <b>拖曳景點定位點</b>，同步移動景點及路線錨點；<br>④ 在景點列表按 ↑ ↓ 編輯導覽順位；<br>⑤ 修改照片 URL、站點位置後按「套用資料」；<br>⑥ 拖曳紫色／橘色點編輯纜線與支柱；<br>⑦ <b>拖曳淺藍色圓點</b>編輯公車動線（可新增、刪除節點）。編輯完成後下載 JSON。<br>青藍色曲線控制點存至 route.curveHandles；纜車線與支柱存至 cableway.points／towerIndices；公車動線存至 bus.points。</div><div class="row"><button id="undoEdit" class="secondary">復原上一步</button><button id="resetView" class="secondary">地圖適應畫面</button></div>
+<div class="route-node-info" id="routeNodeInfo" aria-live="polite">尚未選取節點</div>
+<div class="route-node-tools" style="margin:8px 0 14px;padding:10px;background:#f1f6f2;border:1px solid #d5e2d8;border-radius:10px">
+ <div class="small" style="font-weight:700;margin-bottom:7px">🚶 小人路線節點編輯</div>
+ <div class="row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+  <button id="routeAddNode" class="secondary" type="button">＋ 新增節點</button>
+  <button id="routeInsertNode" class="secondary" type="button">↳ 插入中間節點</button>
+  <button id="routeDeleteNode" class="secondary" type="button">－ 刪除選取節點</button>
+ </div>
+ <label style="display:block">選取小人路線節點
+  <select id="routeNodeSelect" aria-label="選取小人路線節點" style="width:100%;padding:8px;border:1px solid #b8ccc0;border-radius:7px;background:#fff"></select>
+ </label>
+ <div class="small" id="routeNodeHelp" style="margin-top:7px;line-height:1.55">先選取地圖上的紅色節點或下拉選單，再新增、插入或刪除。起點、終點及景點對應節點會受到保護。</div>
+</div>
+<h2>✏️ 編輯模式</h2><label><input type="checkbox" id="editMode"> 開啟路線編輯（自動暫停導覽）</label><div class="editor-help">進入編輯模式後：<br>① <b>拖曳紅色圓點</b>，調整路線節點位置；也可新增、插入中間或刪除節點；<br>② <b>拖曳青藍色圓點</b>，調整該段 SVG 曲線弧度；<br>③ <b>拖曳景點定位點</b>，同步移動景點及路線錨點；<br>④ 在景點列表按 ↑ ↓ 編輯導覽順位；<br>⑤ 修改照片 URL、站點位置後按「套用資料」；<br>⑥ 拖曳紫色／橘色點編輯纜線與支柱；<br>⑦ <b>拖曳淺藍色圓點</b>編輯公車動線（可新增、刪除節點）。編輯完成後下載 JSON。<br>青藍色曲線控制點存至 route.curveHandles；纜車線與支柱存至 cableway.points／towerIndices；公車動線存至 bus.points。</div><div class="row"><button id="undoEdit" class="secondary">復原上一步</button><button id="resetView" class="secondary">地圖適應畫面</button></div>
 <h2>🚡 纜車線與支柱編輯</h2>
 <div class="editor-help cable-info">開啟「編輯模式」後：<br>① <b>拖曳紫色圓點</b>，調整纜車線路節點（可拉伸或轉折）。<br>② <b>拖曳橘色圓點或支柱本體</b>，同步移動支柱及該處的纜線節點。<br>③ 纜車每個動畫影格都重新依照最新線路計算，因此調整後仍沿纜線往返。<br>④ 點「新增線路節點」可在選取節點後插入中間點；完成後按「下載／儲存 JSON」。<br><b>線路不會超出地圖邊界，初始位置不延伸到天空。</b></div>
 <div class="row" style="margin:9px 0"><button id="cableAdd" class="secondary" type="button">＋ 新增線路節點</button><button id="cableRemove" class="secondary" type="button">－ 刪除選取節點</button></div>
@@ -249,6 +262,72 @@ function quadraticPoint(a,c,b,t){const u=1-t;return [u*u*a[0]+2*u*t*c[0]+t*t*b[0
 function rebuildCurveSegment(h){const pts=cfg.route.points,a=pts[h.startIndex],b=pts[h.endIndex],steps=h.endIndex-h.startIndex;if(!a||!b||steps<1)return;for(let j=0;j<=steps;j++)pts[h.startIndex+j]=sanePoint(quadraticPoint(a,h.control,b,j/steps))}
 function moveRouteAnchor(idx,p){const pts=cfg.route.points,old=pts[idx];if(!old)return;const dx=p[0]-old[0],dy=p[1]-old[1];pts[idx]=sanePoint(p);const adjacent=cfg.route.curveHandles.filter(h=>h.startIndex===idx||h.endIndex===idx);for(const h of adjacent){h.control=sanePoint([h.control[0]+dx*.5,h.control[1]+dy*.5]);rebuildCurveSegment(h)}}
 function curveById(id){return cfg.route.curveHandles.find(h=>h.id===id)}
+function refreshRouteCurveIds(){cfg.route.curveHandles.forEach(h=>{h.id=`curve-${h.startIndex}-${h.endIndex}`})}
+function routeNodeIsStop(idx){return cfg.stops.some(s=>Number(s.routeIndex)===idx)}
+function routeInsertAtSelected(mode){
+ if(!editMode){status('請先開啟編輯模式');return}
+ const pts=cfg.route.points,n=pts.length;
+ if(n<2){status('路線至少需要兩個節點');return}
+ const selected=selectedNodeIndex==null?(stopOrder()[0]?.routeIndex??0):selectedNodeIndex;
+ const base=clamp(selected,0,n-2),insertIndex=base+1,a=pts[base],b=pts[base+1];
+ const t=mode==='middle'?.5:.22;
+ const newPoint=sanePoint([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);
+ remember();
+ pts.splice(insertIndex,0,newPoint);
+ // 景點仍指向原本的地理位置；插入點之後的站點索引全部順延。
+ cfg.stops.forEach(st=>{if(st.routeIndex>=insertIndex)st.routeIndex++});
+ let covered=false;
+ for(const h of cfg.route.curveHandles){
+  if(h.startIndex>=insertIndex){h.startIndex++;h.endIndex++}
+  else if(h.endIndex>=insertIndex){h.endIndex++;covered=true}
+ }
+ if(!covered){
+  // 若插入點剛好位於曲線段邊界，補上一段短曲線，避免控制點缺段。
+  const p0=pts[base],p2=pts[insertIndex],control=[(p0[0]+p2[0])/2,(p0[1]+p2[1])/2];
+  cfg.route.curveHandles.push({id:`curve-${base}-${insertIndex}`,startIndex:base,endIndex:insertIndex,control:sanePoint(control)});
+ }
+ refreshRouteCurveIds();
+ // 保留原有取樣座標，只在相鄰兩點間插入新點；曲線控制點仍可在後續拖曳時重算整段。
+ selectedNodeIndex=insertIndex;
+ markDirty();rebuildTimeline();renderStops();renderRoute();renderPins();selectRouteNode(insertIndex);
+ status(mode==='middle'?'已在選取節點與下一節點之間插入中點，可直接拖曳調整。':'已新增路線節點（位於選取節點後方），可直接拖曳調整。');
+}
+function routeDeleteSelected(){
+ if(!editMode){status('請先開啟編輯模式');return}
+ const pts=cfg.route.points,idx=selectedNodeIndex;
+ if(idx==null||!Number.isInteger(idx)){status('請先選取要刪除的路線節點');return}
+ if(idx<=0||idx>=pts.length-1){status('起點與終點節點不可刪除，以確保小人仍從第一站出發並在最後一站折返。');return}
+ const linked=cfg.stops.filter(st=>st.routeIndex===idx);
+ if(linked.length){status(`第 ${idx} 號節點對應景點「${linked.map(x=>x.name).join('、')}」，請先在景點資料中將 routeIndex 改到其他節點，再刪除此點。`);return}
+ remember();
+ const handles=cfg.route.curveHandles;
+ const prev=handles.find(h=>h.endIndex===idx),next=handles.find(h=>h.startIndex===idx);
+ pts.splice(idx,1);
+ cfg.stops.forEach(st=>{if(st.routeIndex>idx)st.routeIndex--});
+ if(prev&&next){
+  // 刪除曲線分段錨點時，合併左右曲線，並以現有中間點估算新的控制點。
+  cfg.route.curveHandles=handles.filter(h=>h!==prev&&h!==next);
+  for(const h of cfg.route.curveHandles){if(h.startIndex>idx)h.startIndex--;if(h.endIndex>idx)h.endIndex--;}
+  const start=prev.startIndex,end=next.endIndex-1;
+  if(end>start){
+   const mid=Math.floor((start+end)/2),p0=pts[start],pm=pts[mid],p2=pts[end];
+   const control=sanePoint([2*pm[0]-.5*(p0[0]+p2[0]),2*pm[1]-.5*(p0[1]+p2[1])]);
+   const merged={id:`curve-${start}-${end}`,startIndex:start,endIndex:end,control};
+   cfg.route.curveHandles.push(merged);rebuildCurveSegment(merged);
+  }
+ }else{
+  for(const h of handles){
+   if(h.startIndex>idx)h.startIndex--;
+   if(h.endIndex>idx)h.endIndex--;
+  }
+  const affected=cfg.route.curveHandles.filter(h=>h.startIndex<idx&&h.endIndex>=idx);
+  affected.forEach(rebuildCurveSegment);
+ }
+ refreshRouteCurveIds();
+ selectedNodeIndex=clamp(idx-1,0,pts.length-1);
+ markDirty();rebuildTimeline();renderStops();renderRoute();renderPins();selectRouteNode(selectedNodeIndex);
+ status(`已刪除第 ${idx} 號路線節點；景點順位及起終點已同步調整。`);
+}
 
 function stopOrder(){return [...cfg.stops].sort((a,b)=>a.order-b.order)}
 function validPhoto(u){try{const x=new URL(String(u).trim());return x.protocol==='https:'?x.href:''}catch{return ''}}
@@ -338,9 +417,20 @@ function selectRouteNode(idx){
 }
 function renderRouteNodeInfo(){
  const el=$('routeNodeInfo');if(!el)return;
- if(selectedNodeIndex==null){el.textContent='尚未選取節點：點選地圖上的路線圓點可聚焦';return}
+ const sel=$('routeNodeSelect');
+ if(sel){
+  const old=selectedNodeIndex;
+  sel.replaceChildren();
+  cfg.route.points.forEach((p,i)=>{const opt=document.createElement('option');opt.value=String(i);const stops=cfg.stops.filter(x=>x.routeIndex===i).map(x=>`第${x.order}站 ${x.name}`).join('、');opt.textContent=`節點 ${i}　X:${Math.round(p[0])} Y:${Math.round(p[1])}${stops?'　｜'+stops:''}`;sel.append(opt)});
+  if(old!=null&&old>=0&&old<cfg.route.points.length)sel.value=String(old);else sel.selectedIndex=-1;
+ }
+ const del=$('routeDeleteNode');
+ if(del){const protectedNode=selectedNodeIndex==null||selectedNodeIndex<=0||selectedNodeIndex>=cfg.route.points.length-1||routeNodeIsStop(selectedNodeIndex);del.disabled=protectedNode;del.title=protectedNode?'起終點或景點對應節點不可直接刪除':'刪除目前選取的路線節點'}
+ const help=$('routeNodeHelp');
+ if(selectedNodeIndex==null){el.textContent='尚未選取節點：請點選地圖紅色節點或使用下拉選單。';if(help)help.textContent='新增節點：在選取點後方加入可拖曳節點；插入中間節點：精準插入兩點中間。景點對應節點及起終點不可直接刪除。';return}
  const p=pointOnRoute(selectedNodeIndex),ss=cfg.stops.filter(x=>x.routeIndex===selectedNodeIndex).map(x=>`第${x.order}站 ${x.name}`).join('、');
- el.textContent=`目前選取第 ${selectedNodeIndex} 號路線節點（共 ${cfg.route.points.length} 個）：X=${p[0].toFixed(1)}、Y=${p[1].toFixed(1)}${ss?'｜'+ss:''}`;
+ el.textContent=`目前選取第 ${selectedNodeIndex} 號節點（共 ${cfg.route.points.length} 個）：X=${p[0].toFixed(1)}、Y=${p[1].toFixed(1)}${ss?'｜'+ss:''}`;
+ if(help)help.textContent=routeNodeIsStop(selectedNodeIndex)?'此節點是景點定位點，為避免景點與路線對應錯亂，不能直接刪除；可先修改景點的 routeIndex。':'可拖曳地圖上的黃色／紅色選取點微調位置，也可在此新增、插入或刪除節點。';
 }
 function renderPins(){
  stage.querySelectorAll('.stop-pin').forEach(e=>e.remove());
@@ -504,6 +594,10 @@ $('addStop').onclick=()=>{
  cfg.stops.push(snew);selectedId=id;$('stopSearch').value='';markDirty();rebuildTimeline();renderStops();renderPins();renderRoute();status('✅ 已新增景點。請展開編輯名稱、照片 URL 與路線節點，再下載 JSON。');
 };
 
+$('routeNodeSelect').onchange=()=>{const idx=+$('routeNodeSelect').value;if(Number.isInteger(idx))selectRouteNode(idx)};
+$('routeAddNode').onclick=()=>routeInsertAtSelected('add');
+$('routeInsertNode').onclick=()=>routeInsertAtSelected('middle');
+$('routeDeleteNode').onclick=routeDeleteSelected;
 $('busNodeSelect').onchange=()=>busSelectIndex(+$('busNodeSelect').value);
 $('busAdd').onclick=()=>{
  if(!editMode){status('請先開啟編輯模式');return}
@@ -530,7 +624,7 @@ $('cableRemove').onclick=()=>{if(!editMode){status('請先開啟編輯模式');r
 $('cableTowerToggle').onclick=()=>{if(!editMode){status('請先開啟編輯模式');return}remember();const idx=selectedCableIndex;const arr=cfg.cableway.towerIndices;cfg.cableway.towerIndices=arr.includes(idx)?arr.filter(n=>n!==idx):[...arr,idx].sort((a,b)=>a-b);markDirty();renderRoute()};
 $('cableReset').onclick=()=>{if(!editMode){status('請先開啟編輯模式');return}if(!confirm('要將纜車線與支柱恢復成這一版的預設位置嗎？步行路線不受影響。'))return;remember();cfg.cableway=structuredClone(INITIAL_CABLEWAY);selectedCableIndex=1;markDirty();renderRoute()};
 $('routeToggle').onchange=()=>{cfg.settings.showRoute=$('routeToggle').checked;renderRoute()};$('cableToggle').onchange=()=>{cfg.settings.showCable=$('cableToggle').checked;renderRoute()};$('busToggle').onchange=()=>cfg.settings.showBus=$('busToggle').checked;$('busRouteToggle').onchange=()=>{cfg.settings.showBusRoute=$('busRouteToggle').checked;markDirty();renderRoute()};$('speed').onchange=()=>cfg.settings.walkerSpeed=+$('speed').value;$('vehicleSpeed').onchange=()=>cfg.settings.transportSpeed=+$('vehicleSpeed').value;
-$('editMode').onchange=()=>{editMode=$('editMode').checked;if(editMode){autoStartSerial++;reset();$('routeToggle').checked=true;status('✏️ 編輯模式：紅色點調步道、青色點調曲線、紫色點調纜線、橘色點調支柱、淺藍色點調公車路線')}else{reset();$('routeToggle').checked=!!cfg.settings.showRoute;status('已退出編輯模式')}renderRoute();renderPins()};
+$('editMode').onchange=()=>{editMode=$('editMode').checked;if(editMode){autoStartSerial++;reset();$('routeToggle').checked=true;status('✏️ 編輯模式：紅色點調步道、青色點調曲線、紫色點調纜線、橘色點調支柱、淺藍色點調公車路線')}else{reset();$('routeToggle').checked=!!cfg.settings.showRoute;status('已退出編輯模式')}renderRoute();renderPins();renderRouteNodeInfo()};
 $('undoEdit').onclick=()=>{if(!history.length)return;cfg=normalize(JSON.parse(history.pop()));photoCache.clear();reset();renderStops();renderPins();renderRoute();status('已復原上一個編輯動作')};
 function applyConfig(raw,from){const saved=!configInitialized?readWalkCheckpoint():null;configInitialized=true;autoStartSerial++;reset();cfg=normalize(raw);history=[];changed=false;selectedId=null;selectedNodeIndex=null;selectedLabelId=null;photoCache.clear();photoStatus={};$('routeToggle').checked=!!cfg.settings.showRoute;$('cableToggle').checked=!!cfg.settings.showCable;$('busToggle').checked=!!cfg.settings.showBus;$('busRouteToggle').checked=!!cfg.settings.showBusRoute;selectedBusIndex=0;$('speed').value=cfg.settings.walkerSpeed;$('vehicleSpeed').value=cfg.settings.transportSpeed;renderStops();renderPins();renderRoute();rebuildTimeline();const first=stopOrder()[0];if(first)setWalker(pointOnRoute(first.routeIndex));preloadAll();status('✅ 已載入 '+from+'，共 '+cfg.stops.length+' 個景點、'+cfg.route.points.length+' 個路線節點');if(restoreWalkCheckpoint(saved)){status(paused?'⏸ 已恢復上次暫停的位置':'▶ 已恢復上次導覽位置，接續行走')}else if(cfg.settings.autoStart&&!editMode)autoStart()}
 async function autoStart(){const serial=++autoStartSerial;const first=stopOrder()[0];if(!first)return;status('📷 優先預載起點：'+first.name);await preload(first);if(serial!==autoStartSerial||playing||editMode)return;start()}
