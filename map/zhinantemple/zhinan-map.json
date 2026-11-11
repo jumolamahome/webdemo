@@ -23,7 +23,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/純陽寶殿.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/純陽寶殿.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        257,
+        597
+      ],
+      "labelWidth": 210
     },
     {
       "id": "place2",
@@ -33,7 +38,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/前山老街.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        351,
+        347
+      ],
+      "labelWidth": 153
     },
     {
       "id": "place3",
@@ -43,7 +53,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/慈母園.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/慈母園.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        677,
+        360
+      ],
+      "labelWidth": 120
     },
     {
       "id": "place4",
@@ -53,7 +68,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/凌霄寶殿.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/凌霄寶殿.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        946,
+        163
+      ],
+      "labelWidth": 223
     },
     {
       "id": "place5",
@@ -63,7 +83,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/九皇星園.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/九皇星園.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        762,
+        542
+      ],
+      "labelWidth": 199
     },
     {
       "id": "place6",
@@ -73,7 +98,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/大雄寶殿.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/大雄寶殿.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        657,
+        654
+      ],
+      "labelWidth": 218
     },
     {
       "id": "place8",
@@ -83,7 +113,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/仙山廣場.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        1098,
+        659
+      ],
+      "labelWidth": 142
     },
     {
       "id": "place9",
@@ -93,7 +128,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/地藏王寶殿.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/地藏王寶殿.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        1432,
+        597
+      ],
+      "labelWidth": 250
     },
     {
       "id": "place10",
@@ -103,7 +143,12 @@
       "photoUrl": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
       "photoSource": "https://jumolamahome.github.io/webdemo/map/zhinantemple/pics/指南宮教育館.jpg",
       "description": "",
-      "waitSeconds": 5
+      "waitSeconds": 5,
+      "labelPosition": [
+        1044,
+        509
+      ],
+      "labelWidth": 194
     }
   ],
   "route": {
@@ -1450,5 +1495,44 @@
         777.1308966633591
       ]
     ]
-  }
+  },
+  "mapLabels": [
+    {
+      "id": "extra1",
+      "name": "前山入口意象石",
+      "position": [
+        128,
+        287
+      ],
+      "labelWidth": 207
+    },
+    {
+      "id": "extra2",
+      "name": "觀景打四亭",
+      "position": [
+        486,
+        241
+      ],
+      "labelWidth": 157
+    },
+    {
+      "id": "extra3",
+      "name": "櫻花林",
+      "position": [
+        690,
+        241
+      ],
+      "labelWidth": 126
+    },
+    {
+      "id": "extra4",
+      "name": "休憩觀景亭",
+      "position": [
+        339,
+        449
+      ],
+      "labelWidth": 167
+    }
+  ],
+  "mapTextMode": "json-labels-v1"
 }
