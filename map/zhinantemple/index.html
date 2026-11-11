@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>指南宮 Q 版地圖｜景點名稱 JSON 化與編輯焦點版 2026-11-11</title><style>
+<!doctype html><html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>指南宮 Q 版地圖｜路徑與角度控制節點雙清單批次編輯版 2026-11-11</title><style>
 :root{font-family:"Microsoft JhengHei","Noto Sans TC",system-ui,sans-serif;color:#213d32;background:#e9f2eb}*{box-sizing:border-box}body{margin:0}header{background:#194e3c;color:white;padding:12px 19px}header h1{font-size:20px;margin:0 0 3px}header small{color:#c7e7d7}.layout{display:grid;grid-template-columns:350px minmax(0,1fr);height:calc(100dvh - 65px)}aside{overflow-y:auto;background:#fff;padding:15px;border-right:1px solid #c6d8c7}h2{font-size:16px;margin:15px 0 8px;border-bottom:1px solid #d4e2d6;padding-bottom:6px}button,.file-btn{cursor:pointer;border:0;border-radius:8px;background:#28785c;color:#fff;padding:8px 10px;font-weight:650;font-size:13px;font-family:inherit}button:hover,.file-btn:hover{filter:brightness(.94)}button:disabled{opacity:.45;cursor:not-allowed}.secondary{background:#e8efe9;color:#24523b}.danger{background:#ab514b}.row{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.row>*{flex-shrink:0}label{font-size:13px;display:block;margin:7px 0;color:#405e4d}label input[type=checkbox]{vertical-align:middle}input[type=text],input[type=url],input[type=number],textarea{width:100%;padding:8px;margin:3px 0 5px;border:1px solid #b8ccc0;border-radius:7px;background:white;font-family:inherit;font-size:13px}input[type=range]{width:100%}textarea{resize:vertical;min-height:54px}.small{font-size:12px;color:#637d70;line-height:1.55}.status{font-size:12px;border-radius:9px;padding:10px;margin:10px 0;background:#e7f2eb;color:#285a45;min-height:39px;line-height:1.5}.viewport{position:relative;overflow:hidden;touch-action:none;background:#dcebdc;cursor:grab}.viewport.dragging{cursor:grabbing}.stage{position:absolute;left:0;top:0;width:1620px;height:971px;transform-origin:0 0}.base{position:absolute;width:100%;height:100%;user-select:none;pointer-events:none;filter:brightness(1.11) saturate(.76) contrast(.94)}.map-svg{position:absolute;top:0;left:0;width:1620px;height:971px;overflow:visible;pointer-events:none}.route-line{fill:none;stroke:#234c75;stroke-width:6;stroke-dasharray:13 10;stroke-linecap:round;stroke-linejoin:round;opacity:.9}.cable-wire{fill:none;stroke:#43515a;stroke-width:5;stroke-linejoin:round}.cable-wire.back{stroke:#f5f7f6;stroke-width:9}.tower{stroke:#354957;stroke-width:5;fill:#d6e2e5}.tower-head{fill:#e5eded;stroke:#354957;stroke-width:3}.editor-handle{fill:#fff;stroke:#dd694e;stroke-width:4;cursor:grab;pointer-events:all}.editor-handle.selected{fill:#ffcf4f;stroke:#b64a35;stroke-width:6;filter:drop-shadow(0 0 5px #ffcf4f)}.editor-handle.anchor{stroke-width:4}.route-node-tools button:disabled{opacity:.45;cursor:not-allowed}.curve-guide{fill:none;stroke:#2d94a8;stroke-width:2;stroke-dasharray:4 5;opacity:.85;pointer-events:none}.curve-handle{fill:#36b7c7;stroke:#fff;stroke-width:3;cursor:grab;pointer-events:all;filter:drop-shadow(0 1px 2px #173e4b88)}.curve-handle:active{cursor:grabbing}.stop-pin{position:absolute;transform:translate(-50%,-100%);border:3px solid white;background:#275e9c;color:white;min-width:29px;height:29px;border-radius:50%;z-index:6;box-shadow:0 2px 7px #0008;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}.stop-pin.edit{background:#c35249;cursor:grab;touch-action:none}.stop-pin.active{outline:4px solid #ffdd76}.walker{position:absolute;z-index:7;width:65px;height:88px;transform:translate(-50%,-88%);filter:drop-shadow(0 3px 3px #264d5366);pointer-events:none}.walker img{width:65px;height:88px;object-fit:contain;object-position:center bottom;opacity:1!important;mix-blend-mode:normal}.walker.left img{transform:scaleX(-1)}.vehicle{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:5;filter:drop-shadow(0 2px 2px #102c4155)}.vehicle.cable{width:55px;height:67px}.vehicle.bus{width:78px;height:49px}.vehicle svg{width:100%;height:100%;overflow:visible}.vehicle.flip svg{transform:scaleX(-1)}.photo{position:absolute;z-index:8;width:268px;border-radius:13px;padding:11px;background:#fffffff5;border:3px solid #2f785e;box-shadow:0 6px 18px #18362966;display:none;pointer-events:auto}.photo h3{margin:0 0 7px;font-size:17px}.photo img{display:block;width:100%;height:150px;object-fit:contain;background:#eef3ef;border-radius:7px}.photo p{margin:5px 0;font-size:12px;color:#617467}.photo a{font-size:12px}.placeholder{padding:25px 8px;color:#556d60;background:#edf2ec;text-align:center;border-radius:8px;font-size:13px}.floating{position:absolute;z-index:10;right:12px;top:12px;display:flex;gap:5px}.floating button{background:white;color:#2d5340;box-shadow:0 1px 6px #0004;font-size:18px}.legend{position:absolute;z-index:9;bottom:10px;left:10px;background:#ffffffe8;border-radius:9px;padding:9px;max-width:425px;font-size:12px;color:#46614e;pointer-events:none}.stop-item{border:1px solid #dae7df;border-radius:9px;padding:8px 9px;margin:6px 0;background:#f8fbf8}.stop-item.active{border-color:#5f9e7b;background:#eef7f0}.stop-title{font-size:13px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:4px}.order-buttons{display:flex;gap:4px}.order-buttons button{padding:3px 7px}.edit-fields{display:none;margin-top:6px}.stop-item.active .edit-fields{display:block}.pill{font-size:11px;padding:2px 7px;background:#e0eee4;border-radius:99px}.editor-help{background:#fff6dd;border-radius:8px;padding:9px;font-size:12px;line-height:1.55;color:#68543b;margin:8px 0}.flex-grow{flex:1}#fileChooser{display:none}#editMode{accent-color:#33845f}@media(max-width:850px){.layout{display:flex;flex-direction:column-reverse;height:auto}.viewport{height:58vh;min-height:330px}aside{max-height:none}.legend{font-size:10px;max-width:75%}header{padding:9px 12px}}
 
 /* 溫柔山林古風音效控制與不帶數字的景點定位點 */
@@ -68,7 +68,30 @@
  filter:drop-shadow(0 0 7px #ffb400);outline:none}
 .route-node-info{background:#e9f4fc;border:1px solid #8cbac9;padding:8px;border-radius:9px;font-size:12px;color:#28556c;margin:8px 0}
 .map-label.edit:focus{outline:5px solid #e65336;outline-offset:3px}
-</style></head><body><header><h1>⛩️ 指南宮 Q 版導覽｜景點、步道、纜車與公車路線編輯器</h1><small>面板預設收合・公車動線可拖曳・纜車線及支柱可編輯・悠揚山林配樂與柔和腳步聲</small></header>
+
+/* 路徑節點／角度控制節點雙清單與批次編輯 */
+.node-editor-group{background:#fff;border:1px solid #dce8df;border-radius:9px;padding:8px;margin:8px 0}
+.node-editor-heading{display:flex;align-items:center;justify-content:space-between;color:#315b45;font-size:13px;margin-bottom:6px}
+.node-action-row{gap:5px;margin:5px 0 2px}
+.node-action-row button,.node-batch-toolbar button{font-size:11px;padding:7px 8px;white-space:normal}
+.node-batch-toolbar{margin:8px 0;gap:5px}
+.node-filter-label{font-size:12px;font-weight:650}
+.route-node-list{max-height:390px;overflow:auto;border:1px solid #cbdccf;border-radius:9px;background:#f8fbf8;padding:5px;overscroll-behavior:contain}
+.node-list-section-title{position:sticky;top:0;z-index:2;background:#e7f0e9;color:#355d47;padding:6px 8px;font-size:11px;font-weight:750;border-radius:6px;margin:3px 0}
+.node-list-row{display:grid;grid-template-columns:22px minmax(0,1fr);align-items:center;gap:5px;padding:4px 5px;border:1px solid transparent;border-radius:7px;margin:2px 0;background:#fff}
+.node-list-row.selected{border-color:#e1a83d;background:#fff4d4;box-shadow:inset 3px 0 #e1a83d}
+.node-list-row.protected{background:#f1f3f1;color:#7b8980}
+.node-list-row input{margin:0;justify-self:center;accent-color:#c35b4d}
+.node-select-button{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;padding:5px 6px;background:transparent;color:#345343;text-align:left;font-size:11px;font-weight:550;border-radius:5px}
+.node-select-button:hover{background:#edf5ee;filter:none}
+.node-select-button .node-primary{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.node-select-button .node-meta{font-size:10px;color:#6d8174;white-space:nowrap;flex:none}
+.node-type-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.node-type-dot.route{background:#d76550}.node-type-dot.curve{background:#35aebd}
+.node-protected-tag{font-size:9px;background:#e5e9e6;color:#66756b;border-radius:99px;padding:2px 5px;white-space:nowrap}
+.node-list-empty{font-size:11px;color:#718276;text-align:center;padding:12px}
+.curve-handle.selected{fill:#ffcf4f;stroke:#b64a35;stroke-width:5;filter:drop-shadow(0 0 5px #ffcf4f)}
+</style></head><body><header><h1>⛩️ 指南宮 Q 版導覽｜景點、步道、纜車與公車路線編輯器</h1><small>面板預設收合・路徑／角度控制節點清單與批次刪除・纜車公車可編輯・悠揚山林配樂</small></header>
 <div class="layout panel-collapsed" id="layout"><aside id="sidebar" aria-hidden="true" inert>
 <h2>📁 JSON 資料管理</h2><div class="row"><button id="loadFile" class="secondary">匯入 JSON</button><input type="file" id="fileChooser" accept=".json,application/json"><button id="saveJson">下載／儲存 JSON</button></div><div class="small">資料檔：<b>zhinan-map.json</b>（與 HTML 放同一資料夾）。透過本機伺服器開啟時會自動讀取；直接雙擊 HTML 時，可按「匯入 JSON」載入。已將你上傳的 JSON 完整內建作為預設值；即使直接雙擊 HTML，也可載入相同資料。編輯後請下載／儲存 JSON，避免資料遺失。</div><div id="status" class="status">初始化中…</div>
 <h2>▶️ 導覽與圖層</h2><div class="row"><button id="start">開始／繼續</button><button id="pause" class="secondary">暫停</button><button id="reset" class="secondary">重設</button></div>
@@ -84,18 +107,34 @@
 </div>
 <div class="route-node-info" id="routeNodeInfo" aria-live="polite">尚未選取節點</div>
 <div class="route-node-tools" style="margin:8px 0 14px;padding:10px;background:#f1f6f2;border:1px solid #d5e2d8;border-radius:10px">
- <div class="small" style="font-weight:700;margin-bottom:7px">🚶 小人路線節點編輯</div>
- <div class="row" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
-  <button id="routeAddNode" class="secondary" type="button">＋ 新增節點</button>
-  <button id="routeInsertNode" class="secondary" type="button">↳ 插入中間節點</button>
-  <button id="routeDeleteNode" class="secondary" type="button">－ 刪除選取節點</button>
+ <div class="small" style="font-weight:700;margin-bottom:7px">🚶 小人路線節點編輯清單</div>
+ <div class="node-editor-group">
+  <div class="node-editor-heading"><b>🔴 路徑節點</b><span id="routePointCount" class="pill">0 點</span></div>
+  <div class="row node-action-row">
+   <button id="routeAddNode" class="secondary" type="button">＋ 新增路徑節點</button>
+   <button id="routeInsertNode" class="secondary" type="button">↳ 插入中間節點</button>
+   <button id="routeDeleteNode" class="danger" type="button">刪除選取路徑節點</button>
+  </div>
  </div>
- <label style="display:block">選取小人路線節點
-  <select id="routeNodeSelect" aria-label="選取小人路線節點" style="width:100%;padding:8px;border:1px solid #b8ccc0;border-radius:7px;background:#fff"></select>
+ <div class="node-editor-group">
+  <div class="node-editor-heading"><b>🔵 角度控制節點</b><span id="curvePointCount" class="pill">0 點</span></div>
+  <div class="row node-action-row">
+   <button id="curveAddNode" class="secondary" type="button">＋ 新增角度控制節點</button>
+   <button id="curveDeleteNode" class="danger" type="button">刪除選取角度節點</button>
+  </div>
+ </div>
+ <div class="row node-batch-toolbar">
+  <button id="nodeSelectAll" class="secondary" type="button">勾選全部可刪節點</button>
+  <button id="nodeClearChecks" class="secondary" type="button">清除勾選</button>
+  <button id="nodeBatchDelete" class="danger" type="button">批次刪除勾選項目</button>
+ </div>
+ <label class="node-filter-label">搜尋節點編號／景點／座標
+  <input id="routeNodeFilter" type="text" placeholder="例如：第 3 站、節點 80、X: 550" autocomplete="off">
  </label>
- <div class="small" id="routeNodeHelp" style="margin-top:7px;line-height:1.55">先選取地圖上的紅色節點或下拉選單，再新增、插入或刪除。起點、終點及景點對應節點會受到保護。</div>
+ <div id="routeNodeList" class="route-node-list" role="list" aria-label="路徑節點與角度控制節點清單"></div>
+ <div class="small" id="routeNodeHelp" style="margin-top:7px;line-height:1.55">點選列表項目可選取並在地圖上 Highlight；勾選左側方框可跨類型批次刪除。起點、終點及景點對應路徑節點會受到保護。</div>
 </div>
-<h2>✏️ 編輯模式</h2><label><input type="checkbox" id="editMode"> 開啟路線編輯（自動暫停導覽）</label><div class="editor-help">進入編輯模式後：<br>① <b>拖曳紅色圓點</b>，調整路線節點位置；也可新增、插入中間或刪除節點；<br>② <b>拖曳青藍色圓點</b>，調整該段 SVG 曲線弧度；<br>③ <b>拖曳景點定位點</b>，同步移動景點及路線錨點；<br>④ 在景點列表按 ↑ ↓ 編輯導覽順位；<br>⑤ 修改照片 URL、站點位置後按「套用資料」；<br>⑥ 拖曳紫色／橘色點編輯纜線與支柱；<br>⑦ <b>拖曳淺藍色圓點</b>編輯公車動線（可新增、刪除節點）。編輯完成後下載 JSON。<br>青藍色曲線控制點存至 route.curveHandles；纜車線與支柱存至 cableway.points／towerIndices；公車動線存至 bus.points。</div><div class="row"><button id="undoEdit" class="secondary">復原上一步</button><button id="resetView" class="secondary">地圖適應畫面</button></div>
+<h2>✏️ 編輯模式</h2><label><input type="checkbox" id="editMode"> 開啟路線編輯（自動暫停導覽）</label><div class="editor-help">進入編輯模式後：<br>① <b>拖曳紅色圓點</b>，調整路線節點位置；也可在節點清單新增、插入、刪除或勾選批次刪除；<br>② <b>拖曳青藍色圓點</b>，調整該段 SVG 曲線弧度；<br>③ <b>拖曳景點定位點</b>，同步移動景點及路線錨點；<br>④ 在景點列表按 ↑ ↓ 編輯導覽順位；<br>⑤ 修改照片 URL、站點位置後按「套用資料」；<br>⑥ 拖曳紫色／橘色點編輯纜線與支柱；<br>⑦ <b>拖曳淺藍色圓點</b>編輯公車動線（可新增、刪除節點）。編輯完成後下載 JSON。<br>青藍色曲線控制點存至 route.curveHandles；纜車線與支柱存至 cableway.points／towerIndices；公車動線存至 bus.points。</div><div class="row"><button id="undoEdit" class="secondary">復原上一步</button><button id="resetView" class="secondary">地圖適應畫面</button></div>
 <h2>🚡 纜車線與支柱編輯</h2>
 <div class="editor-help cable-info">開啟「編輯模式」後：<br>① <b>拖曳紫色圓點</b>，調整纜車線路節點（可拉伸或轉折）。<br>② <b>拖曳橘色圓點或支柱本體</b>，同步移動支柱及該處的纜線節點。<br>③ 纜車每個動畫影格都重新依照最新線路計算，因此調整後仍沿纜線往返。<br>④ 點「新增線路節點」可在選取節點後插入中間點；完成後按「下載／儲存 JSON」。<br><b>線路不會超出地圖邊界，初始位置不延伸到天空。</b></div>
 <div class="row" style="margin:9px 0"><button id="cableAdd" class="secondary" type="button">＋ 新增線路節點</button><button id="cableRemove" class="secondary" type="button">－ 刪除選取節點</button></div>
@@ -128,7 +167,8 @@ const $=id=>document.getElementById(id), W=1620,H=971;
 let cfg=structuredClone(FALLBACK_CONFIG),scale=1,ox=0,oy=0,editMode=false,selectedId=null,changed=false,history=[],playing=false,paused=false,waitState=false,photoReady=false,waitUntil=0,waitLeft=5000,waitToken=0,currentStopId=null,segmentIndex=0,segmentT=0,segmentElapsed=0,progressPos=[0,0],lastTime=0,walkDirection=1,segments=[],photoCache=new Map(),photoStatus={},currentStop=null;
 let saveHandle=null,viewDrag=null,editDrag=null,autoStartSerial=0;
 let selectedCableIndex=1, selectedBusIndex=0;
-let selectedNodeIndex=null,selectedLabelId=null;
+let selectedNodeIndex=null,selectedLabelId=null,selectedCurveId=null;
+const checkedRouteNodes=new Set(),checkedCurveNodes=new Set();
 const INITIAL_CABLEWAY=structuredClone(FALLBACK_CONFIG.cableway);
 const INITIAL_BUS=structuredClone(FALLBACK_CONFIG.bus);
 // 防意外重新整理：儲存導覽目前所在路段及進度，載入同一份地圖時續走。
@@ -247,9 +287,8 @@ data.route.points=data.route.points.map(sanePoint);
 data.stops=data.stops.map((s,i)=>({...s,id:String(s.id||'place'+(i+1)),name:String(s.name||'未命名景點'),order:Number(s.order)||i+1,routeIndex:clamp(Math.round(Number(s.routeIndex)||0),0,data.route.points.length-1),photoUrl:String(s.photoUrl||''),photoSource:String(s.photoSource||''),description:String(s.description||''),waitSeconds:clamp(Number(s.waitSeconds)||5,1,120),labelPosition:Array.isArray(s.labelPosition)?sanePoint(s.labelPosition):sanePoint(data.route.points[clamp(Math.round(Number(s.routeIndex)||0),0,data.route.points.length-1)]),labelWidth:clamp(Number(s.labelWidth)||190,80,420)}));
 data.stops.sort((a,b)=>a.order-b.order).forEach((s,i)=>s.order=i+1);
 const anchors=routeAnchorIndices(data.route.points.length,data.stops);
-if(!Array.isArray(data.route.curveHandles)||!data.route.curveHandles.length){data.route.curveHandles=deriveCurveHandles(data.route.points,anchors)}
+if(!Array.isArray(data.route.curveHandles)){data.route.curveHandles=deriveCurveHandles(data.route.points,anchors)}
 else{data.route.curveHandles=data.route.curveHandles.map((h,i)=>({id:String(h.id||`curve-${h.startIndex}-${h.endIndex}-${i}`),startIndex:clamp(Math.round(Number(h.startIndex)||0),0,data.route.points.length-2),endIndex:clamp(Math.round(Number(h.endIndex)||1),1,data.route.points.length-1),control:sanePoint(h.control)})).filter(h=>h.endIndex>h.startIndex)}
-if(!data.route.curveHandles.length)data.route.curveHandles=deriveCurveHandles(data.route.points,anchors);
 data.cableway={...FALLBACK_CONFIG.cableway,...(data.cableway||{})};data.cableway.points=(data.cableway.points||[]).map(sanePoint);if(data.cableway.points.length<2)data.cableway.points=structuredClone(FALLBACK_CONFIG.cableway.points);data.cableway.towerIndices=(data.cableway.towerIndices||[]).filter(n=>Number.isInteger(n)&&n>=0&&n<data.cableway.points.length);
 data.bus={...FALLBACK_CONFIG.bus,...(data.bus||{})};data.bus.points=(data.bus.points||[]).map(sanePoint);if(data.bus.points.length<2)data.bus.points=structuredClone(FALLBACK_CONFIG.bus.points);data.settings.showBusRoute=!!data.settings.showBusRoute;data.mapLabels=Array.isArray(data.mapLabels)?data.mapLabels.map((l,i)=>({id:String(l.id||'label'+i),name:String(l.name||''),position:sanePoint(l.position),labelWidth:clamp(Number(l.labelWidth)||160,80,420)})):structuredClone(FALLBACK_CONFIG.mapLabels);return data}
 
@@ -268,7 +307,7 @@ function routeInsertAtSelected(mode){
  if(!editMode){status('請先開啟編輯模式');return}
  const pts=cfg.route.points,n=pts.length;
  if(n<2){status('路線至少需要兩個節點');return}
- const selected=selectedNodeIndex==null?(stopOrder()[0]?.routeIndex??0):selectedNodeIndex;
+ const selected=selectedNodeIndex==null?(curveById(selectedCurveId)?.startIndex??stopOrder()[0]?.routeIndex??0):selectedNodeIndex;
  const base=clamp(selected,0,n-2),insertIndex=base+1,a=pts[base],b=pts[base+1];
  const t=mode==='middle'?.5:.22;
  const newPoint=sanePoint([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);
@@ -292,42 +331,7 @@ function routeInsertAtSelected(mode){
  markDirty();rebuildTimeline();renderStops();renderRoute();renderPins();selectRouteNode(insertIndex);
  status(mode==='middle'?'已在選取節點與下一節點之間插入中點，可直接拖曳調整。':'已新增路線節點（位於選取節點後方），可直接拖曳調整。');
 }
-function routeDeleteSelected(){
- if(!editMode){status('請先開啟編輯模式');return}
- const pts=cfg.route.points,idx=selectedNodeIndex;
- if(idx==null||!Number.isInteger(idx)){status('請先選取要刪除的路線節點');return}
- if(idx<=0||idx>=pts.length-1){status('起點與終點節點不可刪除，以確保小人仍從第一站出發並在最後一站折返。');return}
- const linked=cfg.stops.filter(st=>st.routeIndex===idx);
- if(linked.length){status(`第 ${idx} 號節點對應景點「${linked.map(x=>x.name).join('、')}」，請先在景點資料中將 routeIndex 改到其他節點，再刪除此點。`);return}
- remember();
- const handles=cfg.route.curveHandles;
- const prev=handles.find(h=>h.endIndex===idx),next=handles.find(h=>h.startIndex===idx);
- pts.splice(idx,1);
- cfg.stops.forEach(st=>{if(st.routeIndex>idx)st.routeIndex--});
- if(prev&&next){
-  // 刪除曲線分段錨點時，合併左右曲線，並以現有中間點估算新的控制點。
-  cfg.route.curveHandles=handles.filter(h=>h!==prev&&h!==next);
-  for(const h of cfg.route.curveHandles){if(h.startIndex>idx)h.startIndex--;if(h.endIndex>idx)h.endIndex--;}
-  const start=prev.startIndex,end=next.endIndex-1;
-  if(end>start){
-   const mid=Math.floor((start+end)/2),p0=pts[start],pm=pts[mid],p2=pts[end];
-   const control=sanePoint([2*pm[0]-.5*(p0[0]+p2[0]),2*pm[1]-.5*(p0[1]+p2[1])]);
-   const merged={id:`curve-${start}-${end}`,startIndex:start,endIndex:end,control};
-   cfg.route.curveHandles.push(merged);rebuildCurveSegment(merged);
-  }
- }else{
-  for(const h of handles){
-   if(h.startIndex>idx)h.startIndex--;
-   if(h.endIndex>idx)h.endIndex--;
-  }
-  const affected=cfg.route.curveHandles.filter(h=>h.startIndex<idx&&h.endIndex>=idx);
-  affected.forEach(rebuildCurveSegment);
- }
- refreshRouteCurveIds();
- selectedNodeIndex=clamp(idx-1,0,pts.length-1);
- markDirty();rebuildTimeline();renderStops();renderRoute();renderPins();selectRouteNode(selectedNodeIndex);
- status(`已刪除第 ${idx} 號路線節點；景點順位及起終點已同步調整。`);
-}
+function routeDeleteSelected(){deleteSelectedRouteNode();}
 
 function stopOrder(){return [...cfg.stops].sort((a,b)=>a.order-b.order)}
 function validPhoto(u){try{const x=new URL(String(u).trim());return x.protocol==='https:'?x.href:''}catch{return ''}}
@@ -410,27 +414,152 @@ function selectStop(id,{showDetails=false}={}){
  box?.scrollIntoView({block:'nearest',behavior:'smooth'});
 }
 function selectRouteNode(idx){
- selectedNodeIndex=clamp(Number(idx),0,cfg.route.points.length-1);
- const nearby=cfg.stops.find(s=>s.routeIndex===selectedNodeIndex);
+ selectedNodeIndex=clamp(Number(idx),0,cfg.route.points.length-1);selectedCurveId=null;
+ const nearby=cfg.stops.find(x=>x.routeIndex===selectedNodeIndex);
  if(nearby){selectedId=nearby.id;selectedLabelId=nearby.id;renderStops();renderPins();renderMapLabels()}
  renderHandles();renderRouteNodeInfo();
 }
+function selectCurveHandle(id){
+ const h=curveById(id);if(!h)return;
+ selectedCurveId=id;selectedNodeIndex=null;selectedId=null;selectedLabelId=null;
+ renderHandles();renderPins();renderMapLabels();renderRouteNodeInfo();
+}
+function routeNodeProtected(idx){return idx===0||idx===cfg.route.points.length-1||routeNodeIsStop(idx)}
+function nodeMatchesFilter(text){const q=($('routeNodeFilter')?.value||'').trim().toLocaleLowerCase();return !q||String(text).toLocaleLowerCase().includes(q)}
 function renderRouteNodeInfo(){
- const el=$('routeNodeInfo');if(!el)return;
- const sel=$('routeNodeSelect');
- if(sel){
-  const old=selectedNodeIndex;
-  sel.replaceChildren();
-  cfg.route.points.forEach((p,i)=>{const opt=document.createElement('option');opt.value=String(i);const stops=cfg.stops.filter(x=>x.routeIndex===i).map(x=>`第${x.order}站 ${x.name}`).join('、');opt.textContent=`節點 ${i}　X:${Math.round(p[0])} Y:${Math.round(p[1])}${stops?'　｜'+stops:''}`;sel.append(opt)});
-  if(old!=null&&old>=0&&old<cfg.route.points.length)sel.value=String(old);else sel.selectedIndex=-1;
+ const info=$('routeNodeInfo'),list=$('routeNodeList');if(!list)return;
+ const routeCount=$('routePointCount'),curveCount=$('curvePointCount');
+ if(routeCount)routeCount.textContent=`${cfg.route.points.length} 點`;
+ if(curveCount)curveCount.textContent=`${cfg.route.curveHandles.length} 點`;
+ list.replaceChildren();
+ const section=(title)=>{const d=document.createElement('div');d.className='node-list-section-title';d.textContent=title;list.append(d)};
+ const addRow=({kind,index,id,label,meta,selected,protectedNode})=>{
+  const row=document.createElement('div');row.className='node-list-row'+(selected?' selected':'')+(protectedNode?' protected':'');row.setAttribute('role','listitem');
+  const check=document.createElement('input');check.type='checkbox';check.className='node-batch-check';check.dataset.kind=kind;check.dataset.key=kind==='route'?String(index):id;check.checked=kind==='route'?checkedRouteNodes.has(index):checkedCurveNodes.has(id);check.disabled=!!protectedNode;check.title=protectedNode?'起點、終點或景點對應節點受到保護':'勾選後可批次刪除';
+  const btn=document.createElement('button');btn.type='button';btn.className='node-select-button';btn.dataset.kind=kind;btn.dataset.key=kind==='route'?String(index):id;
+  const primary=document.createElement('span');primary.className='node-primary';
+  const dot=document.createElement('span');dot.className='node-type-dot '+(kind==='route'?'route':'curve');primary.append(dot,document.createTextNode(label));
+  const right=document.createElement('span');right.className='node-meta';right.textContent=meta;
+  btn.append(primary,right);row.append(check,btn);
+  if(protectedNode){const tag=document.createElement('span');tag.className='node-protected-tag';tag.textContent='保護';btn.append(tag)}
+  list.append(row);
+ };
+ section(`路徑節點（${cfg.route.points.length}）`);
+ cfg.route.points.forEach((p,i)=>{
+  const stops=cfg.stops.filter(x=>x.routeIndex===i).map(x=>`第${x.order}站 ${x.name}`).join('、');
+  const protectedNode=routeNodeProtected(i);
+  const label=`節點 ${i}${stops?'｜'+stops:''}`;
+  const meta=`X:${Math.round(p[0])} Y:${Math.round(p[1])}`;
+  if(nodeMatchesFilter(`${label} ${meta} ${i}`))addRow({kind:'route',index:i,label,meta,selected:selectedNodeIndex===i,protectedNode});
+ });
+ section(`角度控制節點（${cfg.route.curveHandles.length}）`);
+ cfg.route.curveHandles.slice().sort((a,b)=>a.startIndex-b.startIndex).forEach((h,i)=>{
+  const label=`控制點 ${i+1}｜路徑 ${h.startIndex}–${h.endIndex}`;
+  const meta=`X:${Math.round(h.control[0])} Y:${Math.round(h.control[1])}`;
+  if(nodeMatchesFilter(`${label} ${meta} ${h.id}`))addRow({kind:'curve',id:h.id,label,meta,selected:selectedCurveId===h.id,protectedNode:false});
+ });
+ if(!list.childElementCount){const empty=document.createElement('div');empty.className='node-list-empty';empty.textContent='沒有符合搜尋條件的節點';list.append(empty)}
+ if(info){
+  if(selectedNodeIndex!=null){const p=pointOnRoute(selectedNodeIndex),ss=cfg.stops.filter(x=>x.routeIndex===selectedNodeIndex).map(x=>`第${x.order}站 ${x.name}`).join('、');info.textContent=`已選取路徑節點 ${selectedNodeIndex+1}/${cfg.route.points.length}：X=${p[0].toFixed(1)}、Y=${p[1].toFixed(1)}${ss?'｜'+ss:''}${routeNodeProtected(selectedNodeIndex)?'｜保護節點':''}`}
+  else if(selectedCurveId){const h=curveById(selectedCurveId);info.textContent=h?`已選取角度控制節點：路徑 ${h.startIndex}–${h.endIndex}｜控制座標 X=${h.control[0].toFixed(1)}、Y=${h.control[1].toFixed(1)}`:'尚未選取節點'}
+  else info.textContent='尚未選取節點：請點選列表項目或地圖上的紅色／青藍色節點。';
  }
- const del=$('routeDeleteNode');
- if(del){const protectedNode=selectedNodeIndex==null||selectedNodeIndex<=0||selectedNodeIndex>=cfg.route.points.length-1||routeNodeIsStop(selectedNodeIndex);del.disabled=protectedNode;del.title=protectedNode?'起終點或景點對應節點不可直接刪除':'刪除目前選取的路線節點'}
- const help=$('routeNodeHelp');
- if(selectedNodeIndex==null){el.textContent='尚未選取節點：請點選地圖紅色節點或使用下拉選單。';if(help)help.textContent='新增節點：在選取點後方加入可拖曳節點；插入中間節點：精準插入兩點中間。景點對應節點及起終點不可直接刪除。';return}
- const p=pointOnRoute(selectedNodeIndex),ss=cfg.stops.filter(x=>x.routeIndex===selectedNodeIndex).map(x=>`第${x.order}站 ${x.name}`).join('、');
- el.textContent=`目前選取第 ${selectedNodeIndex} 號節點（共 ${cfg.route.points.length} 個）：X=${p[0].toFixed(1)}、Y=${p[1].toFixed(1)}${ss?'｜'+ss:''}`;
- if(help)help.textContent=routeNodeIsStop(selectedNodeIndex)?'此節點是景點定位點，為避免景點與路線對應錯亂，不能直接刪除；可先修改景點的 routeIndex。':'可拖曳地圖上的黃色／紅色選取點微調位置，也可在此新增、插入或刪除節點。';
+ const del=$('routeDeleteNode');if(del)del.disabled=selectedNodeIndex==null||routeNodeProtected(selectedNodeIndex);
+ const cdel=$('curveDeleteNode');if(cdel)cdel.disabled=!selectedCurveId||!curveById(selectedCurveId);
+ const help=$('routeNodeHelp');if(help)help.textContent='紅色＝路徑節點；青藍色＝角度控制節點。點選列表項目可選取並在地圖上 Highlight；勾選方框可跨類型批次刪除。起點、終點與景點對應的路徑節點不能刪除。新增角度控制節點會將選取曲線分割成兩段，保留原本路線形狀。';
+}
+function handleNodeListClick(e){
+ const btn=e.target.closest('.node-select-button');if(!btn)return;
+ if(btn.dataset.kind==='route')selectRouteNode(Number(btn.dataset.key));else selectCurveHandle(btn.dataset.key);
+}
+function handleNodeListCheck(e){
+ const cb=e.target.closest('.node-batch-check');if(!cb)return;
+ const set=cb.dataset.kind==='route'?checkedRouteNodes:checkedCurveNodes;
+ const key=cb.dataset.kind==='route'?Number(cb.dataset.key):cb.dataset.key;
+ if(cb.checked)set.add(key);else set.delete(key);
+}
+function clearNodeChecks(){checkedRouteNodes.clear();checkedCurveNodes.clear();renderRouteNodeInfo()}
+function selectAllDeletableNodes(){
+ checkedRouteNodes.clear();checkedCurveNodes.clear();
+ cfg.route.points.forEach((p,i)=>{if(!routeNodeProtected(i))checkedRouteNodes.add(i)});
+ cfg.route.curveHandles.forEach(h=>checkedCurveNodes.add(h.id));renderRouteNodeInfo();
+}
+function splitCurveHandle(h,splitIndex){
+ const start=h.startIndex,end=h.endIndex;if(splitIndex<=start||splitIndex>=end)return false;
+ const p0=pointOnRoute(start),p2=pointOnRoute(end),c=h.control,t=(splitIndex-start)/(end-start);
+ const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+ const q0=lerp(p0,c,t),q1=lerp(c,p2,t);
+ // 原有路徑取樣點已包含 splitIndex，De Casteljau 分割可保留原曲線外觀。
+ const left={id:`curve-${start}-${splitIndex}`,startIndex:start,endIndex:splitIndex,control:sanePoint(q0)};
+ const right={id:`curve-${splitIndex}-${end}`,startIndex:splitIndex,endIndex:end,control:sanePoint(q1)};
+ const at=cfg.route.curveHandles.indexOf(h);cfg.route.curveHandles.splice(at,1,left,right);
+ refreshRouteCurveIds();selectedCurveId=right.id;selectedNodeIndex=null;return true;
+}
+function addCurveControlNode(){
+ if(!editMode){status('請先開啟編輯模式');return}
+ let target=selectedCurveId?curveById(selectedCurveId):null,splitIndex=null;
+ if(target){splitIndex=Math.floor((target.startIndex+target.endIndex)/2);if(splitIndex<=target.startIndex||splitIndex>=target.endIndex){status('這段曲線太短，無法再新增角度控制節點');return}}
+ else if(selectedNodeIndex!=null){
+  target=cfg.route.curveHandles.find(h=>h.startIndex<selectedNodeIndex&&h.endIndex>selectedNodeIndex);
+  if(target)splitIndex=selectedNodeIndex;
+  else target=cfg.route.curveHandles.find(h=>h.endIndex-h.startIndex>=2&&(h.startIndex===selectedNodeIndex||h.endIndex===selectedNodeIndex));
+  if(target&&splitIndex==null)splitIndex=Math.floor((target.startIndex+target.endIndex)/2);
+ }
+ if(target&&splitIndex!=null){
+  remember();if(!splitCurveHandle(target,splitIndex))return;
+  markDirty();renderRoute();renderPins();renderRouteNodeInfo();status(`已新增角度控制節點，曲線分割於路徑節點 ${splitIndex}。`);return;
+ }
+ // 若目前沒有可分割的控制曲線，從未設定控制點的相鄰錨點區間建立一個。
+ const anchors=new Set([0,cfg.route.points.length-1,...cfg.stops.map(x=>x.routeIndex),...cfg.route.curveHandles.flatMap(h=>[h.startIndex,h.endIndex])]);
+ for(let i=8;i<cfg.route.points.length-1;i+=8)anchors.add(i);
+ const sorted=[...anchors].sort((a,b)=>a-b),gaps=[];
+ for(let i=0;i<sorted.length-1;i++){const a=sorted[i],b=sorted[i+1];if(b-a>1&&!cfg.route.curveHandles.some(h=>h.startIndex===a&&h.endIndex===b))gaps.push({startIndex:a,endIndex:b})}
+ let gap=gaps.find(g=>selectedNodeIndex!=null&&selectedNodeIndex>=g.startIndex&&selectedNodeIndex<=g.endIndex)||gaps[0];
+ if(!gap){status('目前沒有可新增控制點的曲線區段；請先選取一個可分割的角度控制節點。');return}
+ const mid=Math.floor((gap.startIndex+gap.endIndex)/2),p0=pointOnRoute(gap.startIndex),pm=pointOnRoute(mid),p2=pointOnRoute(gap.endIndex);
+ const control=sanePoint([2*pm[0]-.5*(p0[0]+p2[0]),2*pm[1]-.5*(p0[1]+p2[1])]);
+ remember();const h={id:`curve-${gap.startIndex}-${gap.endIndex}`,...gap,control};cfg.route.curveHandles.push(h);cfg.route.curveHandles.sort((a,b)=>a.startIndex-b.startIndex);selectedCurveId=h.id;selectedNodeIndex=null;markDirty();renderRoute();renderPins();renderRouteNodeInfo();status(`已在路徑 ${gap.startIndex}–${gap.endIndex} 建立角度控制節點。`);
+}
+function deleteSelectedCurveNode(){
+ if(!editMode){status('請先開啟編輯模式');return}
+ const h=curveById(selectedCurveId);if(!h){status('請先選取角度控制節點');return}
+ remember();cfg.route.curveHandles=cfg.route.curveHandles.filter(x=>x.id!==h.id);selectedCurveId=null;checkedCurveNodes.delete(h.id);markDirty();renderRoute();renderPins();renderRouteNodeInfo();status(`已刪除角度控制節點（原路徑 ${h.startIndex}–${h.endIndex}）；既有路徑座標保留為折線。`);
+}
+function deleteRouteNodeCore(idx){
+ const pts=cfg.route.points;if(idx<=0||idx>=pts.length-1||routeNodeIsStop(idx))return false;
+ const handles=cfg.route.curveHandles,prev=handles.find(h=>h.endIndex===idx),next=handles.find(h=>h.startIndex===idx);
+ pts.splice(idx,1);cfg.stops.forEach(st=>{if(st.routeIndex>idx)st.routeIndex--});
+ if(prev&&next){
+  cfg.route.curveHandles=handles.filter(h=>h!==prev&&h!==next);
+  for(const h of cfg.route.curveHandles){if(h.startIndex>idx)h.startIndex--;if(h.endIndex>idx)h.endIndex--;}
+  const start=prev.startIndex,end=next.endIndex-1;
+  if(end>start){const mid=Math.floor((start+end)/2),p0=pts[start],pm=pts[mid],p2=pts[end];const control=sanePoint([2*pm[0]-.5*(p0[0]+p2[0]),2*pm[1]-.5*(p0[1]+p2[1])]);const merged={id:`curve-${start}-${end}`,startIndex:start,endIndex:end,control};cfg.route.curveHandles.push(merged);rebuildCurveSegment(merged)}
+ }else{
+  for(const h of handles){if(h.startIndex>idx)h.startIndex--;if(h.endIndex>idx)h.endIndex--;}
+  const affected=cfg.route.curveHandles.filter(h=>h.startIndex<idx&&h.endIndex>=idx);affected.forEach(rebuildCurveSegment);
+ }
+ refreshRouteCurveIds();return true;
+}
+function deleteSelectedRouteNode(){
+ if(!editMode){status('請先開啟編輯模式');return}
+ const idx=selectedNodeIndex;if(idx==null){status('請先選取要刪除的路徑節點');return}
+ if(routeNodeProtected(idx)){status('起點、終點及景點對應節點受到保護，不能直接刪除。');return}
+ remember();deleteRouteNodeCore(idx);selectedNodeIndex=clamp(idx-1,0,cfg.route.points.length-1);selectedCurveId=null;markDirty();rebuildTimeline();renderStops();renderRoute();renderPins();selectRouteNode(selectedNodeIndex);status(`已刪除路徑節點；目前共 ${cfg.route.points.length} 點。`);
+}
+function batchDeleteNodes(){
+ if(!editMode){status('請先開啟編輯模式');return}
+ const curveIds=[...checkedCurveNodes].filter(id=>curveById(id));
+ const routeIndices=[...checkedRouteNodes].filter(i=>Number.isInteger(i)&&i>=0&&i<cfg.route.points.length).sort((a,b)=>b-a);
+ const deletable=routeIndices.filter(i=>!routeNodeProtected(i));
+ if(!curveIds.length&&!deletable.length){status('請先勾選要批次刪除的節點；起點、終點及景點節點不能刪除。');return}
+ if(!confirm(`確定批次刪除 ${curveIds.length} 個角度控制節點及 ${deletable.length} 個路徑節點？\n起點、終點及景點對應節點會保留。`))return;
+ const oldSelected=selectedNodeIndex;remember();
+ for(const id of curveIds)cfg.route.curveHandles=cfg.route.curveHandles.filter(h=>h.id!==id);
+ let deletedRoute=0;for(const idx of deletable){if(deleteRouteNodeCore(idx))deletedRoute++}
+ checkedRouteNodes.clear();checkedCurveNodes.clear();selectedCurveId=null;
+ if(oldSelected==null)selectedNodeIndex=null;else{const removedBefore=deletable.filter(i=>i<oldSelected).length;selectedNodeIndex=deletable.includes(oldSelected)?clamp(oldSelected-removedBefore-1,0,cfg.route.points.length-1):clamp(oldSelected-removedBefore,0,cfg.route.points.length-1)}
+ markDirty();rebuildTimeline();renderStops();renderRoute();renderPins();renderRouteNodeInfo();
+ status(`批次刪除完成：移除 ${curveIds.length} 個角度控制節點、${deletedRoute} 個路徑節點；保護節點未受影響。`);
 }
 function renderPins(){
  stage.querySelectorAll('.stop-pin').forEach(e=>e.remove());
@@ -443,7 +572,7 @@ function renderPins(){
   b.tabIndex=editMode?0:-1;b.setAttribute('aria-label','第'+s.order+'站 '+s.name);
   stage.append(b)
  }
- renderMapLabels();renderRouteNodeInfo();
+ renderMapLabels();if(!editDrag)renderRouteNodeInfo();
 }
 function renderBusEditor(){
  const layer=$('busEditLayer');layer.replaceChildren();
@@ -504,7 +633,7 @@ function renderHandles(){
 const layer=$('handleLayer');layer.replaceChildren();if(!editMode)return;
 const indices=new Set(Array.from({length:cfg.route.points.length},(_,i)=>i));const anchors=new Set([0,cfg.route.points.length-1,...cfg.route.curveHandles.flatMap(h=>[h.startIndex,h.endIndex])]);
 for(const idx of [...indices].sort((a,b)=>a-b)){const p=pointOnRoute(idx),c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('class','editor-handle'+(anchors.has(idx)?' anchor':'')+(selectedNodeIndex===idx?' selected':''));c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1]);c.setAttribute('r',selectedNodeIndex===idx?11:anchors.has(idx)?7:3.5);c.tabIndex=0;c.setAttribute('role','button');c.setAttribute('aria-label','路線節點 '+idx);c.dataset.idx=idx;c.setAttribute('title','路線錨點 '+idx+'（拖曳調整位置）');layer.append(c)}
-for(const h of cfg.route.curveHandles){const p0=pointOnRoute(h.startIndex),p2=pointOnRoute(h.endIndex),c=h.control,mid=quadraticPoint(p0,c,p2,.5);const guide=document.createElementNS('http://www.w3.org/2000/svg','path');guide.setAttribute('class','curve-guide');guide.setAttribute('d',`M ${p0[0]} ${p0[1]} L ${c[0]} ${c[1]} L ${p2[0]} ${p2[1]}`);layer.append(guide);const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('class','curve-handle');dot.setAttribute('cx',c[0]);dot.setAttribute('cy',c[1]);dot.setAttribute('r',7);dot.dataset.curve=h.id;dot.setAttribute('title',`曲線調整點 ${h.startIndex}–${h.endIndex}（拖曳調整弧度）`);layer.append(dot)}
+for(const h of cfg.route.curveHandles){const p0=pointOnRoute(h.startIndex),p2=pointOnRoute(h.endIndex),c=h.control,mid=quadraticPoint(p0,c,p2,.5);const guide=document.createElementNS('http://www.w3.org/2000/svg','path');guide.setAttribute('class','curve-guide');guide.setAttribute('d',`M ${p0[0]} ${p0[1]} L ${c[0]} ${c[1]} L ${p2[0]} ${p2[1]}`);layer.append(guide);const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('class','curve-handle'+(selectedCurveId===h.id?' selected':''));dot.setAttribute('cx',c[0]);dot.setAttribute('cy',c[1]);dot.setAttribute('r',7);dot.dataset.curve=h.id;dot.setAttribute('title',`曲線調整點 ${h.startIndex}–${h.endIndex}（拖曳調整弧度）`);layer.append(dot)}
 }
 function rebuildTimeline(){const sorted=stopOrder();segments=[];for(let k=0;k<sorted.length-1;k++){const a=sorted[k].routeIndex,b=sorted[k+1].routeIndex,points=[];if(a===b)points.push([...pointOnRoute(a)]);else{const dir=b>a?1:-1;for(let i=a;;i+=dir){points.push([...pointOnRoute(i)]);if(i===b)break}}segments.push({from:sorted[k],to:sorted[k+1],points})}if(sorted.length){segmentIndex=0;segmentT=0;progressPos=[...pointOnRoute(sorted[0].routeIndex)]}}
 function setWalker(p,next){if(!p)return;progressPos=p;$('walker').style.left=p[0]+'px';$('walker').style.top=p[1]+'px';if(next&&Math.abs(next[0]-p[0])>.1)$('walker').classList.toggle('left',next[0]<p[0])}
@@ -551,19 +680,21 @@ function setPanelOpen(open){
 panelToggle.addEventListener('click',()=>setPanelOpen(pageLayout.classList.contains('panel-collapsed')));
 
 function clientToMap(e){const r=viewport.getBoundingClientRect();return sanePoint([(e.clientX-r.left-ox)/scale,(e.clientY-r.top-oy)/scale])}
-viewport.addEventListener('pointerdown',e=>{const bus=editMode&&e.target.closest('.bus-edit-node'),cable=editMode&&e.target.closest('.cable-edit-node,.tower-drag-zone'),curve=editMode&&e.target.closest('.curve-handle'),handle=editMode&&e.target.closest('.editor-handle'),pin=editMode&&e.target.closest('.stop-pin'),label=editMode&&e.target.closest('.map-label');if(bus||cable||curve||handle||pin||label){e.preventDefault();remember();editDrag=bus?{kind:'bus',idx:Number(bus.dataset.busidx)}:cable?{kind:'cable',idx:Number(cable.dataset.cableidx)}:curve?{kind:'curve',id:curve.dataset.curve}:handle?{kind:'node',idx:Number(handle.dataset.idx)}:pin?{kind:'pin',id:pin.dataset.id}:{kind:'label',id:label.dataset.labelid};if(cable)selectedCableIndex=editDrag.idx;if(bus)selectedBusIndex=editDrag.idx;if(handle)selectRouteNode(editDrag.idx);if(pin)selectStop(editDrag.id);if(label){selectedLabelId=editDrag.id;const st=cfg.stops.find(x=>x.id===editDrag.id);if(st)selectedId=st.id;renderMapLabels();renderPins();renderStops()}viewport.setPointerCapture(e.pointerId);return}if(e.target.closest('button,input,.photo'))return;viewDrag={x:e.clientX,y:e.clientY,ox,oy};viewport.classList.add('dragging');viewport.setPointerCapture(e.pointerId)});
+viewport.addEventListener('pointerdown',e=>{const bus=editMode&&e.target.closest('.bus-edit-node'),cable=editMode&&e.target.closest('.cable-edit-node,.tower-drag-zone'),curve=editMode&&e.target.closest('.curve-handle'),handle=editMode&&e.target.closest('.editor-handle'),pin=editMode&&e.target.closest('.stop-pin'),label=editMode&&e.target.closest('.map-label');if(bus||cable||curve||handle||pin||label){e.preventDefault();remember();editDrag=bus?{kind:'bus',idx:Number(bus.dataset.busidx)}:cable?{kind:'cable',idx:Number(cable.dataset.cableidx)}:curve?{kind:'curve',id:curve.dataset.curve}:handle?{kind:'node',idx:Number(handle.dataset.idx)}:pin?{kind:'pin',id:pin.dataset.id}:{kind:'label',id:label.dataset.labelid};if(cable)selectedCableIndex=editDrag.idx;if(bus)selectedBusIndex=editDrag.idx;if(curve)selectCurveHandle(curve.dataset.curve);if(handle)selectRouteNode(editDrag.idx);if(pin)selectStop(editDrag.id);if(label){selectedLabelId=editDrag.id;const st=cfg.stops.find(x=>x.id===editDrag.id);if(st)selectedId=st.id;renderMapLabels();renderPins();renderStops()}viewport.setPointerCapture(e.pointerId);return}if(e.target.closest('button,input,.photo'))return;viewDrag={x:e.clientX,y:e.clientY,ox,oy};viewport.classList.add('dragging');viewport.setPointerCapture(e.pointerId)});
 viewport.addEventListener('pointermove',e=>{if(editDrag){const p=clientToMap(e);if(editDrag.kind==='bus'){updateBusPoint(editDrag.idx,p);renderRoute();return}if(editDrag.kind==='cable'){updateCablePoint(editDrag.idx,p);renderRoute();return}if(editDrag.kind==='curve'){const h=curveById(editDrag.id);if(h){h.control=p;rebuildCurveSegment(h)}}else if(editDrag.kind==='node'){moveRouteAnchor(editDrag.idx,p)}else if(editDrag.kind==='pin'){const s=cfg.stops.find(x=>x.id===editDrag.id);if(s)moveRouteAnchor(s.routeIndex,p)}else if(editDrag.kind==='label'){const st=cfg.stops.find(x=>x.id===editDrag.id),extra=(cfg.mapLabels||[]).find(x=>x.id===editDrag.id);if(st)st.labelPosition=[...p];else if(extra)extra.position=[...p];renderMapLabels();return}renderRoute();renderPins();rebuildTimeline();hidePhoto();return}if(viewDrag){ox=viewDrag.ox+e.clientX-viewDrag.x;oy=viewDrag.oy+e.clientY-viewDrag.y;renderTransform()}});
 function pointerUp(){if(editDrag){editDrag=null;markDirty();renderRoute();renderPins();renderMapLabels()}viewDrag=null;viewport.classList.remove('dragging')}viewport.addEventListener('pointerup',pointerUp);viewport.addEventListener('pointercancel',pointerUp);
 
 viewport.addEventListener('click',e=>{
  if(!editMode)return;
+ const curve=e.target.closest('.curve-handle');if(curve){selectCurveHandle(curve.dataset.curve);return}
  const node=e.target.closest('.editor-handle');if(node){selectRouteNode(Number(node.dataset.idx));return}
  const pin=e.target.closest('.stop-pin');if(pin){selectStop(pin.dataset.id);return}
  const lab=e.target.closest('.map-label');if(lab){selectedLabelId=lab.dataset.labelid;const st=cfg.stops.find(x=>x.id===selectedLabelId);if(st)selectStop(st.id);else renderMapLabels();}
 });
 viewport.addEventListener('keydown',e=>{if(!editMode||!['Enter',' '].includes(e.key))return;
- const node=e.target.closest('.editor-handle');const pin=e.target.closest('.stop-pin');const lab=e.target.closest('.map-label');
- if(node){e.preventDefault();selectRouteNode(Number(node.dataset.idx))}
+ const curve=e.target.closest('.curve-handle');const node=e.target.closest('.editor-handle');const pin=e.target.closest('.stop-pin');const lab=e.target.closest('.map-label');
+ if(curve){e.preventDefault();selectCurveHandle(curve.dataset.curve)}
+ else if(node){e.preventDefault();selectRouteNode(Number(node.dataset.idx))}
  else if(pin){e.preventDefault();selectStop(pin.dataset.id)}
  else if(lab){e.preventDefault();selectedLabelId=lab.dataset.labelid;renderMapLabels()}
 });
@@ -594,10 +725,17 @@ $('addStop').onclick=()=>{
  cfg.stops.push(snew);selectedId=id;$('stopSearch').value='';markDirty();rebuildTimeline();renderStops();renderPins();renderRoute();status('✅ 已新增景點。請展開編輯名稱、照片 URL 與路線節點，再下載 JSON。');
 };
 
-$('routeNodeSelect').onchange=()=>{const idx=+$('routeNodeSelect').value;if(Number.isInteger(idx))selectRouteNode(idx)};
+$('routeNodeList').addEventListener('click',handleNodeListClick);
+$('routeNodeList').addEventListener('change',handleNodeListCheck);
+$('routeNodeFilter').addEventListener('input',renderRouteNodeInfo);
+$('nodeSelectAll').onclick=selectAllDeletableNodes;
+$('nodeClearChecks').onclick=clearNodeChecks;
+$('nodeBatchDelete').onclick=batchDeleteNodes;
 $('routeAddNode').onclick=()=>routeInsertAtSelected('add');
 $('routeInsertNode').onclick=()=>routeInsertAtSelected('middle');
-$('routeDeleteNode').onclick=routeDeleteSelected;
+$('routeDeleteNode').onclick=deleteSelectedRouteNode;
+$('curveAddNode').onclick=addCurveControlNode;
+$('curveDeleteNode').onclick=deleteSelectedCurveNode;
 $('busNodeSelect').onchange=()=>busSelectIndex(+$('busNodeSelect').value);
 $('busAdd').onclick=()=>{
  if(!editMode){status('請先開啟編輯模式');return}
@@ -625,8 +763,8 @@ $('cableTowerToggle').onclick=()=>{if(!editMode){status('請先開啟編輯模�
 $('cableReset').onclick=()=>{if(!editMode){status('請先開啟編輯模式');return}if(!confirm('要將纜車線與支柱恢復成這一版的預設位置嗎？步行路線不受影響。'))return;remember();cfg.cableway=structuredClone(INITIAL_CABLEWAY);selectedCableIndex=1;markDirty();renderRoute()};
 $('routeToggle').onchange=()=>{cfg.settings.showRoute=$('routeToggle').checked;renderRoute()};$('cableToggle').onchange=()=>{cfg.settings.showCable=$('cableToggle').checked;renderRoute()};$('busToggle').onchange=()=>cfg.settings.showBus=$('busToggle').checked;$('busRouteToggle').onchange=()=>{cfg.settings.showBusRoute=$('busRouteToggle').checked;markDirty();renderRoute()};$('speed').onchange=()=>cfg.settings.walkerSpeed=+$('speed').value;$('vehicleSpeed').onchange=()=>cfg.settings.transportSpeed=+$('vehicleSpeed').value;
 $('editMode').onchange=()=>{editMode=$('editMode').checked;if(editMode){autoStartSerial++;reset();$('routeToggle').checked=true;status('✏️ 編輯模式：紅色點調步道、青色點調曲線、紫色點調纜線、橘色點調支柱、淺藍色點調公車路線')}else{reset();$('routeToggle').checked=!!cfg.settings.showRoute;status('已退出編輯模式')}renderRoute();renderPins();renderRouteNodeInfo()};
-$('undoEdit').onclick=()=>{if(!history.length)return;cfg=normalize(JSON.parse(history.pop()));photoCache.clear();reset();renderStops();renderPins();renderRoute();status('已復原上一個編輯動作')};
-function applyConfig(raw,from){const saved=!configInitialized?readWalkCheckpoint():null;configInitialized=true;autoStartSerial++;reset();cfg=normalize(raw);history=[];changed=false;selectedId=null;selectedNodeIndex=null;selectedLabelId=null;photoCache.clear();photoStatus={};$('routeToggle').checked=!!cfg.settings.showRoute;$('cableToggle').checked=!!cfg.settings.showCable;$('busToggle').checked=!!cfg.settings.showBus;$('busRouteToggle').checked=!!cfg.settings.showBusRoute;selectedBusIndex=0;$('speed').value=cfg.settings.walkerSpeed;$('vehicleSpeed').value=cfg.settings.transportSpeed;renderStops();renderPins();renderRoute();rebuildTimeline();const first=stopOrder()[0];if(first)setWalker(pointOnRoute(first.routeIndex));preloadAll();status('✅ 已載入 '+from+'，共 '+cfg.stops.length+' 個景點、'+cfg.route.points.length+' 個路線節點');if(restoreWalkCheckpoint(saved)){status(paused?'⏸ 已恢復上次暫停的位置':'▶ 已恢復上次導覽位置，接續行走')}else if(cfg.settings.autoStart&&!editMode)autoStart()}
+$('undoEdit').onclick=()=>{if(!history.length)return;cfg=normalize(JSON.parse(history.pop()));checkedRouteNodes.clear();checkedCurveNodes.clear();selectedCurveId=null;selectedNodeIndex=null;photoCache.clear();reset();renderStops();renderPins();renderRoute();renderRouteNodeInfo();status('已復原上一個編輯動作')};
+function applyConfig(raw,from){const saved=!configInitialized?readWalkCheckpoint():null;configInitialized=true;autoStartSerial++;reset();cfg=normalize(raw);history=[];changed=false;selectedId=null;selectedNodeIndex=null;selectedCurveId=null;selectedLabelId=null;checkedRouteNodes.clear();checkedCurveNodes.clear();photoCache.clear();photoStatus={};$('routeToggle').checked=!!cfg.settings.showRoute;$('cableToggle').checked=!!cfg.settings.showCable;$('busToggle').checked=!!cfg.settings.showBus;$('busRouteToggle').checked=!!cfg.settings.showBusRoute;selectedBusIndex=0;$('speed').value=cfg.settings.walkerSpeed;$('vehicleSpeed').value=cfg.settings.transportSpeed;renderStops();renderPins();renderRoute();rebuildTimeline();const first=stopOrder()[0];if(first)setWalker(pointOnRoute(first.routeIndex));preloadAll();status('✅ 已載入 '+from+'，共 '+cfg.stops.length+' 個景點、'+cfg.route.points.length+' 個路線節點');if(restoreWalkCheckpoint(saved)){status(paused?'⏸ 已恢復上次暫停的位置':'▶ 已恢復上次導覽位置，接續行走')}else if(cfg.settings.autoStart&&!editMode)autoStart()}
 async function autoStart(){const serial=++autoStartSerial;const first=stopOrder()[0];if(!first)return;status('📷 優先預載起點：'+first.name);await preload(first);if(serial!==autoStartSerial||playing||editMode)return;start()}
 $('loadFile').onclick=()=>$('fileChooser').click();$('fileChooser').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{applyConfig(JSON.parse(await f.text()),f.name)}catch(err){status('❌ JSON 格式錯誤：'+err.message)}e.target.value=''};
 $('saveJson').onclick=async()=>{const output=JSON.stringify(cfg,null,2);try{if(window.showSaveFilePicker){if(!saveHandle)saveHandle=await window.showSaveFilePicker({suggestedName:'zhinan-map.json',types:[{description:'JSON 資料檔',accept:{'application/json':['.json']}}]});const w=await saveHandle.createWritable();await w.write(output);await w.close();changed=false;status('✅ 已儲存 JSON：'+saveHandle.name);return}}catch(e){if(e.name==='AbortError')return;status('無法直接存入檔案，改用下載方式。')}const blob=new Blob([output],{type:'application/json;charset=utf-8'});const u=URL.createObjectURL(blob),a=document.createElement('a');a.href=u;a.download='zhinan-map.json';a.click();setTimeout(()=>URL.revokeObjectURL(u),2000);changed=false;status('✅ 已下載 zhinan-map.json；請將它放在 HTML 同一資料夾並覆蓋舊檔')};
